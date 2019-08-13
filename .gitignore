@@ -5,3 +5,7 @@ config/HitBTCKeys.txt
 config/KucoinKeys.txt
 log*
 LastUSDTInExchanges
+config/HodlingHistory.json
+config/HodlingParams.json
+config/Orders.json
+
