@@ -1,6 +1,7 @@
 #include "Binance.h"
 #include "CurlAPI.h"
 #include "binacpp_utils.h"
+#include <sstream>
 
 
 using namespace std;
@@ -141,7 +142,8 @@ int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string sym
 			cout << RED ("Invalid type: " + type + "\n");
 			return -1;
 		}
-		querystring.append(to_string(price));
+
+		querystring.append(Utility::tostring(price));
 	}
 	
 	if (orderId > 0) {

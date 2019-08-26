@@ -10,6 +10,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sys/time.h>
+#include <iomanip>
 
 #include <json/json.h>
 
@@ -83,7 +84,7 @@ public:
 			amount -= fmod(amount, 0.01);
 		else {
 			cout << "Invalid pair " << RED(pair) << endl;
-			amount = 0;
+			// amount = 0;
 		}
 
 		// cout << " after " << amount << endl;
@@ -120,7 +121,7 @@ public:
 			amount -= fmod(amount, 0.001);
 		else {
 			cout << "Invalid pair " << RED(pair) << endl;
-			amount = 0;
+			// amount = 0;
 		}
 
 		// cout << " after " << amount << endl;
@@ -135,6 +136,22 @@ public:
 			return true;
 		else 
 			return false;
+	}
+
+	static string tostring(const double &n) {
+    	ostringstream oss;
+    	oss << fixed << setprecision(20);
+    	oss << n;
+    	string s =  oss.str();
+    	int dotpos = s.find_first_of('.');
+    	if(dotpos!=string::npos){
+        	int ipos = s.size()-1;
+        	while(s[ipos]=='0' && ipos>dotpos){
+            	--ipos;
+        	}
+        	s.erase ( ipos + 1, string::npos );
+    	}
+    	return s;
 	}
 	
 };

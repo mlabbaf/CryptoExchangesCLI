@@ -185,6 +185,7 @@ static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (12, "BTTUSDT"));
 	MenuOption.insert(pair <int, string> (13, "BNBUSDT"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
+	MenuOption.insert(pair <int, string> (101, "DENTBTC"));
 
 	cout << "Select from following menu:\n";
 
