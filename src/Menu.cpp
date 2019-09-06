@@ -50,8 +50,6 @@ static string _ExchangeSubMenuList(int mode) {
 		MenuOption.insert(pair <int, string> (5, "HitBTC"));
 	if (mode & KUCOIN)
 		MenuOption.insert(pair <int, string> (6, "Kucoin"));
-	if (mode & ALL2)
-		MenuOption.insert(pair <int, string> (7, "All2"));
 
 	cout << "Select from following menu:\n";
 
@@ -185,6 +183,7 @@ static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (12, "BTTUSDT"));
 	MenuOption.insert(pair <int, string> (13, "BNBUSDT"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
+	MenuOption.insert(pair <int, string> (15, "DENTUSDT"));
 	MenuOption.insert(pair <int, string> (101, "DENTBTC"));
 
 	cout << "Select from following menu:\n";
@@ -227,6 +226,7 @@ static string _BinanceSingleSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (12, "BTT"));
 	MenuOption.insert(pair <int, string> (13, "BNB"));
 	MenuOption.insert(pair <int, string> (14, "LTC"));
+	MenuOption.insert(pair <int, string> (15, "DENT"));
 	MenuOption.insert(pair <int, string> (21, "GAS"));
 	MenuOption.insert(pair <int, string> (101, "USDT"));
 
@@ -414,6 +414,7 @@ static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (11, "IOTAUSD"));
 	MenuOption.insert(pair <int, string> (12, "BTTUSD"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSD"));
+	MenuOption.insert(pair <int, string> (15, "DENTUSD"));
 
 	cout << "Select from following menu:\n";
 
@@ -454,6 +455,7 @@ static string _HitBTCSingleSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (11, "IOTA"));
 	MenuOption.insert(pair <int, string> (12, "BTT"));
 	MenuOption.insert(pair <int, string> (14, "LTC"));
+	MenuOption.insert(pair <int, string> (15, "DENT"));
 	MenuOption.insert(pair <int, string> (21, "GAS"));
 	MenuOption.insert(pair <int, string> (101, "USD"));
 
@@ -1389,7 +1391,7 @@ void Menu::UtilityMenu() {
 // New Main menu
 //-----------------
 void Menu::ShowPrice() {
-	int mode = ALL | BINANCE | RAMZINEX | COINEX | HITBTC | KUCOIN | ALL2;
+	int mode = ALL | BINANCE | RAMZINEX | COINEX | HITBTC | KUCOIN;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1405,8 +1407,6 @@ void Menu::ShowPrice() {
 			ShowHitBTCPrice();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinPrice();
-		if ((mode & ALL2) && symbol == "All2")
-			BotMethod::ShowAllExchangesPrice2(mode);
 	}
 }
 

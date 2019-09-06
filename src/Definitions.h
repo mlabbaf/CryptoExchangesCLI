@@ -25,8 +25,7 @@ enum _ExchangeExist {
 	COINEX 		= 0x04,
 	HITBTC 		= 0x08,
 	KUCOIN 		= 0x10,
-	ALL 		= 0X80,
-	ALL2 		= 0X100
+	ALL 		= 0X80
 };
 
 enum _GetBalancesModes {

@@ -139,18 +139,24 @@ public:
 	}
 
 	static string tostring(const double &n) {
-    	ostringstream oss;
-    	oss << fixed << setprecision(20);
-    	oss << n;
-    	string s =  oss.str();
-    	int dotpos = s.find_first_of('.');
-    	if(dotpos!=string::npos){
-        	int ipos = s.size()-1;
-        	while(s[ipos]=='0' && ipos>dotpos){
-            	--ipos;
-        	}
-        	s.erase ( ipos + 1, string::npos );
+    	string s;
+    	if (n < 0.001*0.001) {
+	    	ostringstream oss;
+	    	oss << fixed << setprecision(20);
+	    	oss << n;
+	    	s =  oss.str();
+	    	int dotpos = s.find_first_of('.');
+	    	if(dotpos!=string::npos){
+	        	int ipos = s.size()-1;
+	        	while(s[ipos]=='0' && ipos>dotpos){
+	            	--ipos;
+	        	}
+	        	s.erase ( ipos + 1, string::npos );
+	    	}
+    		
     	}
+    	else 
+    		s = to_string(n);
     	return s;
 	}
 	
