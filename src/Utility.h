@@ -140,7 +140,7 @@ public:
 
 	static string tostring(const double &n) {
     	string s;
-    	if (n < 0.001*0.001) {
+    	if (n < 0.01*0.01) {
 	    	ostringstream oss;
 	    	oss << fixed << setprecision(20);
 	    	oss << n;
