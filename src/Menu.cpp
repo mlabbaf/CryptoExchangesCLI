@@ -184,6 +184,7 @@ static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (13, "BNBUSDT"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
 	MenuOption.insert(pair <int, string> (15, "DENTUSDT"));
+	MenuOption.insert(pair <int, string> (16, "LINKUSDT"));
 	// MenuOption.insert(pair <int, string> (101, "DENTBTC"));
 	MenuOption.insert(pair <int, string> (102, "COSBTC"));
 
@@ -228,6 +229,7 @@ static string _BinanceSingleSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (13, "BNB"));
 	MenuOption.insert(pair <int, string> (14, "LTC"));
 	MenuOption.insert(pair <int, string> (15, "DENT"));
+	MenuOption.insert(pair <int, string> (16, "LINK"));
 	MenuOption.insert(pair <int, string> (21, "GAS"));
 	MenuOption.insert(pair <int, string> (101, "USDT"));
 
@@ -416,6 +418,7 @@ static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (12, "BTTUSD"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSD"));
 	MenuOption.insert(pair <int, string> (15, "DENTUSD"));
+	MenuOption.insert(pair <int, string> (16, "LINKUSD"));
 	MenuOption.insert(pair <int, string> (101, "DENTBTC"));
 
 	cout << "Select from following menu:\n";
@@ -458,6 +461,7 @@ static string _HitBTCSingleSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (12, "BTT"));
 	MenuOption.insert(pair <int, string> (14, "LTC"));
 	MenuOption.insert(pair <int, string> (15, "DENT"));
+	MenuOption.insert(pair <int, string> (16, "LINK"));
 	MenuOption.insert(pair <int, string> (21, "GAS"));
 	MenuOption.insert(pair <int, string> (101, "USD"));
 
