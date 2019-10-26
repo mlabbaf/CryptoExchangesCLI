@@ -73,7 +73,7 @@ public:
 		else if (pair == "XLMUSDT" || pair == "XLMUSD")
 			amount -= fmod(amount, 0.1);
 		else if (pair == "XRPUSDT")
-			amount -= fmod(amount, 0.1);
+			amount -= fmod(amount, 0.01);
 		else if (pair == "IOTAUSDT" || pair == "IOTAUSD")
 			amount -= fmod(amount, 0.1);
 		else if (pair == "BTTUSDT" || pair == "BTTUSD")
@@ -93,7 +93,7 @@ public:
 	static void RoundPriceBasedOnPair(string pair, double &amount) {
 
 		// cout << "pair " << pair;
-		// cout << " before " << amount;
+		// cout << " before " << amount << endl;
 
 		if (pair == "BTCUSDT" || pair == "BTCUSD")
 			amount -= fmod(amount, 1);
@@ -104,7 +104,7 @@ public:
 		else if (pair == "ONTUSDT" || pair == "ONTUSD")
 			amount -= fmod(amount, 0.0001);
 		else if (pair == "ADAUSDT" || pair == "ADAUSD")
-			amount -= fmod(amount, 0.0001);
+			amount -= fmod(amount, 0.001);
 		else if (pair == "TRXUSDT" || pair == "TRXUSD")
 			amount -= fmod(amount, 0.0001);
 		else if (pair == "XLMUSDT" || pair == "XLMUSD")

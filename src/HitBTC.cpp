@@ -628,7 +628,7 @@ void HitBTC::SendOrder(string symbol, string side, string type, double quantity,
 		else if (type == "stopLimit") {
 			double sellPrice = price * 0.99;
 			Utility::RoundPriceBasedOnPair(symbol, sellPrice);
-			HitBTC::_createJsonData(postData, symbol, temp, side, type, quantity, 0, sellPrice, price);
+			HitBTC::_createJsonData(postData, symbol, temp, side, type, quantity, 0, price, sellPrice);
 		}
 		else {
 			cout << RED ("Invalid type " + type + "\n");
