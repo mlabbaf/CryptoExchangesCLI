@@ -419,7 +419,9 @@ static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (14, "LTCUSD"));
 	MenuOption.insert(pair <int, string> (15, "DENTUSD"));
 	MenuOption.insert(pair <int, string> (16, "LINKUSD"));
-	MenuOption.insert(pair <int, string> (101, "DENTBTC"));
+	MenuOption.insert(pair <int, string> (104, "ETHBTC"));
+	MenuOption.insert(pair <int, string> (110, "XRPBTC"));
+	MenuOption.insert(pair <int, string> (115, "DENTBTC"));
 
 	cout << "Select from following menu:\n";
 
