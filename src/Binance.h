@@ -35,7 +35,8 @@ class Binance
 	static int _pathQueryStringToUrl(string &url, string baseAddress, string symbol, string asset, 
 									int limit, long fromId, long recvWindow, int status, long startTime, long endTime);
 	static int _pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
-									 string timeInForce, double quantity, double price, long orderId, long recvWindow);
+									 string timeInForce, double quantity, double price, double ocoStopPrice,
+									 double stopLimitPrice, long orderId, long recvWindow);
 
 	static void _GetAllPrices();
 	static void _GetPriceBySymbol(string &symbol);
@@ -68,8 +69,11 @@ public:
 	static void ShowDepositAddress(string &str);
 	static void ShowDepositHistory(string str);
 	static void ShowWithdrawHistory(string str);
-	static void SendOrder(string symbol, string side, string type, double quantity, double price);
+	static void SendOrder(string symbol, string side, string type, double quantity, 
+						  double price, double stopPrice, double stopLimitPrice);
 	static void CancelOrder(string symbol, long orderId);
+
+	// static void test();
 };
 
 #endif

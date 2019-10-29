@@ -264,6 +264,7 @@ static string _BinanceOrderTypeList() {
 	// MenuOption.insert(pair <int, string> (5, "TAKE_PROFIT"));
 	// MenuOption.insert(pair <int, string> (6, "TAKE_PROFIT_LIMIT"));
 	// MenuOption.insert(pair <int, string> (7, "LIMIT_MAKER"));
+	MenuOption.insert(pair <int, string> (8, "OCO"));
 
 	cout << "Select from following menu:\n";
 
@@ -831,11 +832,21 @@ static void SendOrderToBinance() {
 				if (quantity > 0) {
 					if (type != "MARKET") {
 						double price = _GetDoubleValue("Enter the price:");
-						if (price > 0)
-							Binance::SendOrder(symbol, side, type, quantity, price);
+						if (price > 0) {
+							if (type != "OCO")
+								Binance::SendOrder(symbol, side, type, quantity, price, 0, 0);
+							else {
+								double stopPrice = _GetDoubleValue("Enter the stopPrice:");
+								if (stopPrice > 0) {
+									double stopLimitPrice = _GetDoubleValue("Enter the stopLimitPrice:");
+									if (stopLimitPrice > 0)
+										Binance::SendOrder(symbol, side, type, quantity, price, stopPrice, stopLimitPrice);
+								}
+							}
+						}
 					}
 					else 
-						Binance::SendOrder(symbol, side, type, quantity, 0);
+						Binance::SendOrder(symbol, side, type, quantity, 0, 0, 0);
 				}
 			}
 		}
@@ -1744,7 +1755,7 @@ int Menu::MainMenu() {
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (16, MainMenuMapValues("TransferBetweenBankAndExchange", & TransferBetweenBankAndExchange)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (88, MainMenuMapValues("Bot", & BotMenu)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (99, MainMenuMapValues("Utility", & UtilityMenu)));
-	// MapMenuOption.insert(pair <int, MainMenuMapValues> (111, MainMenuMapValues("Test", & CurlAPI::test)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (111, MainMenuMapValues("Test", & Binance::test)));
 
 	cout << "Select from following menu:\n";
 

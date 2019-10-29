@@ -95,7 +95,8 @@ int Binance::_pathQueryStringToUrl(	string &url, string baseAddress, string symb
 }
 
 int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
-									 string timeInForce, double quantity, double price, long orderId, long recvWindow) {
+									 string timeInForce, double quantity, double price, double stopPrice, 
+									 double stopLimitPrice, long orderId, long recvWindow) {
 	url = BINANCE_HOST;
 	url += baseAddress;
 
@@ -111,13 +112,16 @@ int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string sym
 		querystring.append(side);
 	}
 
-	if (type.size() != 0) {
+	if (type.size() != 0 && type != "OCO") {
 		querystring.append("&type=");
 		querystring.append(type);
 	}
 
 	if (timeInForce.size() != 0) {
-		querystring.append("&timeInForce=");
+		if (type != "OCO") 
+			querystring.append("&timeInForce=");
+		else
+			querystring.append("&stopLimitTimeInForce=");
 		querystring.append("GTC");
 	}
 	
@@ -127,7 +131,7 @@ int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string sym
 	}
 	
 	if (price > 0) {
-		if (type == "LIMIT")
+		if (type == "LIMIT" || type == "OCO")
 			querystring.append("&price=");
 		else if (type == "STOP_LOSS") 
 			querystring.append("&stopPrice=");
@@ -144,6 +148,16 @@ int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string sym
 		}
 
 		querystring.append(Utility::tostring(price));
+	}
+
+	if (stopPrice > 0) {
+		querystring.append("&stopPrice=");
+		querystring.append(to_string(stopPrice));
+	}
+
+	if (stopLimitPrice > 0) {
+		querystring.append("&stopLimitPrice=");
+		querystring.append(to_string(stopLimitPrice));
 	}
 	
 	if (orderId > 0) {
@@ -826,20 +840,28 @@ void Binance::ShowWithdrawHistory(string str) {
 	}
 }
 
-void Binance::SendOrder(string symbol, string side, string type, double quantity, double price) {
-	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", quantity: " << quantity << ", price: " << price << endl << endl;
+void Binance::SendOrder(string symbol, string side, string type, double quantity, 
+						double price, double stopPrice, double stopLimitPrice) {
+	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", quantity: " << quantity << ", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl << endl;
 
 	if (Utility::AreYouSure("")) {
 		string url;
-		string baseAddress = "/api/v3/order?";
+		string baseAddress;
+		if (type != "OCO")
+			baseAddress = "/api/v3/order?";
+		else 
+			baseAddress = "/api/v3/order/oco?";
+
 
 		string temp;
 		if (type == "LIMIT" || type == "STOP_LOSS_LIMIT")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, 0, myRecvWindow);
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, 0, 0, 0, myRecvWindow);
 		else if (type == "MARKET")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, 0, 0, myRecvWindow);
-		else if(type == "STOP_LOSS")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, price, 0, myRecvWindow);
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, 0, 0, 0, 0, myRecvWindow);
+		else if (type == "STOP_LOSS")
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, price, 0, 0, 0, myRecvWindow);
+		else if (type == "OCO")
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, stopPrice, stopLimitPrice, 0, myRecvWindow);
 		else {
 			cout << "Invalid type " << type << endl;
 		}	
@@ -868,7 +890,7 @@ void Binance::CancelOrder(string symbol, long orderId) {
 	string baseAddress = "/api/v3/order?";
 
 	string temp;
-	_pathQueryStringToUrl_2(url, baseAddress, symbol, temp, temp, temp, 0, 0, orderId, myRecvWindow);
+	_pathQueryStringToUrl_2(url, baseAddress, symbol, temp, temp, temp, 0, 0, 0, 0, orderId, myRecvWindow);
 	cout << "url: " << url << endl;
 
 	string str_result;

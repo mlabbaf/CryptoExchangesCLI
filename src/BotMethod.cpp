@@ -844,7 +844,7 @@ void BotMethod::_addLimitOrder(OrderParams &orderParams) {
 
 	cout << "Issue Binance::SendOrder(" << orderParams.pair << ", " << orderParams.side << ", " <<
 			orderParams.type << ", " << orderParams.origQty << ", " << orderParams.price << ");\n";
-	Binance::SendOrder(orderParams.pair, orderParams.side, orderParams.type, orderParams.origQty, orderParams.price);
+	Binance::SendOrder(orderParams.pair, orderParams.side, orderParams.type, orderParams.origQty, orderParams.price, 0, 0);
 	cout << GREEN("SendOrder is Issued\n");
 }
 
