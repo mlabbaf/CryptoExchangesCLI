@@ -104,9 +104,9 @@ public:
 		else if (pair == "ONTUSDT" || pair == "ONTUSD")
 			amount -= fmod(amount, 0.0001);
 		else if (pair == "ADAUSDT" || pair == "ADAUSD")
-			amount -= fmod(amount, 0.001);
+			amount -= fmod(amount, 0.00001);
 		else if (pair == "TRXUSDT" || pair == "TRXUSD")
-			amount -= fmod(amount, 0.0001);
+			amount -= fmod(amount, 0.00001);
 		else if (pair == "XLMUSDT" || pair == "XLMUSD")
 			amount -= fmod(amount, 0.0001);
 		else if (pair == "XRPUSDT")
@@ -118,7 +118,7 @@ public:
 		else if (pair == "BNBUSDT" || pair == "BNBUSD")
 			amount -= fmod(amount, 0.001);
 		else if (pair == "LTCUSDT" || pair == "LTCUSD")
-			amount -= fmod(amount, 0.001);
+			amount -= fmod(amount, 0.01);
 		else {
 			cout << "Invalid pair " << RED(pair) << endl;
 			// amount = 0;

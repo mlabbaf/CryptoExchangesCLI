@@ -75,6 +75,7 @@ public:
 	static void Trading();
 	static void HodlingTrading();
 	static void Scalping2();
+	static void RandomBuy();
 
 	static void CancelAllOrders(string &str, string exchange);
 	static void SetJsonFileOrders();

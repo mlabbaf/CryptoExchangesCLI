@@ -1,4 +1,5 @@
 #include "BotMethod.h"
+#include "Menu.h"
 #include "Binance.h"
 #include "Ramzinex.h"
 #include "Coinex.h"
@@ -690,6 +691,38 @@ void BotMethod::Scalping2() {
 	// }
 }
 
+void BotMethod::RandomBuy() {
+	double money;
+	cout << "Enter money: \n";
+	cin >> money;
+
+	string pair = Menu::binancePairSubMenuList();
+
+	SymbolPriceSrtuct priceBinance;
+	int lenBinance= 0;
+	Binance::GetPrices(pair, &priceBinance, lenBinance);
+
+	double quantity = money/priceBinance.price;
+	Utility::RoundAmountBasedOnPair(pair, quantity);
+
+	Binance::SendOrder(pair, "BUY", "MARKET", quantity, 0, 0, 0);
+
+	double price = priceBinance.price * 1.011;
+	double stopPrice = priceBinance.price * 0.97;
+	double stopLimitPrice = priceBinance.price * 0.96;
+
+	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
+			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
+	
+	Utility::RoundPriceBasedOnPair(pair, price);
+	Utility::RoundPriceBasedOnPair(pair, stopPrice);
+	Utility::RoundPriceBasedOnPair(pair, stopLimitPrice);
+
+	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
+			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
+	
+	Binance::SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
+}
 
 void BotMethod::CancelAllOrders(string &str, string exchange) {
 	// cout << "Inside CancelAllOrders " << str << "\n";

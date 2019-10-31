@@ -58,6 +58,8 @@ private:
 	static void TransferBetweenBankAndExchange();
 
 public:
+	static string binancePairSubMenuList();
+
 	static int MainMenu();
 };
 

@@ -539,28 +539,64 @@ void Coinex::ShowTradesPerformance(string &str, int pastDay) {
 	else
 		limit = 20;
 	limit = limit*5;
-	Coinex::_GetMyTrades(str, limit);
-	// cout << json_result << endl;
+
 
 	double Sells = 0, Buys = 0;
-	// if (json_result.isArray()) {
-	if (_IsJsonResultValid(json_result)) {
-		for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
-			Json::Value json_temp = json_result["data"]["data"][i];
-			if (pastDay == 0 || (tv.tv_sec - pastDay*24*60*60) < Utility::JsonToLong(json_temp["create_time"])) {
-				cout << "symbol: " << YELLOW(str) << ", price: " << YELLOW(json_temp["price"]) << 
-						", amount:" << json_temp["amount"] << ", type: " << json_temp["type"] << endl;
-				if (json_temp["type"].asString() == "sell") 
-					Sells += Utility::JsonToDouble(json_temp["amount"])*Utility::JsonToDouble(json_temp["price"])*0.999;
-				else
-					Buys += Utility::JsonToDouble(json_temp["amount"])*Utility::JsonToDouble(json_temp["price"]);
+
+	if (str == "WatchList") {
+		// Json::Value::const_iterator iter;
+		string line;
+  		ifstream myfile ("config/WatchlistCoinex.txt");
+  		if (myfile.is_open()) {
+    		while ( getline (myfile, line) ) {
+				Coinex::_GetMyTrades(line, limit);
+				// cout << json_result << endl;
+
+				if (_IsJsonResultValid(json_result)) {
+					for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
+						Json::Value json_temp = json_result["data"]["data"][i];
+						if (pastDay == 0 || (tv.tv_sec - pastDay*24*60*60) < Utility::JsonToLong(json_temp["create_time"])) {
+							cout << "symbol: " << YELLOW(str) << ", price: " << YELLOW(json_temp["price"]) << 
+									", amount:" << json_temp["amount"] << ", type: " << json_temp["type"] << endl;
+							if (json_temp["type"].asString() == "sell") 
+								Sells += Utility::JsonToDouble(json_temp["amount"])*Utility::JsonToDouble(json_temp["price"])*0.999;
+							else
+								Buys += Utility::JsonToDouble(json_temp["amount"])*Utility::JsonToDouble(json_temp["price"]);
+						}
+					}
+				}
+				else {
+					cout << "json_result is not valid\n";
+					cout << json_result << endl;
+					return;
+				}
 			}
-		}
+    		cout << endl;
+    		myfile.close();
+    	}
 	}
 	else {
-		cout << "json_result is not valid\n";
-		cout << json_result << endl;
-		return;
+		Coinex::_GetMyTrades(str, limit);
+		// cout << json_result << endl;
+
+		if (_IsJsonResultValid(json_result)) {
+			for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
+				Json::Value json_temp = json_result["data"]["data"][i];
+				if (pastDay == 0 || (tv.tv_sec - pastDay*24*60*60) < Utility::JsonToLong(json_temp["create_time"])) {
+					cout << "symbol: " << YELLOW(str) << ", price: " << YELLOW(json_temp["price"]) << 
+							", amount:" << json_temp["amount"] << ", type: " << json_temp["type"] << endl;
+					if (json_temp["type"].asString() == "sell") 
+						Sells += Utility::JsonToDouble(json_temp["amount"])*Utility::JsonToDouble(json_temp["price"])*0.999;
+					else
+						Buys += Utility::JsonToDouble(json_temp["amount"])*Utility::JsonToDouble(json_temp["price"]);
+				}
+			}
+		}
+		else {
+			cout << "json_result is not valid\n";
+			cout << json_result << endl;
+			return;
+		}
 	}
 
 	cout << "Considering all trades by " << YELLOW(str) << ". Buys " << Buys << " and sells " << Sells << ". ";

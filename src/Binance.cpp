@@ -685,12 +685,9 @@ void Binance::ShowMyTrades(string str, int PastDay) {
   		if (myfile.is_open()) {
     		while ( getline (myfile, line) ) {
 				Binance::_GetMyTrades(line, PastDay);
-				// if (json_result.empty() == false) {
 				if (_IsJsonResultValid(json_result))
 					// cout << json_result << endl;
-					// if (json_result.isArray())
 					for (int i=0 ; i<json_result.size(); i++)
-					// if (json_result[i].isMember("symbol"))
 						cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << 
 								", price: " << KYEL << json_result[i]["price"] << RESET << ", qty :" << json_result[i]["qty"] << 
 								", quoteQty: " << json_result[i]["quoteQty"] << ", isBuyer: " << json_result[i]["isBuyer"] << endl;
@@ -710,10 +707,8 @@ void Binance::ShowMyTrades(string str, int PastDay) {
 	else {
 		Binance::_GetMyTrades(str, PastDay);
 		// cout << json_result << endl;
-		// if (json_result.isArray())
 		if (_IsJsonResultValid(json_result))
 			for (int i=0 ; i<json_result.size(); i++)
-			// if (json_result[i].isMember("symbol"))
 				cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", price: " << KYEL << json_result[i]["price"] << RESET << 
 						", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
 						", isBuyer: " << json_result[i]["isBuyer"] << endl;
@@ -727,27 +722,86 @@ void Binance::ShowMyTrades(string str, int PastDay) {
 void Binance::ShowTradesPerformance(string &str, int PastDay) {
 	// cout << "ShowTradesPerformance\n";
 
-	Binance::_GetMyTrades(str, PastDay);
-	// cout << json_result << endl;
-
 	double Sells = 0, Buys = 0;
-	// if (json_result.isArray()) {
-	if (_IsJsonResultValid(json_result)) {
-		for (int i=0 ; i<json_result.size(); i++) {
-			cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
-					", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
-					", isBuyer: " << json_result[i]["isBuyer"] << endl;
-			if (json_result[i]["isBuyer"].asString() == "false") 
-				Sells += atof(json_result[i]["quoteQty"].asString().c_str())*0.999;
-			else
-				Buys += atof(json_result[i]["quoteQty"].asString().c_str());
-		}
+
+	if (str == "WatchList") {
+		Json::Value::const_iterator iter;
+		string line;
+  		ifstream myfile ("config/WatchlistBinance.txt");
+  		if (myfile.is_open()) {
+    		while ( getline (myfile, line) ) {
+				Binance::_GetMyTrades(line, PastDay);
+				// cout << json_result << endl;
+
+				if (_IsJsonResultValid(json_result)) {
+					for (int i=0 ; i<json_result.size(); i++) {
+						cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
+								", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
+								", isBuyer: " << json_result[i]["isBuyer"] << endl;
+						if (json_result[i]["isBuyer"].asString() == "false") 
+							Sells += atof(json_result[i]["quoteQty"].asString().c_str())*0.999;
+						else
+							Buys += atof(json_result[i]["quoteQty"].asString().c_str());
+					}
+				}
+				else {
+					cout << "json_result is not valid\n";
+					cout << json_result << endl;
+					return;
+				}		
+			}
+    		cout << endl;
+    		myfile.close();
+    	}
+    	else {
+    		cout << "myfile is not open\n";
+    		return;
+    	}
 	}
 	else {
-		cout << "json_result is not valid\n";
-		cout << json_result << endl;
-		return;
+		Binance::_GetMyTrades(str, PastDay);
+		// cout << json_result << endl;
+
+		if (_IsJsonResultValid(json_result)) {
+			for (int i=0 ; i<json_result.size(); i++) {
+				cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
+						", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
+						", isBuyer: " << json_result[i]["isBuyer"] << endl;
+				if (json_result[i]["isBuyer"].asString() == "false") 
+					Sells += atof(json_result[i]["quoteQty"].asString().c_str())*0.999;
+				else
+					Buys += atof(json_result[i]["quoteQty"].asString().c_str());
+			}
+		}
+		else {
+			cout << "json_result is not valid\n";
+			cout << json_result << endl;
+			return;
+		}		
 	}
+
+
+
+
+	// Binance::_GetMyTrades(str, PastDay);
+	// // cout << json_result << endl;
+
+	// if (_IsJsonResultValid(json_result)) {
+	// 	for (int i=0 ; i<json_result.size(); i++) {
+	// 		cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
+	// 				", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
+	// 				", isBuyer: " << json_result[i]["isBuyer"] << endl;
+	// 		if (json_result[i]["isBuyer"].asString() == "false") 
+	// 			Sells += atof(json_result[i]["quoteQty"].asString().c_str())*0.999;
+	// 		else
+	// 			Buys += atof(json_result[i]["quoteQty"].asString().c_str());
+	// 	}
+	// }
+	// else {
+	// 	cout << "json_result is not valid\n";
+	// 	cout << json_result << endl;
+	// 	return;
+	// }
 
 	cout << "Considering all trades by " << YELLOW(str) << ". Buys " << Buys << " and sells " << Sells << ". ";
 	if (Sells > Buys)
@@ -879,7 +933,7 @@ void Binance::SendOrder(string symbol, string side, string type, double quantity
 			cout << "json_result is not valid\n";
 			cout << json_result << endl;
 		}
-		exit(0);
+		// exit(0);
 	}
 }
 

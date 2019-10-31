@@ -563,25 +563,60 @@ void HitBTC::ShowMyTrades(string str, int PastDay) {
 void HitBTC::ShowTradesPerformance(string &str, int PastDay) {
 	// cout << "ShowTradesPerformance\n";
 
-	HitBTC::_GetMyTrades(str, PastDay);
-	// cout << json_result << endl;
-
 	double Sells = 0, Buys = 0;
-	// if (json_result.isArray()) {
-	if (_IsJsonResultValid(json_result)) {
-		for (int i=0 ; i<json_result.size(); i++) {
-			cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
-					", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
-			if (json_result[i]["side"].asString() == "sell") 
-				Sells += Utility::JsonToDouble(json_result[i]["quantity"])*Utility::JsonToDouble(json_result[i]["price"])*0.999;
-			else
-				Buys += Utility::JsonToDouble(json_result[i]["quantity"])*Utility::JsonToDouble(json_result[i]["price"]);
-		}
+	
+	if (str == "WatchList") {
+		Json::Value::const_iterator iter;
+		string line;
+  		ifstream myfile ("config/WatchlistHitBTC.txt");
+  		if (myfile.is_open()) {
+    		while ( getline (myfile, line) ) {
+				HitBTC::_GetMyTrades(line, PastDay);
+				// cout << json_result << endl;
+
+				if (_IsJsonResultValid(json_result)) {
+					for (int i=0 ; i<json_result.size(); i++) {
+						cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
+								", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
+						if (json_result[i]["side"].asString() == "sell") 
+							Sells += Utility::JsonToDouble(json_result[i]["quantity"])*Utility::JsonToDouble(json_result[i]["price"])*0.999;
+						else
+							Buys += Utility::JsonToDouble(json_result[i]["quantity"])*Utility::JsonToDouble(json_result[i]["price"]);
+					}
+				}
+				else {
+					cout << "json_result is not valid\n";
+					cout << json_result << endl;
+					return;
+				}
+			}
+    		cout << endl;
+    		myfile.close();
+    	}
+    	else {
+    		cout << "myfile is not open\n";
+    		return;
+    	}
 	}
 	else {
-		cout << "json_result is not valid\n";
-		cout << json_result << endl;
-		return;
+		HitBTC::_GetMyTrades(str, PastDay);
+		// cout << json_result << endl;
+
+		if (_IsJsonResultValid(json_result)) {
+			for (int i=0 ; i<json_result.size(); i++) {
+				cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
+						", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
+				if (json_result[i]["side"].asString() == "sell") 
+					Sells += Utility::JsonToDouble(json_result[i]["quantity"])*Utility::JsonToDouble(json_result[i]["price"])*0.999;
+				else
+					Buys += Utility::JsonToDouble(json_result[i]["quantity"])*Utility::JsonToDouble(json_result[i]["price"]);
+			}
+		}
+		else {
+			cout << "json_result is not valid\n";
+			cout << json_result << endl;
+			return;
+		}
 	}
 
 	cout << "Considering all trades by " << YELLOW(str) << ". Buys " << Buys << " and sells " << Sells << ". ";

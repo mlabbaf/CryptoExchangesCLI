@@ -208,6 +208,10 @@ static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	return rc;
 }
 
+string Menu::binancePairSubMenuList() {
+	return _BinancePairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+}
+
 static string _BinanceSingleSubMenuList(_SubMenuListMode mode) {
 	int choice;
 
@@ -789,7 +793,7 @@ static void ShowBinanceMyTrades () {
 static void ShowBinanceTradesPerformance () {
 	// cout << "Inside ShowBinanceTradesPerformance\n";
 
-	string SubMenuSelection = _BinancePairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+	string SubMenuSelection = _BinancePairSubMenuList(WITH_WATCHLIST);
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
@@ -940,7 +944,7 @@ static void ShowCoinexMyTrades () {
 static void ShowCoinexTradesPerformance () {
 	cout << "Inside ShowCoinexTradesPerformance\n";
 
-	string SubMenuSelection = _CoinexPairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+	string SubMenuSelection = _CoinexPairSubMenuList(WITH_WATCHLIST);
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
@@ -1035,7 +1039,7 @@ static void ShowHitBTCMyTrades() {
 static void ShowHitBTCTradesPerformance () {
 	// cout << "Inside ShowHitBTCTradesPerformance\n";
 
-	string SubMenuSelection = _HitBTCPairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+	string SubMenuSelection = _HitBTCPairSubMenuList(WITH_WATCHLIST);
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
@@ -1134,7 +1138,7 @@ static void ShowKucoinMyTrades() {
 static void ShowKucoinTradesPerformance () {
 	// cout << "Inside ShowKucoinTradesPerformance\n";
 
-	string SubMenuSelection = _KucoinPairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+	string SubMenuSelection = _KucoinPairSubMenuList(WITH_WATCHLIST);
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
@@ -1361,6 +1365,7 @@ void Menu::BotMenu() {
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (7, MainMenuMapValues("CheckHistoryHodling", & BotMethod::CheckHistoryHodling)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (8, MainMenuMapValues("CheckHistoryTrading", & BotMethod::CheckHistoryTrading)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (9, MainMenuMapValues("CheckHistoryHodlingTrading", & BotMethod::CheckHistoryHodlingTrading)));
+	MapMenuOption.insert(pair <int, MainMenuMapValues> (22, MainMenuMapValues("RandomBuyFromBinance", & BotMethod::RandomBuy)));
 
 	cout << "Select from following menu:\n";
 
@@ -1755,7 +1760,7 @@ int Menu::MainMenu() {
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (16, MainMenuMapValues("TransferBetweenBankAndExchange", & TransferBetweenBankAndExchange)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (88, MainMenuMapValues("Bot", & BotMenu)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (99, MainMenuMapValues("Utility", & UtilityMenu)));
-	// MapMenuOption.insert(pair <int, MainMenuMapValues> (111, MainMenuMapValues("Test", & Binance::test)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (111, MainMenuMapValues("Test", & BotMethod::Test)));
 
 	cout << "Select from following menu:\n";
 

@@ -652,26 +652,65 @@ void Kucoin::ShowMyTrades(string str, int PastDay) {
 void Kucoin::ShowTradesPerformance(string &str, int PastDay) {
 	// cout << "ShowTradesPerformance\n";
 
-	Kucoin::_GetMyTrades(str, PastDay);
-	// cout << json_result << endl;
-
 	double Sells = 0, Buys = 0;
-	if (_IsJsonResultValid(json_result)) {
-		Json::Value json_items = json_result["data"]["items"];
-		for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++) {
-			cout << "symbol: " << YELLOW((*iter)["symbol"]) << ", price: " << YELLOW((*iter)["price"]) <<
-					", size :" << (*iter)["size"] << ", side: " << (*iter)["side"] << endl;
-			double quoteQty = Utility::JsonToDouble((*iter)["size"]) * Utility::JsonToDouble((*iter)["price"]);
-			if ((*iter)["side"].asString() == "buy") 
-				Sells += quoteQty*0.999;
-			else
-				Buys += quoteQty*1.001;
-		}
+
+
+	if (str == "WatchList") {
+		Json::Value::const_iterator iter;
+		string line;
+  		ifstream myfile ("config/WatchlistKucoin.txt");
+  		if (myfile.is_open()) {
+    		while ( getline (myfile, line) ) {
+				Kucoin::_GetMyTrades(line, PastDay);
+				// cout << json_result << endl;
+
+				if (_IsJsonResultValid(json_result)) {
+					Json::Value json_items = json_result["data"]["items"];
+					for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++) {
+						cout << "symbol: " << YELLOW((*iter)["symbol"]) << ", price: " << YELLOW((*iter)["price"]) <<
+								", size :" << (*iter)["size"] << ", side: " << (*iter)["side"] << endl;
+						double quoteQty = Utility::JsonToDouble((*iter)["size"]) * Utility::JsonToDouble((*iter)["price"]);
+						if ((*iter)["side"].asString() == "buy") 
+							Sells += quoteQty*0.999;
+						else
+							Buys += quoteQty*1.001;
+					}
+				}
+				else {
+					cout << "json_result is not valid\n";
+					cout << json_result << endl;
+					return;
+				}
+			}
+    		cout << endl;
+    		myfile.close();
+    	}
+    	else {
+    		cout << "myfile is not open\n";
+    		return;
+    	}
 	}
 	else {
-		cout << "json_result is not valid\n";
-		cout << json_result << endl;
-		return;
+		Kucoin::_GetMyTrades(str, PastDay);
+		// cout << json_result << endl;
+
+		if (_IsJsonResultValid(json_result)) {
+			Json::Value json_items = json_result["data"]["items"];
+			for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++) {
+				cout << "symbol: " << YELLOW((*iter)["symbol"]) << ", price: " << YELLOW((*iter)["price"]) <<
+						", size :" << (*iter)["size"] << ", side: " << (*iter)["side"] << endl;
+				double quoteQty = Utility::JsonToDouble((*iter)["size"]) * Utility::JsonToDouble((*iter)["price"]);
+				if ((*iter)["side"].asString() == "buy") 
+					Sells += quoteQty*0.999;
+				else
+					Buys += quoteQty*1.001;
+			}
+		}
+		else {
+			cout << "json_result is not valid\n";
+			cout << json_result << endl;
+			return;
+		}
 	}
 
 	cout << "Considering all trades by " << YELLOW(str) << ". Buys " << Buys << " and sells " << Sells << ". ";
