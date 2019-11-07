@@ -19,3 +19,10 @@ following exchanges are supported:
 	Kucoin
 
 Warning: The user is responsible for the results of using the source code.
+
+
+Note:
+	If you encounter following error in Building procedure:
+		src/Kucoin.h:13:26: fatal error: openssl/hmac.h: No such file or directory
+	you can use the following command to install required ssh library and the problem will be solved. 
+	sudo apt-get install libssl-dev 

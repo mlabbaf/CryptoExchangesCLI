@@ -696,32 +696,81 @@ void BotMethod::RandomBuy() {
 	cout << "Enter money: \n";
 	cin >> money;
 
-	string pair = Menu::binancePairSubMenuList();
+	// if (money > 0) {
+	// 	string pair = Menu::binancePairSubMenuList();
 
-	SymbolPriceSrtuct priceBinance;
-	int lenBinance= 0;
-	Binance::GetPrices(pair, &priceBinance, lenBinance);
+	// 	SymbolPriceSrtuct priceBinance;
+	// 	int lenBinance= 0;
+	// 	Binance::GetPrices(pair, &priceBinance, lenBinance);
 
-	double quantity = money/priceBinance.price;
-	Utility::RoundAmountBasedOnPair(pair, quantity);
+	// 	double quantity = money/priceBinance.price;
+	// 	Utility::RoundAmountBasedOnPair(pair, quantity);
 
-	Binance::SendOrder(pair, "BUY", "MARKET", quantity, 0, 0, 0);
+	// 	cout << "Estimated price: " << priceBinance.price << ", quantity: " << quantity << endl;
+	// 	Binance::SendOrder(pair, "BUY", "MARKET", quantity, 0, 0, 0);
 
-	double price = priceBinance.price * 1.011;
-	double stopPrice = priceBinance.price * 0.97;
-	double stopLimitPrice = priceBinance.price * 0.96;
+	// 	double price = priceBinance.price * 1.011;
+	// 	double stopPrice = priceBinance.price * 0.97;
+	// 	double stopLimitPrice = priceBinance.price * 0.96;
 
-	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
-			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
-	
-	Utility::RoundPriceBasedOnPair(pair, price);
-	Utility::RoundPriceBasedOnPair(pair, stopPrice);
-	Utility::RoundPriceBasedOnPair(pair, stopLimitPrice);
+	// 	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
+	// 			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
+		
+	// 	Utility::RoundPriceBasedOnPair(pair, price);
+	// 	Utility::RoundPriceBasedOnPair(pair, stopPrice);
+	// 	Utility::RoundPriceBasedOnPair(pair, stopLimitPrice);
 
-	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
-			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
-	
-	Binance::SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
+	// 	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
+	// 			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
+		
+	// 	Binance::SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
+	// }
+
+	if (money > 0) {
+		string pair = Menu::binancePairSubMenuList();
+
+		double priceBuy;
+		cout << "Enter priceBuy: \n";
+		cin >> priceBuy;
+
+		if (priceBuy > 0) {
+			double quantity = money/priceBuy;
+			Utility::RoundAmountBasedOnPair(pair, quantity);
+
+			cout << "priceBuy: " << priceBuy << ", quantity: " << quantity << endl;
+			Binance::SendOrder(pair, "BUY", "LIMIT", quantity, priceBuy, 0, 0);
+
+			map <string, map<string,double>> userBalance;
+			bool waitToBuy = true;
+			while (waitToBuy) {
+				userBalance = Binance::GetBalances();
+				for (map < string, map<string,double> >::iterator it_i=userBalance.begin(); it_i!=userBalance.end(); it_i++) {
+					if ((*it_i).first == pair && ((*it_i).second["f"] != 0 || (*it_i).second["l"] != 0)) {
+						cout << GREEN(pair) << " is bought. quantity: " << (*it_i).second["f"] + (*it_i).second["l"] << endl;
+						waitToBuy = false;
+					}
+				}
+				if (waitToBuy)
+					sleep(120);
+			}
+
+			double price = priceBuy * 1.011;
+			double stopPrice = priceBuy * 0.97;
+			double stopLimitPrice = priceBuy * 0.96;
+
+			cout << "quantity: " << quantity << ", priceBuy: " << priceBuy << 
+					", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
+			
+			Utility::RoundPriceBasedOnPair(pair, price);
+			Utility::RoundPriceBasedOnPair(pair, stopPrice);
+			Utility::RoundPriceBasedOnPair(pair, stopLimitPrice);
+
+			cout << "quantity: " << quantity << ", priceBuy: " << priceBuy << 
+					", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
+			
+			Binance::SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
+		}
+	}
 }
 
 void BotMethod::CancelAllOrders(string &str, string exchange) {
