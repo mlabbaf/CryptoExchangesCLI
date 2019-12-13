@@ -373,21 +373,25 @@ void BotMethod::HodlingTradingHandler(_BotHodlingTradingModes mode) {
 	SymbolPriceSrtuct priceBinance[200];
 	int lenBinance;
 	Binance::GetPrices(str, priceBinance, lenBinance);
+	cout << "Successfully GetPrices from Binance\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceCoinex[200];
 	int lenCoinex;
 	Coinex::GetPrices(str, priceCoinex, lenCoinex);
+	cout << "Successfully GetPrices from Coinex\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceHitBTC[200];
 	int lenHitBTC;
 	HitBTC::GetPrices(str, priceHitBTC, lenHitBTC);
+	cout << "Successfully GetPrices from HitBTC\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceKucoin[200];
 	int lenKucoin;
 	Kucoin::GetPrices(str, priceKucoin, lenKucoin);
+	cout << "Successfully GetPrices from Kucoin\n";
 
 
 	// cout << "Successfully GetPrices\n";
@@ -398,6 +402,7 @@ void BotMethod::HodlingTradingHandler(_BotHodlingTradingModes mode) {
 		cout << "Cannot read HodlingParams.json\n";
 		return;
 	}
+	cout << "Successfully read json file\n";
 	// cout << jsonHoldingParams << endl;
 
 	// Process
@@ -986,21 +991,25 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 	SymbolPriceSrtuct priceBinance[200];
 	int lenBinance;
 	Binance::GetPrices(str, priceBinance, lenBinance);
+	cout << "Successfully GetPrices from Binance\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceCoinex[200];
 	int lenCoinex;
 	Coinex::GetPrices(str, priceCoinex, lenCoinex);
+	cout << "Successfully GetPrices from Coinex\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceHitBTC[200];
 	int lenHitBTC;
 	HitBTC::GetPrices(str, priceHitBTC, lenHitBTC);
+	cout << "Successfully GetPrices from HitBTC\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceKucoin[200];
 	int lenKucoin;
 	Kucoin::GetPrices(str, priceKucoin, lenKucoin);
+	cout << "Successfully GetPrices from Kucoin\n";
 
 
 	// cout << "Successfully GetPrices\n";
@@ -1011,6 +1020,7 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 		cout << "Cannot read HodlingHistory.json\n";
 		return;
 	}
+	cout << "Successfully read json file\n";
 	// cout << jsonHoldingHistory << endl;
 
 	// Process
