@@ -10,6 +10,12 @@
 
 using namespace std;
 
+static Binance *binance;
+static Coinex *coinex;
+static HitBTC *hitbtc;
+static Kucoin *kucoin;
+
+
 static void Exit() {
 	cout << "Goodbye\n";
 	exit(0);
@@ -679,29 +685,29 @@ static string _KucoinTransferType() {
 //-----------------
 static void ShowAllPrice(int mode) {
 	// if (mode & BINANCE)
-	// 	Binance::ShowPrices(string("WatchList"));
+	// 	binance->ShowPrices(string("WatchList"));
 	// if (mode & RAMZINEX)
 	// 	Ramzinex::ShowPrices(string("WatchList"));
 	// if (mode & COINEX)
-	// 	Coinex::ShowPrices(string("WatchList"));
+	// 	coinex->ShowPrices(string("WatchList"));
 	// if (mode & HITBTC)
-	// 	HitBTC::ShowPrices(string("WatchList"));
+	// 	hitbtc->ShowPrices(string("WatchList"));
 	// if (mode & KUCOIN)
-	// 	Kucoin::ShowPrices(string("WatchList"));
+	// 	kucoin->ShowPrices(string("WatchList"));
 	BotMethod::ShowAllExchangesPrice(mode);
 }
 
 static void ShowAllOpenOrders(int mode) {
 	if (mode & BINANCE)
-		Binance::ShowOpenOrders(string("All"));
+		binance->ShowOpenOrders(string("All"));
 	if (mode & RAMZINEX)
 		_NotSupported();
 	if (mode & COINEX)
-		Coinex::ShowOpenOrders(string("WatchList"));
+		coinex->ShowOpenOrders(string("WatchList"));
 	if (mode & HITBTC)
-		HitBTC::ShowOpenOrders(string("All"));
+		hitbtc->ShowOpenOrders(string("All"));
 	if (mode & KUCOIN)
-		Kucoin::ShowOpenOrders(string("All"));
+		kucoin->ShowOpenOrders(string("All"));
 }
 
 static void ShowAllMyTrades (int mode) {
@@ -710,42 +716,42 @@ static void ShowAllMyTrades (int mode) {
 	
 	if (pastDay >= 0) {
 		if (mode & BINANCE)
-			Binance::ShowMyTrades(string("WatchList"), pastDay);
+			binance->ShowMyTrades(string("WatchList"), pastDay);
 		if (mode & RAMZINEX)
 			_NotSupported();
 		if (mode & COINEX)
-			Coinex::ShowMyTrades(string("WatchList"), pastDay);
+			coinex->ShowMyTrades(string("WatchList"), pastDay);
 		if (mode & HITBTC)
-			HitBTC::ShowMyTrades(string("WatchList"), pastDay);
+			hitbtc->ShowMyTrades(string("WatchList"), pastDay);
 		if (mode & KUCOIN)
-			Kucoin::ShowMyTrades(string("All"), pastDay);
+			kucoin->ShowMyTrades(string("All"), pastDay);
 	}
 }
 
 static void ShowAllDepositHistory (int mode) {
 	if (mode & BINANCE)
-		Binance::ShowDepositHistory(string("All"));
+		binance->ShowDepositHistory(string("All"));
 	if (mode & RAMZINEX)
 		_NotSupported();
 	if (mode & COINEX)
-		Coinex::ShowDepositHistory(string("WatchList"));
+		coinex->ShowDepositHistory(string("WatchList"));
 	if (mode & HITBTC)
 		_NotSupported();
 	if (mode & KUCOIN)
-		Kucoin::ShowDepositHistory(string("All"));
+		kucoin->ShowDepositHistory(string("All"));
 }
 
 static void ShowAllWithdrawHistory (int mode) {
 	if (mode & BINANCE)
-		Binance::ShowWithdrawHistory(string("All"));
+		binance->ShowWithdrawHistory(string("All"));
 	if (mode & RAMZINEX)
 		_NotSupported();
 	if (mode & COINEX)
-		Coinex::ShowWithdrawHistory(string("WatchList"));
+		coinex->ShowWithdrawHistory(string("WatchList"));
 	if (mode & HITBTC)
 		_NotSupported();
 	if (mode & KUCOIN)
-		Kucoin::ShowDepositHistory(string("All"));
+		kucoin->ShowDepositHistory(string("All"));
 }
 
 //-----------------
@@ -757,7 +763,7 @@ static void ShowBinancePrice() {
 	string SubMenuSelection = _BinancePairSubMenuList(WITH_ALL_AND_WATCHLIST);
 	// cout << "ShowBinancePrice: " << SubMenuSelection << endl;
 	if (SubMenuSelection.size() != 0)
-		Binance::ShowPrices(SubMenuSelection);
+		binance->ShowPrices(SubMenuSelection);
 }
 
 static void ShowBinanceOpenOrders() {
@@ -765,7 +771,7 @@ static void ShowBinanceOpenOrders() {
 
 	string SubMenuSelection = _BinancePairSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Binance::ShowOpenOrders(SubMenuSelection);
+		binance->ShowOpenOrders(SubMenuSelection);
 }
 
 static void ShowBinanceAllOrders() {
@@ -775,7 +781,7 @@ static void ShowBinanceAllOrders() {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Binance::ShowAllOrders(SubMenuSelection, pastDay);
+			binance->ShowAllOrders(SubMenuSelection, pastDay);
 	}
 }
 
@@ -786,7 +792,7 @@ static void ShowBinanceMyTrades () {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Binance::ShowMyTrades(SubMenuSelection, pastDay);	
+			binance->ShowMyTrades(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -797,7 +803,7 @@ static void ShowBinanceTradesPerformance () {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Binance::ShowTradesPerformance(SubMenuSelection, pastDay);	
+			binance->ShowTradesPerformance(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -806,7 +812,7 @@ static void ShowBinanceDepositAddress () {
 
 	string SubMenuSelection = _BinanceSingleSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
 	if (SubMenuSelection.size() != 0)
-		Binance::ShowDepositAddress(SubMenuSelection);
+		binance->ShowDepositAddress(SubMenuSelection);
 }
 
 static void ShowBinanceDepositHistory () {
@@ -814,7 +820,7 @@ static void ShowBinanceDepositHistory () {
 
 	string SubMenuSelection = _BinanceSingleSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Binance::ShowDepositHistory(SubMenuSelection);	
+		binance->ShowDepositHistory(SubMenuSelection);	
 }
 
 static void ShowBinanceWithdrawHistory () {
@@ -822,7 +828,7 @@ static void ShowBinanceWithdrawHistory () {
 
 	string SubMenuSelection = _BinanceSingleSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Binance::ShowWithdrawHistory(SubMenuSelection);	
+		binance->ShowWithdrawHistory(SubMenuSelection);	
 }
 
 static void SendOrderToBinance() {
@@ -838,19 +844,19 @@ static void SendOrderToBinance() {
 						double price = _GetDoubleValue("Enter the price:");
 						if (price > 0) {
 							if (type != "OCO")
-								Binance::SendOrder(symbol, side, type, quantity, price, 0, 0);
+								binance->SendOrder(symbol, side, type, quantity, price, 0, 0);
 							else {
 								double stopPrice = _GetDoubleValue("Enter the stopPrice:");
 								if (stopPrice > 0) {
 									double stopLimitPrice = _GetDoubleValue("Enter the stopLimitPrice:");
 									if (stopLimitPrice > 0)
-										Binance::SendOrder(symbol, side, type, quantity, price, stopPrice, stopLimitPrice);
+										binance->SendOrder(symbol, side, type, quantity, price, stopPrice, stopLimitPrice);
 								}
 							}
 						}
 					}
 					else 
-						Binance::SendOrder(symbol, side, type, quantity, 0, 0, 0);
+						binance->SendOrder(symbol, side, type, quantity, 0, 0, 0);
 				}
 			}
 		}
@@ -862,7 +868,7 @@ static void CancelOneOrderFromBinance() {
 	if (symbol.size() != 0) {
 		long orderId = _GetLongValue("Enter orderId:");
 		if (orderId > 0)
-			Binance::CancelOrder(symbol, orderId);
+			binance->CancelOrder(symbol, orderId);
 	}
 }
 
@@ -917,7 +923,7 @@ static void ShowCoinexPrice() {
 	string SubMenuSelection = _CoinexPairSubMenuList(WITH_WATCHLIST);
 	// cout << "ShowCoinexPrice: " << SubMenuSelection << endl;
 	if (SubMenuSelection.size() != 0)
-		Coinex::ShowPrices(SubMenuSelection);
+		coinex->ShowPrices(SubMenuSelection);
 }
 
 static void ShowCoinexOpenOrders() {
@@ -925,7 +931,7 @@ static void ShowCoinexOpenOrders() {
 
 	string SubMenuSelection = _CoinexPairSubMenuList(WITH_WATCHLIST);
 	if (SubMenuSelection.size() != 0)
-		Coinex::ShowOpenOrders(SubMenuSelection);
+		coinex->ShowOpenOrders(SubMenuSelection);
 }
 
 static void ShowCoinexMyTrades () {
@@ -937,7 +943,7 @@ static void ShowCoinexMyTrades () {
 		// cout << "By default last " << limit << " trades are shown\n";
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Coinex::ShowMyTrades(SubMenuSelection, pastDay); // limit); 
+			coinex->ShowMyTrades(SubMenuSelection, pastDay); // limit); 
 	}
 }
 
@@ -948,7 +954,7 @@ static void ShowCoinexTradesPerformance () {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Coinex::ShowTradesPerformance(SubMenuSelection, pastDay);	
+			coinex->ShowTradesPerformance(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -957,7 +963,7 @@ static void ShowCoinexDepositHistory () {
 
 	string SubMenuSelection = _CoinexSingleSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Coinex::ShowDepositHistory(SubMenuSelection);	
+		coinex->ShowDepositHistory(SubMenuSelection);	
 }
 
 static void ShowCoinexWithdrawHistory () {
@@ -965,7 +971,7 @@ static void ShowCoinexWithdrawHistory () {
 
 	string SubMenuSelection = _CoinexSingleSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Coinex::ShowWithdrawHistory(SubMenuSelection);	
+		coinex->ShowWithdrawHistory(SubMenuSelection);	
 }
 
 static void SendOrderToCoinex() {
@@ -980,10 +986,10 @@ static void SendOrderToCoinex() {
 					if (type != "MARKET") {
 						double price = _GetDoubleValue("Enter the price:");
 						if (price > 0)
-							Coinex::SendOrder(symbol, side, type, quantity, price);
+							coinex->SendOrder(symbol, side, type, quantity, price);
 					}
 					else 
-						Coinex::SendOrder(symbol, side, type, quantity, 0);
+						coinex->SendOrder(symbol, side, type, quantity, 0);
 				}
 			}
 		}
@@ -995,7 +1001,7 @@ static void CancelOneOrderFromCoinex() {
 	if (symbol.size() != 0) {
 		long orderId = _GetLongValue("Enter orderId:");
 		if (orderId > 0)
-			Coinex::CancelOrder(symbol, orderId);
+			coinex->CancelOrder(symbol, orderId);
 	}
 }
 
@@ -1014,7 +1020,7 @@ static void ShowHitBTCPrice() {
 	string SubMenuSelection = _HitBTCPairSubMenuList(WITH_ALL_AND_WATCHLIST);
 	// cout << "ShowHitBTCPrice: " << SubMenuSelection << endl;
 	if (SubMenuSelection.size() != 0)
-		HitBTC::ShowPrices(SubMenuSelection);
+		hitbtc->ShowPrices(SubMenuSelection);
 }
 
 static void ShowHitBTCOpenOrders() {
@@ -1022,7 +1028,7 @@ static void ShowHitBTCOpenOrders() {
 
 	string SubMenuSelection = _HitBTCPairSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		HitBTC::ShowOpenOrders(SubMenuSelection);
+		hitbtc->ShowOpenOrders(SubMenuSelection);
 }
 
 static void ShowHitBTCMyTrades() {
@@ -1032,7 +1038,7 @@ static void ShowHitBTCMyTrades() {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			HitBTC::ShowMyTrades(SubMenuSelection, pastDay);	
+			hitbtc->ShowMyTrades(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -1043,7 +1049,7 @@ static void ShowHitBTCTradesPerformance () {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			HitBTC::ShowTradesPerformance(SubMenuSelection, pastDay);	
+			hitbtc->ShowTradesPerformance(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -1052,7 +1058,7 @@ static void ShowHitBTCDepositAddress () {
 
 	string SubMenuSelection = _HitBTCSingleSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
 	if (SubMenuSelection.size() != 0)
-		HitBTC::ShowDepositAddress(SubMenuSelection);
+		hitbtc->ShowDepositAddress(SubMenuSelection);
 }
 
 static void SendOrderToHitBTC() {
@@ -1067,10 +1073,10 @@ static void SendOrderToHitBTC() {
 					if (type != "market") {
 						double price = _GetDoubleValue("Enter the price:");
 						if (price > 0)
-							HitBTC::SendOrder(symbol, side, type, quantity, price);
+							hitbtc->SendOrder(symbol, side, type, quantity, price);
 					}
 					else 
-						HitBTC::SendOrder(symbol, side, type, quantity, 0);
+						hitbtc->SendOrder(symbol, side, type, quantity, 0);
 				}
 			}
 		}
@@ -1082,7 +1088,7 @@ static void CancelOneOrderFromHitBTC() {
 	if (symbol.size() != 0) {
 		string clientOrderId = _GetStringValue("Enter clientOrderId:");
 		if (clientOrderId.size() != 0)
-			HitBTC::CancelOrder(symbol, clientOrderId);
+			hitbtc->CancelOrder(symbol, clientOrderId);
 	}
 }
 
@@ -1099,7 +1105,7 @@ static void TransferBetweenBankAndExchangeInHitBTC() {
 		if (amount > 0) {
 			string type = _HitBTCTransferType();
 			if (type.size() != 0)
-				HitBTC::TransferBetweenBankAndExchange(currency, amount, type);
+				hitbtc->TransferBetweenBankAndExchange(currency, amount, type);
 		}
 	}
 }
@@ -1113,7 +1119,7 @@ static void ShowKucoinPrice() {
 	string SubMenuSelection = _KucoinPairSubMenuList(WITH_ALL_AND_WATCHLIST);
 	// cout << "ShowKucoinPrice: " << SubMenuSelection << endl;
 	if (SubMenuSelection.size() != 0)
-		Kucoin::ShowPrices(SubMenuSelection);
+		kucoin->ShowPrices(SubMenuSelection);
 }
 
 static void ShowKucoinOpenOrders() {
@@ -1121,7 +1127,7 @@ static void ShowKucoinOpenOrders() {
 
 	string SubMenuSelection = _KucoinPairSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Kucoin::ShowOpenOrders(SubMenuSelection);
+		kucoin->ShowOpenOrders(SubMenuSelection);
 }
 
 static void ShowKucoinMyTrades() {
@@ -1131,7 +1137,7 @@ static void ShowKucoinMyTrades() {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Kucoin::ShowMyTrades(SubMenuSelection, pastDay);	
+			kucoin->ShowMyTrades(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -1142,7 +1148,7 @@ static void ShowKucoinTradesPerformance () {
 	if (SubMenuSelection.size() != 0) {
 		int pastDay = _DurationPerDay();
 		if (pastDay >= 0)
-			Kucoin::ShowTradesPerformance(SubMenuSelection, pastDay);	
+			kucoin->ShowTradesPerformance(SubMenuSelection, pastDay);	
 	}
 }
 
@@ -1151,7 +1157,7 @@ static void ShowKucoinDepositAddress () {
 
 	string SubMenuSelection = _KucoinSingleSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
 	if (SubMenuSelection.size() != 0)
-		Kucoin::ShowDepositAddress(SubMenuSelection);
+		kucoin->ShowDepositAddress(SubMenuSelection);
 }
 
 static void ShowKucoinDepositHistory () {
@@ -1159,7 +1165,7 @@ static void ShowKucoinDepositHistory () {
 
 	string SubMenuSelection = _KucoinSingleSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Kucoin::ShowDepositHistory(SubMenuSelection);	
+		kucoin->ShowDepositHistory(SubMenuSelection);	
 }
 
 static void ShowKucoinWithdrawHistory () {
@@ -1167,7 +1173,7 @@ static void ShowKucoinWithdrawHistory () {
 
 	string SubMenuSelection = _KucoinSingleSubMenuList(WITH_ALL);
 	if (SubMenuSelection.size() != 0)
-		Kucoin::ShowWithdrawHistory(SubMenuSelection);	
+		kucoin->ShowWithdrawHistory(SubMenuSelection);	
 }
 
 static void SendOrderToKucoin() {
@@ -1182,10 +1188,10 @@ static void SendOrderToKucoin() {
 					if (type != "market") {
 						double price = _GetDoubleValue("Enter the price:");
 						if (price > 0)
-							Kucoin::SendOrder(symbol, side, type, quantity, price);
+							kucoin->SendOrder(symbol, side, type, quantity, price);
 					}
 					else 
-						Kucoin::SendOrder(symbol, side, type, quantity, 0);
+						kucoin->SendOrder(symbol, side, type, quantity, 0);
 				}
 			}
 		}
@@ -1197,7 +1203,7 @@ static void CancelOneOrderFromKucoin() {
 	if (symbol.size() != 0) {
 		string orderId = _GetStringValue("Enter orderId:");
 		if (orderId.size() != 0)
-			Kucoin::CancelOrder(symbol, orderId);
+			kucoin->CancelOrder(symbol, orderId);
 	}
 }
 
@@ -1214,7 +1220,7 @@ static void TransferBetweenBankAndExchangeInKucoin() {
 		if (amount > 0) {
 			string type = _KucoinTransferType();
 			if (type.size() != 0)
-				Kucoin::TransferBetweenBankAndExchange(currency, amount, type);
+				kucoin->TransferBetweenBankAndExchange(currency, amount, type);
 		}
 	}
 }
@@ -1229,8 +1235,8 @@ static void TransferBetweenBankAndExchangeInKucoin() {
 // 	map <int, MainMenuMapValues> MapMenuOption;
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (0, MainMenuMapValues("Exit", & Exit)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (1, MainMenuMapValues("ShowPriceFromBinance", & ShowBinancePrice)));
-// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowBinanceBalances", & Binance::ShowBalances)));
-// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowBinanceBalanceInUSDT", & Binance::ShowBalanceInUSDT)));
+// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowBinanceBalances", & binance->ShowBalances)));
+// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowBinanceBalanceInUSDT", & binance->ShowBalanceInUSDT)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (4, MainMenuMapValues("ShowBinanceOpenOrders", & ShowBinanceOpenOrders)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (5, MainMenuMapValues("ShowBinanceAllOrders", & ShowBinanceAllOrders)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (6, MainMenuMapValues("ShowBinanceMyTrades", & ShowBinanceMyTrades)));
@@ -1287,8 +1293,8 @@ static void TransferBetweenBankAndExchangeInKucoin() {
 // 	map <int, MainMenuMapValues> MapMenuOption;
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (0, MainMenuMapValues("Exit", & Exit)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (1, MainMenuMapValues("ShowPriceFromCoinex", & ShowCoinexPrice)));
-// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowCoinexBalances", & Coinex::ShowBalances)));
-// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowCoinexBalanceInUSDT", & Coinex::ShowBalanceInUSDT)));
+// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowCoinexBalances", & coinex->ShowBalances)));
+// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowCoinexBalanceInUSDT", & coinex->ShowBalanceInUSDT)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (4, MainMenuMapValues("ShowCoinexOpenOrders", & ShowCoinexOpenOrders)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (6, MainMenuMapValues("ShowBinanceMyTrades", & ShowCoinexMyTrades)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (9, MainMenuMapValues("ShowCoinexDepositHistory", & ShowCoinexDepositHistory)));
@@ -1320,8 +1326,8 @@ static void TransferBetweenBankAndExchangeInKucoin() {
 // 	map <int, MainMenuMapValues> MapMenuOption;
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (0, MainMenuMapValues("Exit", & Exit)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (1, MainMenuMapValues("ShowPriceFromHitBTC", & ShowHitBTCPrice)));
-// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowHitBTCBalances", & HitBTC::ShowBalances)));
-// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowHitBTCBalanceInUSDT", & HitBTC::ShowBalanceInUSDT)));
+// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowHitBTCBalances", & hitbtc->ShowBalances)));
+// 	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowHitBTCBalanceInUSDT", & hitbtc->ShowBalanceInUSDT)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (4, MainMenuMapValues("ShowHitBTCOpenOrders", & ShowHitBTCOpenOrders)));
 // 	// MapMenuOption.insert(pair <int, MainMenuMapValues> (5, MainMenuMapValues("ShowHitBTCAllOrders", & ShowHitBTCAllOrders)));
 // 	MapMenuOption.insert(pair <int, MainMenuMapValues> (6, MainMenuMapValues("ShowHitBTCMyTrades", & ShowHitBTCMyTrades)));
@@ -1388,12 +1394,12 @@ void Menu::UtilityMenu() {
 
 	map <int, MainMenuMapValues> MapMenuOption;
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (0, MainMenuMapValues("Exit", & Exit)));
-	MapMenuOption.insert(pair <int, MainMenuMapValues> (1, MainMenuMapValues("TestBinanceConnectivity", & Binance::TestConnectivity)));
-	MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowBinanceServerTime", & Binance::ShowServerTime)));
-	MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowBinanceAccountStatus", & Binance::ShowAccountStatus)));
-	MapMenuOption.insert(pair <int, MainMenuMapValues> (4, MainMenuMapValues("ShowBinanceExchangeInfo", & Binance::ShowExchangeInfo)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (1, MainMenuMapValues("TestBinanceConnectivity", & binance->TestConnectivity)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("ShowBinanceServerTime", & binance->ShowServerTime)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("ShowBinanceAccountStatus", & binance->ShowAccountStatus)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (4, MainMenuMapValues("ShowBinanceExchangeInfo", & binance->ShowExchangeInfo)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (5, MainMenuMapValues("ShowMyExternalIpAddress", & CurlAPI::ShowExternalIpAddress)));
-	MapMenuOption.insert(pair <int, MainMenuMapValues> (12, MainMenuMapValues("ShowKucoinServerTime", & Kucoin::ShowServerTime)));
+	// MapMenuOption.insert(pair <int, MainMenuMapValues> (12, MainMenuMapValues("ShowKucoinServerTime", & kucoin->ShowServerTime)));
 
 	cout << "Select from following menu:\n";
 
@@ -1440,15 +1446,15 @@ void Menu::ShowBalances() {
 
 	if (symbol.size() != 0) {
 		if ((mode & BINANCE) &&  (symbol == "All" || symbol == "Binance"))
-			Binance::ShowBalances();
+			binance->ShowBalances();
 		if ((mode & RAMZINEX) &&  (symbol == "All" || symbol == "Ramzinex"))
 			_NotSupported();
 		if ((mode & COINEX) &&  (symbol == "All" || symbol == "Coinex"))
-			Coinex::ShowBalances();
+			coinex->ShowBalances();
 		if ((mode & HITBTC) &&  (symbol == "All" || symbol == "HitBTC"))
-			HitBTC::ShowBalances();
+			hitbtc->ShowBalances();
 		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
-			Kucoin::ShowBalances();
+			kucoin->ShowBalances();
 	}
 }
 
@@ -1460,15 +1466,15 @@ void Menu::ShowBalanceInUSDT() {
 		if ((mode & ALL) && symbol == "All")
 			BotMethod::ShowBalanceInUSDT();
 		if ((mode & BINANCE) && symbol == "Binance")
-			Binance::ShowBalanceInUSDT();
+			binance->ShowBalanceInUSDT();
 		if ((mode & RAMZINEX) && symbol == "Ramzinex")
 			_NotSupported();
 		if ((mode & COINEX) && symbol == "Coinex")
-			Coinex::ShowBalanceInUSDT();
+			coinex->ShowBalanceInUSDT();
 		if ((mode & HITBTC) && symbol == "HitBTC")
-			HitBTC::ShowBalanceInUSDT();
+			hitbtc->ShowBalanceInUSDT();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
-			Kucoin::ShowBalanceInUSDT();
+			kucoin->ShowBalanceInUSDT();
 	}
 }
 
@@ -1678,9 +1684,9 @@ void Menu::ShowBankBalances() {
 		if ((mode & COINEX) &&  (symbol == "All" || symbol == "Coinex"))
 			_NotSupported();
 		if ((mode & HITBTC) &&  (symbol == "All" || symbol == "HitBTC"))
-			HitBTC::ShowBankBalances();
+			hitbtc->ShowBankBalances();
 		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
-			Kucoin::ShowBankBalances();
+			kucoin->ShowBankBalances();
 	}
 }
 
@@ -1696,9 +1702,9 @@ void Menu::ShowExchangeBalances() {
 		if ((mode & COINEX) &&  (symbol == "All" || symbol == "Coinex"))
 			_NotSupported();
 		if ((mode & HITBTC) &&  (symbol == "All" || symbol == "HitBTC"))
-			HitBTC::ShowExchangeBalances();
+			hitbtc->ShowExchangeBalances();
 		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
-			Kucoin::ShowExchangeBalances();
+			kucoin->ShowExchangeBalances();
 	}
 }
 
@@ -1781,4 +1787,15 @@ int Menu::MainMenu() {
 		cout << KRED << "Invalid number\n\n\n" << RESET;
 		return 1;
 	}
+}
+
+void Menu::Init() {
+	binance = Binance::getInstance();
+	coinex = Coinex::getInstance();
+	hitbtc = HitBTC::getInstance();
+	kucoin = Kucoin::getInstance();
+}
+
+void Menu::Cleanup() {
+	// cout << "Successfully perform Menu cleaning up\n";
 }

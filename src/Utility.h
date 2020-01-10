@@ -159,7 +159,6 @@ public:
     		s = to_string(n);
     	return s;
 	}
-	
 };
 
 #endif

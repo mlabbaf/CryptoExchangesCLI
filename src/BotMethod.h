@@ -85,6 +85,9 @@ public:
 
 	static void ShowBalanceInUSDT();
 	static void ShowAllExchangesPrice(int mode);
+
+	static void Init();
+	static void Cleanup();
 };
 
 #endif

@@ -8,13 +8,13 @@
 
 using namespace std;
 
-CURL* Coinex::curl = NULL;
-Json::Value Coinex::json_result;
-Json::FastWriter Coinex::fastWriter;
-string Coinex::secret_key;
-string Coinex::access_id;
-
-
+Coinex* Coinex::instance = 0;
+Coinex* Coinex::getInstance() {
+    if (instance == 0) {
+        instance = new Coinex();
+    }
+    return instance;
+}
 
 static bool _IsJsonResultValid(Json::Value json_result) {
 	if (json_result.isObject()) {
@@ -159,24 +159,12 @@ int Coinex::_createJsonData(string &postData, string market, string type, double
 }
 
 void Coinex::Init() {
-	string line; 
-	ifstream myfile ("config/CoinexKeys.txt");
-	if (myfile.is_open()) {
-		getline (myfile, access_id);
-		getline (myfile, secret_key);
-			
-		// cout << access_id << endl;
-		// cout << secret_key << endl;
-
-		myfile.close();
-	}
-	else {
-		cout << RED("Cannot open CoinexKeys.txt\n");
-		exit(-1);
-	}
+	Exchange::setKeyFilePath("config/CoinexKeys.txt");
+	Exchange::InitApiSecret();
 }
 
 void Coinex::Cleanup() {
+	Exchange::Cleanup();
 	// cout << "Successfully perform Coinex cleaning up\n";
 }
 
@@ -225,14 +213,7 @@ void Coinex::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
 }
 
 void Coinex::ShowPrices(string str) {
-	// cout << "Inside ShowPrices\n";
-	
-	SymbolPriceSrtuct result[50];
-	int len;
-	Coinex::GetPrices(str, result, len);
-
-	for (int i=0; i<len; i++)
-		cout << "symbol: " << result[i].symbol << ", last_price: " << YELLOW(result[i].price) << endl;
+	Exchange::ShowPrices(str);
 }
 
 void Coinex::_GetAccountInfoBalances() {
@@ -253,7 +234,8 @@ void Coinex::_GetAccountInfoBalances() {
 	Utility::ParseStringToJson("_GetAccountInfoBalances", str_result, json_result);
 }
 
-map <string, map<string, double>> Coinex::GetBalances() {
+// mode is not used in Coinex exchange and is added for compatibility
+map <string, map<string, double>> Coinex::GetBalances(_GetBalancesModes mode) {
 	// cout << "GetBalances\n";
 
 	Coinex::_GetAccountInfoBalances();
@@ -275,8 +257,8 @@ map <string, map<string, double>> Coinex::GetBalances() {
 	Json::Value::Members members = json_result["data"].getMemberNames();
 	for (vector<string>::iterator iter = members.begin(); iter != members.end(); iter++) {
 		string symbol = *iter;
-		userBalance[symbol]["available"] = atof( json_result["data"][*iter]["available"].asString().c_str() );
-		userBalance[symbol]["frozen"] = atof( json_result["data"][*iter]["frozen"].asString().c_str() );
+		userBalance[symbol]["f"] = atof( json_result["data"][*iter]["available"].asString().c_str() );
+		userBalance[symbol]["l"] = atof( json_result["data"][*iter]["frozen"].asString().c_str() );
 
 		// cout << *iter << " - " << json_result["data"][*iter] << endl;
 	}
@@ -285,26 +267,7 @@ map <string, map<string, double>> Coinex::GetBalances() {
 }
 
 void Coinex::ShowBalances() {
-	// cout << "ShowBalances\n";
-	
-	map <string, map<string,double>> userBalance;
-	userBalance = GetBalances();
-
-	cout << "==================================" << endl;
-	
-	map < string, map<string,double> >::iterator it_i;
-	for ( it_i = userBalance.begin() ; it_i != userBalance.end() ; it_i++ ) {
-
-		string symbol 			= (*it_i).first;
-		map <string,double> balance 	= (*it_i).second;
-
-		if (balance["available"] != 0 || balance["frozen"] != 0) {
-			cout << "Symbol :" << symbol << ", \t";
-			printf("Available   : %.08f, ", balance["available"] );
-			printf("Frozen : %.08f " , balance["frozen"] );
-			cout << " " << endl;
-		}
-	}
+	Exchange::ShowBalances();
 }
 
 map <string, StructBalanceInUSDT> Coinex::ShowBalanceInUSDT() {
@@ -312,7 +275,7 @@ map <string, StructBalanceInUSDT> Coinex::ShowBalanceInUSDT() {
 
 	// Get balance
 	map <string, map<string,double>> userBalance;
-	userBalance = GetBalances();
+	userBalance = GetBalances(BANK_AND_EXCHANGE_MODE);
 
 	// Get current prices
 	string str = "WatchList";
@@ -402,7 +365,7 @@ bool Coinex::_GetOpenOrdersForOneSymbol(string symbol, vector<SymbolOrderStruct>
 bool Coinex::GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) {
 	if (str == "All") {
 		// map <string, map<string,double>> userBalance;
-		// userBalance = GetBalances();
+		// userBalance = GetBalances(BANK_AND_EXCHANGE_MODE);
 		
 		// map < string, map<string,double> >::iterator iter;
 		// for (iter = userBalance.begin(); iter != userBalance.end(); iter++) {

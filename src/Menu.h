@@ -61,6 +61,8 @@ public:
 	static string binancePairSubMenuList();
 
 	static int MainMenu();
+	static void Init();
+	static void Cleanup();
 };
 
 #endif

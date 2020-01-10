@@ -19,7 +19,7 @@
 #include "Log.h"
 #include "Definitions.h"
 #include "Utility.h"
-
+#include "Exchange.h" 
 
 using namespace std;
 
@@ -27,61 +27,62 @@ using namespace std;
 #define KUCOIN_HOST "https://api.kucoin.com"
 
 
-class Kucoin
+class Kucoin : public Exchange
 {
 private:
-	static CURL* curl;
-	static Json::Value json_result;
-	static Json::FastWriter fastWriter;
-	static string secret_key;
-	static string api_key;
-	static string passphrase;
+	static Kucoin* instance;
 
-	static void _FillKucoinFields(StructKucoinHttpFields &fields, string &endpoint, string method, string body);
+	CURL* curl;
+	Json::Value json_result;
+	Json::FastWriter fastWriter;
+
+	void _FillKucoinFields(StructKucoinHttpFields &fields, string &endpoint, string method, string body);
 	
-	static int _createJsonData(	string &postData, string symbol, string currency, string side, string from, string to, 
+	int _createJsonData(	string &postData, string symbol, string currency, string side, string from, string to, 
 								double size, double amount, double price, double stopPrice);
-	static int _pathQueryStringToUrl(	string &url, string baseAddress, string &querystring, string status, string symbol,
+	int _pathQueryStringToUrl(	string &url, string baseAddress, string &querystring, string status, string symbol,
 										string currency, long startAt);
-// 	static int _pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
+// 	int _pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
 // 									 string timeInForce, double quantity, double price, long orderId, long recvWindow);
 
-	static void _GetAllPrices();
-	static void _GetPriceBySymbol(string &symbol);
-	static void _GetAccountInfoBalances();
-// 	static void _GetAllOrders(string &str, int PastDay);
-	static void _GetMyTrades(string &str, int PastDay);
+	void _GetAllPrices();
+	void _GetPriceBySymbol(string &symbol);
+	void _GetAccountInfoBalances();
+// 	void _GetAllOrders(string &str, int PastDay);
+	void _GetMyTrades(string &str, int PastDay);
 
 public:
-	static void SetCurl(CURL* c) {
+	static Kucoin* getInstance();
+
+	void SetCurl(CURL* c) {
 		curl = c;
 	}
-	static void Init();
-	static void Cleanup();
+	void Init();
+	void Cleanup();
 
-	static void ShowServerTime();
-// 	static void TestConnectivity();
-// 	static void ShowAccountStatus();
-// 	static void ShowExchangeInfo();
-	static void GetPrices(string &str, SymbolPriceSrtuct* result, int &len);
-	static void ShowPrices(string str);
-	static map <string, map<string, double>> GetBalances(_GetBalancesModes mode);
-	static void ShowBalances();
-	static void ShowBankBalances();
-	static void ShowExchangeBalances();
-	static map <string, StructBalanceInUSDT> ShowBalanceInUSDT();
-	static bool GetOpenOrders(string &str, Json::Value &jsonOpenOrders);
-	static void ShowOpenOrders(string str);
-// 	static void ShowAllOrders(string &str, int PastDay);
-	static void ShowMyTrades(string str, int PastDay);
-	static void ShowTradesPerformance(string &str, int PastDay);
-	static void ShowDepositAddress(string &str);
-	static void ShowDepositHistory(string str);
-	static void ShowWithdrawHistory(string str);
-	static void SendOrder(string symbol, string side, string type, double size, double price);
-	static void CancelOrder(string symbol, string orderId);
-	static void CancelAllOrders(string symbol);
-	static void TransferBetweenBankAndExchange(string currency, double amount, string type);
+	void ShowServerTime();
+// 	void TestConnectivity();
+// 	void ShowAccountStatus();
+// 	void ShowExchangeInfo();
+	void GetPrices(string &str, SymbolPriceSrtuct* result, int &len);
+	void ShowPrices(string str);
+	map <string, map<string, double>> GetBalances(_GetBalancesModes mode);
+	void ShowBalances();
+	void ShowBankBalances();
+	void ShowExchangeBalances();
+	map <string, StructBalanceInUSDT> ShowBalanceInUSDT();
+	bool GetOpenOrders(string &str, Json::Value &jsonOpenOrders);
+	void ShowOpenOrders(string str);
+// 	void ShowAllOrders(string &str, int PastDay);
+	void ShowMyTrades(string str, int PastDay);
+	void ShowTradesPerformance(string &str, int PastDay);
+	void ShowDepositAddress(string &str);
+	void ShowDepositHistory(string str);
+	void ShowWithdrawHistory(string str);
+	void SendOrder(string symbol, string side, string type, double size, double price);
+	void CancelOrder(string symbol, string orderId);
+	void CancelAllOrders(string symbol);
+	void TransferBetweenBankAndExchange(string currency, double amount, string type);
 };
 
 #endif

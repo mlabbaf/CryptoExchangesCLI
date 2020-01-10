@@ -11,6 +11,12 @@
 
 using namespace std;
 
+static Binance *binance;
+static Coinex *coinex;
+static HitBTC *hitbtc;
+static Kucoin *kucoin;
+
+
 void _findMinAndMaxFromStrcutExchangesPrices(strcutExchangesPrices &priceExchanges, double &min, double &max) {
 	min = 10000000;
 	max = 0;
@@ -89,7 +95,7 @@ void BotMethod::CheckArbitrage() {
 	// Json::Value::const_iterator json_iter;
 
 	// string str = "All";
-	// jsonBinance = Binance::GetPrices(str);
+	// jsonBinance = binance->GetPrices(str);
 	// jsonRamzinex = Ramzinex::GetPrices(str);
 
 	// map <string, StructDifferentExchangePrices> mapPrices;
@@ -140,7 +146,7 @@ void BotMethod::DollarPriceInRamzinex() {
 	SymbolPriceSrtuct priceBinance[200];
 
 	string str = "WatchList";
-	Binance::GetPrices(str, priceBinance, lenBinance);
+	binance->GetPrices(str, priceBinance, lenBinance);
 
 	str = "All";
 	jsonRamzinex = Ramzinex::GetPrices(str);
@@ -227,7 +233,7 @@ void BotMethod::Scalping() {
 	// double percent = 0.03;
 
 	// // Get current balances
-	// map <string, map<string, double>> userBalances = Binance::GetBalances();
+	// map <string, map<string, double>> userBalances = binance->GetBalances(BANK_AND_EXCHANGE_MODE);
 	// if (userBalances.size() == 0) {
 	// 	cout << "Cannot get userBalances\n";
 	// 	return;
@@ -236,7 +242,7 @@ void BotMethod::Scalping() {
 
 	// // Get current prices
 	// string str = "All";
-	// Json::Value jsonBinance = Binance::GetPrices(str);
+	// Json::Value jsonBinance = binance->GetPrices(str);
 	// // cout << "Successfully GetPrices\n";
 	
 	// // Read Scalping parameters
@@ -372,25 +378,25 @@ void BotMethod::HodlingTradingHandler(_BotHodlingTradingModes mode) {
 	string str = "WatchList";
 	SymbolPriceSrtuct priceBinance[200];
 	int lenBinance;
-	Binance::GetPrices(str, priceBinance, lenBinance);
+	binance->GetPrices(str, priceBinance, lenBinance);
 	cout << "Successfully GetPrices from Binance\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceCoinex[200];
 	int lenCoinex;
-	Coinex::GetPrices(str, priceCoinex, lenCoinex);
+	coinex->GetPrices(str, priceCoinex, lenCoinex);
 	cout << "Successfully GetPrices from Coinex\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceHitBTC[200];
 	int lenHitBTC;
-	HitBTC::GetPrices(str, priceHitBTC, lenHitBTC);
+	hitbtc->GetPrices(str, priceHitBTC, lenHitBTC);
 	cout << "Successfully GetPrices from HitBTC\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceKucoin[200];
 	int lenKucoin;
-	Kucoin::GetPrices(str, priceKucoin, lenKucoin);
+	kucoin->GetPrices(str, priceKucoin, lenKucoin);
 	cout << "Successfully GetPrices from Kucoin\n";
 
 
@@ -560,7 +566,7 @@ void BotMethod::Scalping2() {
 	// double stopLossPercent = 0.04;
 
 	// // Get current balances
-	// map <string, map<string, double>> userBalances = Binance::GetBalances();
+	// map <string, map<string, double>> userBalances = binance->GetBalances(BANK_AND_EXCHANGE_MODE);
 	// if (userBalances.size() == 0) {
 	// 	cout << "Cannot get userBalances\n";
 	// 	return;
@@ -569,7 +575,7 @@ void BotMethod::Scalping2() {
 
 	// // Get current prices
 	// string str = "All";
-	// Json::Value jsonBinance = Binance::GetPrices(str);
+	// Json::Value jsonBinance = binance->GetPrices(str);
 	// // cout << "Successfully GetPrices\n";
 	
 	// // Read Scalping parameters
@@ -706,13 +712,13 @@ void BotMethod::RandomBuy() {
 
 	// 	SymbolPriceSrtuct priceBinance;
 	// 	int lenBinance= 0;
-	// 	Binance::GetPrices(pair, &priceBinance, lenBinance);
+	// 	binance->GetPrices(pair, &priceBinance, lenBinance);
 
 	// 	double quantity = money/priceBinance.price;
 	// 	Utility::RoundAmountBasedOnPair(pair, quantity);
 
 	// 	cout << "Estimated price: " << priceBinance.price << ", quantity: " << quantity << endl;
-	// 	Binance::SendOrder(pair, "BUY", "MARKET", quantity, 0, 0, 0);
+	// 	binance->SendOrder(pair, "BUY", "MARKET", quantity, 0, 0, 0);
 
 	// 	double price = priceBinance.price * 1.011;
 	// 	double stopPrice = priceBinance.price * 0.97;
@@ -728,7 +734,7 @@ void BotMethod::RandomBuy() {
 	// 	cout << "quantity: " << quantity << ", priceBuy: " << priceBinance.price << 
 	// 			", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
 		
-	// 	Binance::SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
+	// 	binance->SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
 	// }
 
 	if (money > 0) {
@@ -743,12 +749,12 @@ void BotMethod::RandomBuy() {
 			Utility::RoundAmountBasedOnPair(pair, quantity);
 
 			cout << "priceBuy: " << priceBuy << ", quantity: " << quantity << endl;
-			Binance::SendOrder(pair, "BUY", "LIMIT", quantity, priceBuy, 0, 0);
+			binance->SendOrder(pair, "BUY", "LIMIT", quantity, priceBuy, 0, 0);
 
 			map <string, map<string,double>> userBalance;
 			bool waitToBuy = true;
 			while (waitToBuy) {
-				userBalance = Binance::GetBalances();
+				userBalance = binance->GetBalances(BANK_AND_EXCHANGE_MODE);
 				for (map < string, map<string,double> >::iterator it_i=userBalance.begin(); it_i!=userBalance.end(); it_i++) {
 					if ((*it_i).first == pair && ((*it_i).second["f"] != 0 || (*it_i).second["l"] != 0)) {
 						cout << GREEN(pair) << " is bought. quantity: " << (*it_i).second["f"] + (*it_i).second["l"] << endl;
@@ -773,7 +779,7 @@ void BotMethod::RandomBuy() {
 			cout << "quantity: " << quantity << ", priceBuy: " << priceBuy << 
 					", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl;
 			
-			Binance::SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
+			binance->SendOrder(pair, "SELL", "OCO", quantity, price, stopPrice, stopLimitPrice);
 		}
 	}
 }
@@ -783,36 +789,36 @@ void BotMethod::CancelAllOrders(string &str, string exchange) {
 
 	if (exchange == "BINANCE") {
 		Json::Value jsonOpenOrders;
-		if (Binance::GetOpenOrders(str, jsonOpenOrders) == false) {
+		if (binance->GetOpenOrders(str, jsonOpenOrders) == false) {
 			cout << "Cannot GetOpenOrders\n";
 			return;
 		}
 
 		for (int i=0 ; i<jsonOpenOrders.size(); i++)
-			Binance::CancelOrder(jsonOpenOrders[i]["symbol"].asString(), jsonOpenOrders[i]["orderId"].asInt64());
+			binance->CancelOrder(jsonOpenOrders[i]["symbol"].asString(), jsonOpenOrders[i]["orderId"].asInt64());
 	}
 	else if (exchange == "COINEX") {
 		vector <SymbolOrderStruct> vecOpenOrders;
-		if (Coinex::GetOpenOrders(str, vecOpenOrders) == false) {
+		if (coinex->GetOpenOrders(str, vecOpenOrders) == false) {
 			cout << "Cannot GetOpenOrders\n";
 			return;
 		}
 
 		for (vector<SymbolOrderStruct>::iterator iter = vecOpenOrders.begin(); iter != vecOpenOrders.end(); iter++)
-			Coinex::CancelOrder(str, iter->id);
+			coinex->CancelOrder(str, iter->id);
 	}
 	else if (exchange == "HITBTC") {
 		Json::Value jsonOpenOrders;
-		if (HitBTC::GetOpenOrders(str, jsonOpenOrders) == false) {
+		if (hitbtc->GetOpenOrders(str, jsonOpenOrders) == false) {
 			cout << "Cannot GetOpenOrders\n";
 			return;
 		}
 
 		for (int i=0 ; i<jsonOpenOrders.size(); i++)
-			HitBTC::CancelOrder(jsonOpenOrders[i]["symbol"].asString(), jsonOpenOrders[i]["clientOrderId"].asString());
+			hitbtc->CancelOrder(jsonOpenOrders[i]["symbol"].asString(), jsonOpenOrders[i]["clientOrderId"].asString());
 	}
 	else if (exchange == "KUCOIN") 
-		Kucoin::CancelAllOrders(str);
+		kucoin->CancelAllOrders(str);
 	else {
 		cout << "Invalid exchange " << exchange << endl;
 		return;
@@ -884,7 +890,7 @@ int BotMethod::_FillOldOrderParams(string storedIn, string pair, double amount, 
 
 	if (storedIn == "Binance") {
 		Json::Value jsonOpenOrders;
-		if (Binance::GetOpenOrders(pair, jsonOpenOrders)) {
+		if (binance->GetOpenOrders(pair, jsonOpenOrders)) {
 			for (int i=0; i<jsonOpenOrders.size(); i++) {
 				// cout << jsonOpenOrders[i]["symbol"].asString() << " - " << pair << " - " << 
 				// 		amount << " - " << Utility::JsonToDouble(jsonOpenOrders[i]["origQty"]) << endl;
@@ -913,25 +919,25 @@ int BotMethod::_FillOldOrderParams(string storedIn, string pair, double amount, 
 void BotMethod::_removeAnOrder(OrderParams &orderParams) {
 	// cout << "Inside _removeAnOrder\n";
 
-	// void Binance::CancelOrder(string symbol, long orderId);
+	// void binance->CancelOrder(string symbol, long orderId);
 	cout << "We shoule remove an order of " << orderParams.pair << "with price " << orderParams.price <<
 			"and origQty " << orderParams.origQty << ". OrderId " << orderParams.orderId << endl;
 
-	cout << "Issue Binance::CancelOrder(" << orderParams.pair << ", " << orderParams.orderId << ");\n";
-	Binance::CancelOrder(orderParams.pair, orderParams.orderId);
+	cout << "Issue binance->CancelOrder(" << orderParams.pair << ", " << orderParams.orderId << ");\n";
+	binance->CancelOrder(orderParams.pair, orderParams.orderId);
 	cout << GREEN("CancelOrder is Issued\n");
 }
 
 void BotMethod::_addLimitOrder(OrderParams &orderParams) {
 	// cout << "Inside _addLimitOrder\n";
 
-	// void Binance::SendOrder(string symbol, string side, string type, double quantity, double price);
+	// void binance->SendOrder(string symbol, string side, string type, double quantity, double price);
 	cout << "We shoule add limit order for " << orderParams.pair << " with price " << orderParams.price <<
 			" and origQty " << orderParams.origQty << endl;
 
-	cout << "Issue Binance::SendOrder(" << orderParams.pair << ", " << orderParams.side << ", " <<
+	cout << "Issue binance->SendOrder(" << orderParams.pair << ", " << orderParams.side << ", " <<
 			orderParams.type << ", " << orderParams.origQty << ", " << orderParams.price << ");\n";
-	Binance::SendOrder(orderParams.pair, orderParams.side, orderParams.type, orderParams.origQty, orderParams.price, 0, 0);
+	binance->SendOrder(orderParams.pair, orderParams.side, orderParams.type, orderParams.origQty, orderParams.price, 0, 0);
 	cout << GREEN("SendOrder is Issued\n");
 }
 
@@ -939,11 +945,11 @@ void BotMethod::_addLimitOrder(OrderParams &orderParams) {
 void BotMethod::_addStopLossOrder(OrderParams &orderParams) {
 	// cout << "Inside _addStopLossOrder\n";
 
-	// void Binance::SendOrder(string symbol, string side, string type, double quantity, double price);
+	// void binance->SendOrder(string symbol, string side, string type, double quantity, double price);
 	cout << "We shoule add stop_loss order for " << orderParams.pair << " with price " << orderParams.price <<
 			" and origQty " << orderParams.origQty << endl;
 
-	cout << "Issue Binance::SendOrder(" << orderParams.pair << ", " << orderParams.side << ", " <<
+	cout << "Issue binance->SendOrder(" << orderParams.pair << ", " << orderParams.side << ", " <<
 			orderParams.type << ", " << orderParams.origQty << ", " << orderParams.price << ");\n";
 }
 
@@ -990,25 +996,25 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 	string str = "WatchList";
 	SymbolPriceSrtuct priceBinance[200];
 	int lenBinance;
-	Binance::GetPrices(str, priceBinance, lenBinance);
+	binance->GetPrices(str, priceBinance, lenBinance);
 	cout << "Successfully GetPrices from Binance\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceCoinex[200];
 	int lenCoinex;
-	Coinex::GetPrices(str, priceCoinex, lenCoinex);
+	coinex->GetPrices(str, priceCoinex, lenCoinex);
 	cout << "Successfully GetPrices from Coinex\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceHitBTC[200];
 	int lenHitBTC;
-	HitBTC::GetPrices(str, priceHitBTC, lenHitBTC);
+	hitbtc->GetPrices(str, priceHitBTC, lenHitBTC);
 	cout << "Successfully GetPrices from HitBTC\n";
 
 	str = "WatchList";
 	SymbolPriceSrtuct priceKucoin[200];
 	int lenKucoin;
-	Kucoin::GetPrices(str, priceKucoin, lenKucoin);
+	kucoin->GetPrices(str, priceKucoin, lenKucoin);
 	cout << "Successfully GetPrices from Kucoin\n";
 
 
@@ -1150,10 +1156,10 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 void BotMethod::ShowBalanceInUSDT() {
 	map <string, StructBalanceInUSDT> balanceAllExchanges;
 
-	map <string, StructBalanceInUSDT> balanceInUSDTBinance = Binance::ShowBalanceInUSDT();
-	map <string, StructBalanceInUSDT> balanceInUSDTCoinex = Coinex::ShowBalanceInUSDT();
-	map <string, StructBalanceInUSDT> balanceInUSDTHitBTC = HitBTC::ShowBalanceInUSDT();
-	map <string, StructBalanceInUSDT> balanceInUSDTKucoin = Kucoin::ShowBalanceInUSDT();
+	map <string, StructBalanceInUSDT> balanceInUSDTBinance = binance->ShowBalanceInUSDT();
+	map <string, StructBalanceInUSDT> balanceInUSDTCoinex = coinex->ShowBalanceInUSDT();
+	map <string, StructBalanceInUSDT> balanceInUSDTHitBTC = hitbtc->ShowBalanceInUSDT();
+	map <string, StructBalanceInUSDT> balanceInUSDTKucoin = kucoin->ShowBalanceInUSDT();
 
 	for (map <string, StructBalanceInUSDT>::iterator iter = balanceInUSDTBinance.begin(); iter != balanceInUSDTBinance.end(); iter++) {
 		balanceAllExchanges[iter->first].balance += iter->second.balance;
@@ -1210,7 +1216,7 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 
 	if (mode & BINANCE) {
 		str = "WatchList";
-		Binance::GetPrices(str, priceBinance, lenBinance);
+		binance->GetPrices(str, priceBinance, lenBinance);
 	}
 
 	// if (mode & RAMZINEX) {
@@ -1220,17 +1226,17 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 
 	if (mode & COINEX) {
 		str = "WatchList";
-		Coinex::GetPrices(str, priceCoinex, lenCoinex);
+		coinex->GetPrices(str, priceCoinex, lenCoinex);
 	}
 
 	if (mode & HITBTC) {
 		str = "WatchList";
-		HitBTC::GetPrices(str, priceHitBTC, lenHitBTC);
+		hitbtc->GetPrices(str, priceHitBTC, lenHitBTC);
 	}
 
 	if (mode & KUCOIN) {
 		str = "WatchList";
-		Kucoin::GetPrices(str, priceKucoin, lenKucoin);
+		kucoin->GetPrices(str, priceKucoin, lenKucoin);
 	}
 	
 
@@ -1269,4 +1275,15 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 	}
 	cout << "\t" << setfill('-') << setw(121) << "" << endl;
 	cout << endl;
+}
+
+void BotMethod::Init() {
+	binance = Binance::getInstance();
+	coinex = Coinex::getInstance();
+	hitbtc = HitBTC::getInstance();
+	kucoin = Kucoin::getInstance();
+}
+
+void BotMethod::Cleanup() {
+	// cout << "Successfully perform Menu cleaning up\n";
 }

@@ -29,6 +29,11 @@
 
 using namespace std;
 
+static Binance *binance;
+static Coinex *coinex;
+static HitBTC *hitbtc;
+static Kucoin *kucoin;
+
 
 void Init() {
 	CURL *curl;
@@ -36,20 +41,28 @@ void Init() {
 	CurlAPI::CurlInit();
 	curl = CurlAPI::GetCurl();
 
-	Binance::Init();
-	Binance::SetCurl(curl);
+	binance = Binance::getInstance();
+	coinex = Coinex::getInstance();
+	hitbtc = HitBTC::getInstance();
+	kucoin = Kucoin::getInstance();
+
+	binance->Init();
+	binance->SetCurl(curl);
 
 	Ramzinex::Init();
 	Ramzinex::SetCurl(curl);
 
-	Coinex::Init();
-	Coinex::SetCurl(curl);
+	coinex->Init();
+	coinex->SetCurl(curl);
 
-	HitBTC::Init();
-	HitBTC::SetCurl(curl);
+	hitbtc->Init();
+	hitbtc->SetCurl(curl);
 
-	Kucoin::Init();
-	Kucoin::SetCurl(curl);
+	kucoin->Init();
+	kucoin->SetCurl(curl);
+
+	Menu::Init();
+	BotMethod::Init();
 
 	// cout << "Successfully perform initialization\n";
 }
@@ -57,12 +70,14 @@ void Init() {
 void Cleanup() {
 	CurlAPI::CurlCleanup();	
 
-	Binance::Cleanup();
+	binance->Cleanup();
 	Ramzinex::Cleanup();
-	Coinex::Cleanup();
-	HitBTC::Cleanup();
-	Kucoin::Cleanup();
+	coinex->Cleanup();
+	hitbtc->Cleanup();
+	kucoin->Cleanup();
 
+	Menu::Cleanup();
+	BotMethod::Cleanup();
 
 	// cout << "Successfully perform cleaning up\n";
 }
@@ -79,7 +94,7 @@ void Exit() {
 //--------------------------
 int main() {
 	Init();
-	
+
 	while ( Menu::MainMenu() >= 0 );
 
 	Exit();

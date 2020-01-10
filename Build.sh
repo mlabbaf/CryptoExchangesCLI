@@ -15,7 +15,7 @@ libwebsockets_dir="${root_dir}/lib/libwebsockets-2.4.0"
 libwebsockets_include="${libwebsockets_dir}/include"
 libwebsockets_lib="${libwebsockets_dir}/lib"
 
-SRC="src/main.cpp src/Menu.cpp src/CurlAPI.cpp src/Binance.cpp src/Ramzinex.cpp src/BotMethod.cpp src/Coinex.cpp src/HitBTC.cpp src/Kucoin.cpp src/jsoncpp.cpp src/binacpp_utils.cpp"
+SRC="src/main.cpp src/Menu.cpp src/CurlAPI.cpp src/Binance.cpp src/Ramzinex.cpp src/BotMethod.cpp src/Coinex.cpp src/HitBTC.cpp src/Kucoin.cpp src/jsoncpp.cpp src/binacpp_utils.cpp src/Exchange.cpp"
 
 BINARY=bot
 

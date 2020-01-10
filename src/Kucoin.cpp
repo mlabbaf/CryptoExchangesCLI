@@ -5,12 +5,13 @@
 
 using namespace std;
 
-CURL* Kucoin::curl = NULL;
-Json::Value Kucoin::json_result;
-Json::FastWriter Kucoin::fastWriter;
-string Kucoin::secret_key;
-string Kucoin::api_key;
-string Kucoin::passphrase;
+Kucoin* Kucoin::instance = 0;
+Kucoin* Kucoin::getInstance() {
+    if (instance == 0) {
+        instance = new Kucoin();
+    }
+    return instance;
+}
 
 
 static bool _IsJsonResultValid(Json::Value json_result) {
@@ -212,26 +213,12 @@ static void _GetStartTimeFromDay(int PastDay, long &StartTime) {
 }
 
 void Kucoin::Init() {
-	string line; 
-	ifstream myfile ("config/KucoinKeys.txt");
-	if (myfile.is_open()) {
-		getline (myfile, api_key);
-		getline (myfile, secret_key);
-		getline (myfile, passphrase);
-			
-		// cout << api_key << endl;
-		// cout << secret_key << endl;
-		// cout << passphrase << endl;
-
-		myfile.close();
-	}
-	else {
-		cout << RED("Cannot open KucoinKeys.txt\n");
-		exit(-1);
-	}
+	Exchange::setKeyFilePath("config/KucoinKeys.txt");
+	Exchange::InitApiSecretPassphrase();
 }
 
 void Kucoin::Cleanup() {
+	Exchange::Cleanup();
 	// cout << "Successfully perform Kucoin cleaning up\n";
 }
 
@@ -330,14 +317,7 @@ void Kucoin::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
 }
 
 void Kucoin::ShowPrices(string str) {
-	// cout << "Inside ShowPrices\n";
-	
-	SymbolPriceSrtuct result[2000];
-	int len;
-	Kucoin::GetPrices(str, result, len);
-
-	for (int i=0; i<len; i++)
-		cout << "symbol: " << result[i].symbol << ", price: " << YELLOW(result[i].price) << endl;
+	Exchange::ShowPrices(str);
 }
 
 void Kucoin::_GetAccountInfoBalances() {
@@ -406,26 +386,7 @@ map <string, map<string, double>> Kucoin::GetBalances(_GetBalancesModes mode) {
 }
 
 void Kucoin::ShowBalances() {
-	// cout << "ShowBalances\n";
-	
-	map <string, map<string,double>> userBalance;
-	userBalance = GetBalances(BANK_AND_EXCHANGE_MODE);
-
-	cout << "==================================" << endl;
-	
-	map < string, map<string,double> >::iterator it_i;
-	for ( it_i = userBalance.begin() ; it_i != userBalance.end() ; it_i++ ) {
-
-		string symbol 			= (*it_i).first;
-		map <string,double> balance 	= (*it_i).second;
-
-		if (balance["f"] != 0 || balance["l"] != 0) {
-			cout << "Symbol :" << symbol << ", \t";
-			printf("Free   : %.08f, ", balance["f"] );
-			printf("Locked : %.08f " , balance["l"] );
-			cout << " " << endl;
-		}
-	}
+	Exchange::ShowBalances();
 }
 
 void Kucoin::ShowBankBalances() {

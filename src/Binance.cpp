@@ -6,11 +6,14 @@
 
 using namespace std;
 
-CURL* Binance::curl = NULL;
-Json::Value Binance::json_result;
-Json::FastWriter Binance::fastWriter;
-string Binance::secret_key;
-string Binance::api_key;
+Binance* Binance::instance = 0;
+Binance* Binance::getInstance() {
+    if (instance == 0) {
+        instance = new Binance();
+    }
+    return instance;
+}
+
 
 int myRecvWindow = 15000;
 
@@ -197,24 +200,12 @@ static void _GetStartTimeFromDay(int PastDay, long &StartTime) {
 }
 
 void Binance::Init() {
-	string line; 
-	ifstream myfile ("config/BinanceKeys.txt");
-	if (myfile.is_open()) {
-		getline (myfile, api_key);
-		getline (myfile, secret_key);
-			
-		// cout << api_key << endl;
-		// cout << secret_key << endl;
-
-		myfile.close();
-	}
-	else {
-		cout << RED("Cannot open BinanceKeys.txt\n");
-		exit(-1);
-	}
+	Exchange::setKeyFilePath("config/BinanceKeys.txt");
+	Exchange::InitApiSecret();
 }
 
 void Binance::Cleanup() {
+	Exchange::Cleanup();
 	// cout << "Successfully perform Binance cleaning up\n";
 }
 
@@ -392,14 +383,7 @@ void Binance::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
 }
 
 void Binance::ShowPrices(string str) {
-	// cout << "Inside ShowPrices\n";
-
-	SymbolPriceSrtuct result[10000];
-	int len;
-	Binance::GetPrices(str, result, len);
-
-	for (int i=0; i<len; i++)
-		cout << "symbol: " << result[i].symbol << ", last_price: " << YELLOW(result[i].price) << endl;
+	Exchange::ShowPrices(str);
 }
 
 void Binance::_GetAccountInfoBalances() {
@@ -425,7 +409,8 @@ void Binance::_GetAccountInfoBalances() {
 	}
 }
 
-map <string, map<string, double>> Binance::GetBalances() {
+// mode is not used in Binance exchange and is added for compatibility
+map <string, map<string, double>> Binance::GetBalances(_GetBalancesModes mode) {
 	// cout << "GetBalances\n";
 
 	Binance::_GetAccountInfoBalances();
@@ -451,26 +436,7 @@ map <string, map<string, double>> Binance::GetBalances() {
 }
 
 void Binance::ShowBalances() {
-	// cout << "ShowBalances\n";
-	
-	map <string, map<string,double>> userBalance;
-	userBalance = GetBalances();
-
-	cout << "==================================" << endl;
-	
-	map < string, map<string,double> >::iterator it_i;
-	for ( it_i = userBalance.begin() ; it_i != userBalance.end() ; it_i++ ) {
-
-		string symbol 			= (*it_i).first;
-		map <string,double> balance 	= (*it_i).second;
-
-		if (balance["f"] != 0 || balance["l"] != 0) {
-			cout << "Symbol :" << symbol << ", \t";
-			printf("Free   : %.08f, ", balance["f"] );
-			printf("Locked : %.08f " , balance["l"] );
-			cout << " " << endl;
-		}
-	}
+	Exchange::ShowBalances();
 }
 
 map <string, StructBalanceInUSDT> Binance::ShowBalanceInUSDT() {
@@ -478,7 +444,7 @@ map <string, StructBalanceInUSDT> Binance::ShowBalanceInUSDT() {
 
 	// Get balance
 	map <string, map<string,double>> userBalance;
-	userBalance = GetBalances();
+	userBalance = GetBalances(BANK_AND_EXCHANGE_MODE);
 
 	// Get current prices
 	string str = "All";
