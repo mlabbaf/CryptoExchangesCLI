@@ -288,7 +288,7 @@ map <string, StructBalanceInUSDT> Coinex::ShowBalanceInUSDT() {
 	for (map <string, map<string, double>>::iterator it_i=userBalance.begin(); it_i!= userBalance.end(); it_i++) {
 		string symbol 			= (*it_i).first;
 		map <string,double> balance 	= (*it_i).second;
-		double coinBalance = balance["available"] + balance["frozen"];
+		double coinBalance = balance["f"] + balance["l"];
 
 		if (coinBalance > 0) {
 			// Get price
