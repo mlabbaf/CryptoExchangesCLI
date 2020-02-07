@@ -11,6 +11,9 @@
 #include <chrono>
 #include <future>
 #include <iomanip>
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #include "Utility.h"
 #include "Definitions.h"

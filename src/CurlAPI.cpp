@@ -22,27 +22,39 @@ void CurlAPI::CurlCleanup() {
 //-----------------
 // Curl's callback
 //-----------------
+
+static int getBarWidth () {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+    // printf ("lines %d\n", w.ws_row);
+    // printf ("columns %d\n", w.ws_col);
+    return w.ws_col;
+}
+
 void CurlAPI::_waiting(future<void> futureObj) {
-	int barWidth = 50;
+	int barWidth; // = 50;
 	
 	while (futureObj.wait_for(chrono::milliseconds(1)) == future_status::timeout) {
 		time(&CurlAPI::timeEnd);
 		
-		cout << "\rPlease waiting\t\t";
+	    barWidth = (getBarWidth() - 30) * 0.75;
+
+		cout << "\rPlease waiting      ";
 	    cout << "[";
 	    for (int i = 0; i < barWidth; ++i) {
 	        if (i < progressCnt) cout << "*";
 	        else if (i == progressCnt) cout << "*";
 	        else cout << " ";
 	    }
-	    cout << "]\t" << CurlAPI::timeEnd - CurlAPI::timeStart << " s";
+	    cout << "]   " << CurlAPI::timeEnd - CurlAPI::timeStart << " s";
 
 	    if (++progressCnt > barWidth)
 	    	progressCnt = 0;
 		cout.flush();
 		this_thread::sleep_for(chrono::milliseconds(200));
 	}
-	cout << "\r" << setfill(' ') << setw(barWidth+50) << "" << "\r";
+	cout << "\r" << setfill(' ') << setw(getBarWidth()) << "" << "\r";
 }
 
 //-----------------
