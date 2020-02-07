@@ -8,4 +8,4 @@ LastUSDTInExchanges
 config/HodlingHistory.json
 config/HodlingParams.json
 config/Orders.json
-
+tools/timer.sh
