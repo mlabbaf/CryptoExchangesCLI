@@ -53,6 +53,7 @@ struct prices {
 	double buy;
 	double sell;
 	double current;
+	double diff;
 };
 
 

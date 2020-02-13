@@ -63,6 +63,29 @@ void sortMapBasedOnPriceCurrent(map <string, prices> &items, vector <pair<string
 	}
 }
 
+void sortMapBasedOnPriceDiff(map <string, prices> &items, vector <pair<string, prices>> &items_sorted) {
+	// Declaring the type of Predicate that accepts 2 pairs and return a bool
+	typedef function <bool(pair<string, prices>, pair<string, prices>)> Comparator;
+ 
+	// Defining a lambda function to compare two pairs. It will compare two pairs using second field
+	Comparator compFunctorDiff =
+		[](pair<string, prices> elem1 ,pair<string, prices> elem2)
+		{
+			return elem1.second.diff > elem2.second.diff;
+		};
+
+	// Declaring a set that will store the pairs using above comparision logic
+	set<pair<string, prices>, Comparator> setOfWords(
+		items.begin(), items.end(), compFunctorDiff);
+ 
+	// Iterate over a set using range base for loop
+	for (pair<string, prices> element : setOfWords) {
+		items_sorted.push_back(element);
+		// items[element.first] = element.second;
+		// cout << element.first << " :: " << element.second.buy << endl;
+	}
+}
+
 void sortMapBasedOnAsset(map <string, StructBalanceInUSDT> &items, vector <pair<string, StructBalanceInUSDT>> &items_sorted) {
 	// Declaring the type of Predicate that accepts 2 pairs and return a bool
 	typedef function <bool(pair<string, StructBalanceInUSDT>, pair<string, StructBalanceInUSDT>)> Comparator;
@@ -1126,30 +1149,39 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 	for (list<HodlingParams>::iterator iter = historyList.begin(); iter != historyList.end(); iter ++) {
 		exchanges[iter->storedIn].buy = 0;
 		exchanges[iter->storedIn].sell = 0;
+		exchanges[iter->storedIn].diff = 0;
 		coins[iter->symbol].buy = 0;
 		coins[iter->symbol].sell = 0;
+		coins[iter->symbol].diff = 0;
 	}
 	for (list<HodlingParams>::iterator iter = historyList.begin(); iter != historyList.end(); iter ++) { 
 		exchanges[iter->storedIn].buy += (iter->priceBuy*iter->hodlingAmount)*1.001;
 		exchanges[iter->storedIn].sell += (iter->priceSell*iter->hodlingAmount)*0.999;
+		exchanges[iter->storedIn].diff = exchanges[iter->storedIn].sell - exchanges[iter->storedIn].buy;
 		coins[iter->symbol].buy += (iter->priceBuy*iter->hodlingAmount)*1.001;
 		coins[iter->symbol].sell += (iter->priceSell*iter->hodlingAmount)*0.999;
+		coins[iter->symbol].diff = coins[iter->symbol].sell - coins[iter->symbol].buy;
 	}
+	
+	vector <pair<string, prices>> coinsSorted;
+	sortMapBasedOnPriceDiff(coins, coinsSorted);
+	vector <pair<string, prices>> exchangesSorted;
+	sortMapBasedOnPriceDiff(exchanges, exchangesSorted);
 
-	for (map <string, prices>::iterator iter = exchanges.begin(); iter != exchanges.end(); iter ++) {
-		cout << "Exchange: " << YELLOWw(iter->first, 7) << ",\tbought: " << REDw(iter->second.buy, 8) << ",\tsold: " << GREENw(iter->second.sell, 8) << ",\t";
+	for (vector <pair<string, prices>>::iterator iter = exchangesSorted.begin(); iter != exchangesSorted.end(); iter ++) {
+		cout << "Exchange: " << YELLOWw(iter->first, 7) << ",  bought: " << REDw(iter->second.buy, 8) << ",  sold: " << GREENw(iter->second.sell, 8) << ",  ";
 		if (iter->second.sell > iter->second.buy)
-			cout << GREENw(iter->second.sell - iter->second.buy, 8) << " ( " << GREENw((iter->second.sell - iter->second.buy)/iter->second.buy*100, 8) << GREEN(" %") << " )\n";
+			cout << GREENw(iter->second.diff, 8) << " ( " << GREEN(iter->second.diff/iter->second.buy*100) << GREEN(" %") << " )\n";
 		else
-			cout << REDw(iter->second.sell - iter->second.buy, 8) << " ( " << REDw((iter->second.sell - iter->second.buy)/iter->second.buy*100, 8) << RED(" %") << " )\n";
+			cout << REDw(iter->second.diff, 8) << " ( " << RED(iter->second.diff/iter->second.buy*100) << RED(" %") << " )\n";
 	}
 	cout << endl;
-	for (map <string, prices>::iterator iter = coins.begin(); iter != coins.end(); iter ++) {
-		cout << "Symbol: " <<  YELLOWw(iter->first, 4) << ",\tbought: " << REDw(iter->second.buy, 8) << ",\tsold: " << GREENw(iter->second.sell, 8) << ",\t";
+	for (vector<pair<string, prices>>::iterator iter = coinsSorted.begin(); iter != coinsSorted.end(); iter ++) {
+		cout << "Symbol: " << YELLOWw(iter->first, 4) << ",  bought: " << REDw(iter->second.buy, 8) <<  ",  sold: " << GREENw(iter->second.sell, 8) << ",  ";
 		if (iter->second.sell > iter->second.buy)
-			cout << GREENw(iter->second.sell - iter->second.buy, 8) << " ( " << GREENw((iter->second.sell - iter->second.buy)/iter->second.buy*100, 8) << GREEN(" %") << " )\n";
+			cout << GREENw(iter->second.diff, 10) << " ( " << GREEN(iter->second.diff/iter->second.buy*100) << GREEN(" %") << " )\n";
 		else
-			cout << REDw(iter->second.sell - iter->second.buy, 8) << " ( " << REDw((iter->second.sell - iter->second.buy)/iter->second.buy*100, 8) << RED(" %") << " )\n";
+			cout << REDw(iter->second.diff, 10) << " ( " << RED(iter->second.diff/iter->second.buy*100) << RED(" %") << " )\n";
 	}
 }
 

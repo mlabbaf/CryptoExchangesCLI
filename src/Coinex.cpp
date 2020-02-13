@@ -306,13 +306,13 @@ map <string, StructBalanceInUSDT> Coinex::ShowBalanceInUSDT() {
 			}
 
 			wholeBalance += coinBalance * price;
-			cout << symbol << ": " << YELLOW(coinBalance) << " (" << balance["available"] << " , " 
-				 << balance["frozen"] << ") at price " << YELLOW(price) 
+			cout << symbol << ": " << YELLOW(coinBalance) << " (" << balance["f"] << " , " 
+				 << balance["l"] << ") at price " << YELLOW(price) 
 				 << " (" << RED(coinBalance*price) << ")\n";
 			
 			balanceResult[symbol].balance = coinBalance;
-			balanceResult[symbol].balanceFree = balance["available"];
-			balanceResult[symbol].balanceLocked = balance["frozen"];
+			balanceResult[symbol].balanceFree = balance["f"];
+			balanceResult[symbol].balanceLocked = balance["l"];
 			balanceResult[symbol].price = price;
 			balanceResult[symbol].asset = coinBalance*price;
 		}
