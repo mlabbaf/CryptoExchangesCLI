@@ -899,7 +899,7 @@ void Binance::SendOrder(string symbol, string side, string type, double quantity
 			cout << "json_result is not valid\n";
 			cout << json_result << endl;
 		}
-		// exit(0);
+		exit(0);
 	}
 }
 
