@@ -55,7 +55,7 @@ Json::Value Ramzinex::GetPrices(string &str) {
     		while ( getline (myfile,line) ) {
     			transform(line.begin(), line.end(), line.begin(), ::tolower);
 				// cout << counter++ << ")  " << line << endl << json_result[line] << endl;
-				cout << line << ":      \t" << fastWriter.write(json_result[line]);
+				cout << line << ":      \t" << fastWriter.write(json_result["original"][line]);
     		}
     		myfile.close();
     	}
@@ -67,7 +67,7 @@ Json::Value Ramzinex::GetPrices(string &str) {
   		return temp;  // not worked correctly in this situation
   	}
 	else
-		return json_result[str];
+		return json_result["original"][str];
 }
 
 void Ramzinex::ShowPrices(string str) {
@@ -81,5 +81,5 @@ void Ramzinex::ShowPrices(string str) {
 	else if (str == "watchlist") {}		// Handled in GetPrices
 	else
 		// cout << json_result[str] << endl;
-		cout << str << endl << fastWriter.write(json_result[str]) << endl;
+		cout << str << endl << fastWriter.write(json_result["original"][str]) << endl;
 }

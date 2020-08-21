@@ -174,7 +174,7 @@ void BotMethod::DollarPriceInRamzinex() {
 	str = "All";
 	jsonRamzinex = Ramzinex::GetPrices(str);
 
-	double XRPUSDT, BTCUSDT, ETHUSDT, LTCUSDT;
+	double XRPUSDT, BTCUSDT, ETHUSDT, LTCUSDT, BNBUSDT,XLMUSDT;
 
 	for (int i=0; i<lenBinance; i++) {
 		if (priceBinance[i].symbol == "XRPUSDT")
@@ -185,14 +185,20 @@ void BotMethod::DollarPriceInRamzinex() {
 			ETHUSDT = priceBinance[i].price;
 		if (priceBinance[i].symbol == "LTCUSDT") 
 			LTCUSDT = priceBinance[i].price;
+		if (priceBinance[i].symbol == "BNBUSDT") 
+			BNBUSDT = priceBinance[i].price;
+		if (priceBinance[i].symbol == "XLMUSDT") 
+			XLMUSDT = priceBinance[i].price;
 	}
 
 	cout << GREEN("Buy ") << "options for me:\n";
-	double SellDollarByUSDT = Utility::JsonToDouble(jsonRamzinex["usdtirr"]["sell"]);
-	double SellDollarByXRPUSDT = Utility::JsonToDouble(jsonRamzinex["xrpirr"]["sell"])/XRPUSDT;
-	double SellDollarByBTCUSDT = Utility::JsonToDouble(jsonRamzinex["btcirr"]["sell"])/BTCUSDT;
-	double SellDollarByETHUSDT = Utility::JsonToDouble(jsonRamzinex["ethirr"]["sell"])/ETHUSDT;
-	double SellDollarByLTCUSDT = Utility::JsonToDouble(jsonRamzinex["ltcirr"]["sell"])/LTCUSDT;
+	double SellDollarByUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["usdtirr"]["sell"]);
+	double SellDollarByXRPUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["xrpirr"]["sell"])/XRPUSDT;
+	double SellDollarByBTCUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["btcirr"]["sell"])/BTCUSDT;
+	double SellDollarByETHUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["ethirr"]["sell"])/ETHUSDT;
+	double SellDollarByLTCUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["ltcirr"]["sell"])/LTCUSDT;
+	double SellDollarByBNBUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["bnbirr"]["sell"])/BNBUSDT;
+	double SellDollarByXMLUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["xlmirr"]["sell"])/XLMUSDT;
 	
 	double SellMin = 10000000;
 	if (SellDollarByUSDT < SellMin)			SellMin = SellDollarByUSDT;
@@ -200,20 +206,26 @@ void BotMethod::DollarPriceInRamzinex() {
 	if (SellDollarByBTCUSDT < SellMin)		SellMin = SellDollarByBTCUSDT;
 	if (SellDollarByETHUSDT < SellMin)		SellMin = SellDollarByETHUSDT;
 	if (SellDollarByLTCUSDT < SellMin)		SellMin = SellDollarByLTCUSDT;
+	if (SellDollarByBNBUSDT < SellMin)		SellMin = SellDollarByBNBUSDT;
+	if (SellDollarByXMLUSDT < SellMin)		SellMin = SellDollarByXMLUSDT;
 	
-	cout << "\tusdtirr ----\t" << Utility::JsonToDouble(jsonRamzinex["usdtirr"]["sell"]) << endl;
-	cout << "\txrpirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["xrpirr"]["sell"])/XRPUSDT << " (" << jsonRamzinex["xrpirr"]["sell"].asString() << " , " << XRPUSDT << ")" << endl; 
-	cout << "\tbtcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["btcirr"]["sell"])/BTCUSDT << " (" << jsonRamzinex["btcirr"]["sell"].asString() << " , " << BTCUSDT << ")" << endl; 
-	cout << "\tethirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["ethirr"]["sell"])/ETHUSDT << " (" << jsonRamzinex["ethirr"]["sell"].asString() << " , " << ETHUSDT << ")" << endl; 
-	cout << "\tltcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["ltcirr"]["sell"])/LTCUSDT << " (" << jsonRamzinex["ltcirr"]["sell"].asString() << " , " << LTCUSDT << ")" << endl; 
+	cout << "\tusdtirr ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["usdtirr"]["sell"]) << endl;
+	cout << "\txrpirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["xrpirr"]["sell"])/XRPUSDT << " (" << jsonRamzinex["original"]["xrpirr"]["sell"].asString() << " , " << XRPUSDT << ")" << endl; 
+	cout << "\tbtcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["btcirr"]["sell"])/BTCUSDT << " (" << jsonRamzinex["original"]["btcirr"]["sell"].asString() << " , " << BTCUSDT << ")" << endl; 
+	cout << "\tethirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["ethirr"]["sell"])/ETHUSDT << " (" << jsonRamzinex["original"]["ethirr"]["sell"].asString() << " , " << ETHUSDT << ")" << endl; 
+	cout << "\tltcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["ltcirr"]["sell"])/LTCUSDT << " (" << jsonRamzinex["original"]["ltcirr"]["sell"].asString() << " , " << LTCUSDT << ")" << endl; 
+	cout << "\tbnbirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["bnbirr"]["sell"])/BNBUSDT << " (" << jsonRamzinex["original"]["bnbirr"]["sell"].asString() << " , " << BNBUSDT << ")" << endl; 
+	cout << "\txlmirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["xlmirr"]["sell"])/XLMUSDT << " (" << jsonRamzinex["original"]["xlmirr"]["sell"].asString() << " , " << XLMUSDT << ")" << endl; 
 	cout << endl << "\tMinimum Buy option: " << SellMin << endl << endl;
 
 	cout << KGRN << "Sell " << RESET << "options for me:\n";
-	double BuyDollarByUSDT = Utility::JsonToDouble(jsonRamzinex["usdtirr"]["buy"]);
-	double BuyDollarByXRPUSDT = Utility::JsonToDouble(jsonRamzinex["xrpirr"]["buy"])/XRPUSDT;
-	double BuyDollarByBTCUSDT = Utility::JsonToDouble(jsonRamzinex["btcirr"]["buy"])/BTCUSDT;
-	double BuyDollarByETHUSDT = Utility::JsonToDouble(jsonRamzinex["ethirr"]["buy"])/ETHUSDT;
-	double BuyDollarByLTCUSDT = Utility::JsonToDouble(jsonRamzinex["ltcirr"]["buy"])/LTCUSDT;
+	double BuyDollarByUSDT = Utility::JsonToDouble(jsonRamzinex	  ["original"]["usdtirr"]["buy"]);
+	double BuyDollarByXRPUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["xrpirr"]["buy"])/XRPUSDT;
+	double BuyDollarByBTCUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["btcirr"]["buy"])/BTCUSDT;
+	double BuyDollarByETHUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["ethirr"]["buy"])/ETHUSDT;
+	double BuyDollarByLTCUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["ltcirr"]["buy"])/LTCUSDT;
+	double BuyDollarByBNBUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["bnbirr"]["buy"])/BNBUSDT;
+	double BuyDollarByXLMUSDT = Utility::JsonToDouble(jsonRamzinex["original"]["xlmirr"]["buy"])/XLMUSDT;
 	
 	double BuyMax = 0;
 	if (BuyDollarByUSDT > BuyMax)			BuyMax = BuyDollarByUSDT;
@@ -221,12 +233,16 @@ void BotMethod::DollarPriceInRamzinex() {
 	if (BuyDollarByBTCUSDT > BuyMax)		BuyMax = BuyDollarByBTCUSDT;
 	if (BuyDollarByETHUSDT > BuyMax)		BuyMax = BuyDollarByETHUSDT;
 	if (BuyDollarByLTCUSDT > BuyMax)		BuyMax = BuyDollarByLTCUSDT;
+	if (BuyDollarByBNBUSDT > BuyMax)		BuyMax = BuyDollarByBNBUSDT;
+	if (BuyDollarByXLMUSDT > BuyMax)		BuyMax = BuyDollarByXLMUSDT;
 	
-	cout << "\tusdtirr ----\t" << Utility::JsonToDouble(jsonRamzinex["usdtirr"]["buy"]) << endl;
-	cout << "\txrpirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["xrpirr"]["buy"])/XRPUSDT << " (" << jsonRamzinex["xrpirr"]["buy"].asString() << " , " << XRPUSDT << ")" << endl; 
-	cout << "\tbtcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["btcirr"]["buy"])/BTCUSDT << " (" << jsonRamzinex["btcirr"]["buy"].asString() << " , " << BTCUSDT << ")" << endl; 
-	cout << "\tethirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["ethirr"]["buy"])/ETHUSDT << " (" << jsonRamzinex["ethirr"]["buy"].asString() << " , " << ETHUSDT << ")" << endl; 
-	cout << "\tltcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["ltcirr"]["buy"])/LTCUSDT << " (" << jsonRamzinex["ltcirr"]["buy"].asString() << " , " << LTCUSDT << ")" << endl; 
+	cout << "\tusdtirr ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["usdtirr"]["buy"]) << endl;
+	cout << "\txrpirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["xrpirr"]["buy"])/XRPUSDT << " (" << jsonRamzinex["original"]["xrpirr"]["buy"].asString() << " , " << XRPUSDT << ")" << endl; 
+	cout << "\tbtcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["btcirr"]["buy"])/BTCUSDT << " (" << jsonRamzinex["original"]["btcirr"]["buy"].asString() << " , " << BTCUSDT << ")" << endl; 
+	cout << "\tethirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["ethirr"]["buy"])/ETHUSDT << " (" << jsonRamzinex["original"]["ethirr"]["buy"].asString() << " , " << ETHUSDT << ")" << endl; 
+	cout << "\tltcirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["ltcirr"]["buy"])/LTCUSDT << " (" << jsonRamzinex["original"]["ltcirr"]["buy"].asString() << " , " << LTCUSDT << ")" << endl; 
+	cout << "\tbnbirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["bnbirr"]["buy"])/BNBUSDT << " (" << jsonRamzinex["original"]["bnbirr"]["buy"].asString() << " , " << BNBUSDT << ")" << endl; 
+	cout << "\txlmirr  ----\t" << Utility::JsonToDouble(jsonRamzinex["original"]["xlmirr"]["buy"])/XLMUSDT << " (" << jsonRamzinex["original"]["xlmirr"]["buy"].asString() << " , " << XLMUSDT << ")" << endl; 
 	cout << endl << "\tMaximum Sell option: " << BuyMax << endl << endl;
 }
 
