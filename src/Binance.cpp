@@ -15,7 +15,7 @@ Binance* Binance::getInstance() {
 }
 
 
-int myRecvWindow = 15000;
+int myRecvWindow = 60000;
 
 
 static bool _IsJsonResultValid(Json::Value json_result) {

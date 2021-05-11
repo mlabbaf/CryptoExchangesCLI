@@ -191,6 +191,8 @@ static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
 	MenuOption.insert(pair <int, string> (15, "DENTUSDT"));
 	MenuOption.insert(pair <int, string> (16, "LINKUSDT"));
+	MenuOption.insert(pair <int, string> (17, "EOSUSDT"));
+	MenuOption.insert(pair <int, string> (18, "SHIBUSDT"));
 	// MenuOption.insert(pair <int, string> (101, "DENTBTC"));
 	MenuOption.insert(pair <int, string> (102, "COSBTC"));
 
@@ -315,6 +317,7 @@ static string _CoinexPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (10, "XRPUSDT"));
 	MenuOption.insert(pair <int, string> (13, "CETUSDT"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
+	MenuOption.insert(pair <int, string> (17, "EOSUSDT"));
 
 	cout << "Select from following menu:\n";
 
@@ -430,6 +433,7 @@ static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (14, "LTCUSD"));
 	MenuOption.insert(pair <int, string> (15, "DENTUSD"));
 	MenuOption.insert(pair <int, string> (16, "LINKUSD"));
+	MenuOption.insert(pair <int, string> (17, "EOSUSD"));
 	MenuOption.insert(pair <int, string> (104, "ETHBTC"));
 	MenuOption.insert(pair <int, string> (110, "XRPBTC"));
 	MenuOption.insert(pair <int, string> (115, "DENTBTC"));
@@ -1766,7 +1770,7 @@ int Menu::MainMenu() {
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (16, MainMenuMapValues("TransferBetweenBankAndExchange", & TransferBetweenBankAndExchange)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (88, MainMenuMapValues("Bot", & BotMenu)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (99, MainMenuMapValues("Utility", & UtilityMenu)));
-	// MapMenuOption.insert(pair <int, MainMenuMapValues> (111, MainMenuMapValues("Test", & BotMethod::Test)));
+	MapMenuOption.insert(pair <int, MainMenuMapValues> (111, MainMenuMapValues("Test", & BotMethod::Test)));
 
 	cout << "Select from following menu:\n";
 

@@ -1297,7 +1297,7 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 	for (int i=0; i<lenCoinex; i++)
 		mapExchanges[priceCoinex[i].symbol].coinexPrice = priceCoinex[i].price;
 	for (int i=0; i<lenHitBTC; i++) {
-		if (priceHitBTC[i].symbol != "XRPUSDT")
+		if (priceHitBTC[i].symbol != "XRPUSDT" && priceHitBTC[i].symbol.find("USD") != string::npos)
 			priceHitBTC[i].symbol += "T";
 		mapExchanges[priceHitBTC[i].symbol].hitBTCPrice = priceHitBTC[i].price;
 	}
@@ -1334,4 +1334,7 @@ void BotMethod::Init() {
 
 void BotMethod::Cleanup() {
 	// cout << "Successfully perform Menu cleaning up\n";
+}
+
+void BotMethod::Test() {
 }
