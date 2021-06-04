@@ -193,6 +193,10 @@ static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (16, "LINKUSDT"));
 	MenuOption.insert(pair <int, string> (17, "EOSUSDT"));
 	MenuOption.insert(pair <int, string> (18, "SHIBUSDT"));
+	MenuOption.insert(pair <int, string> (19, "BALUSDT"));
+	MenuOption.insert(pair <int, string> (20, "DOGEUSDT"));
+	MenuOption.insert(pair <int, string> (21, "ALPHAUSDT"));
+	MenuOption.insert(pair <int, string> (22, "MATICUSDT"));
 	// MenuOption.insert(pair <int, string> (101, "DENTBTC"));
 	MenuOption.insert(pair <int, string> (102, "COSBTC"));
 
@@ -318,6 +322,7 @@ static string _CoinexPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (13, "CETUSDT"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
 	MenuOption.insert(pair <int, string> (17, "EOSUSDT"));
+	MenuOption.insert(pair <int, string> (20, "DOGEUSDT"));
 
 	cout << "Select from following menu:\n";
 

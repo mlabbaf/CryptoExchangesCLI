@@ -130,7 +130,7 @@ int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string sym
 	
 	if (quantity > 0) {
 		querystring.append("&quantity=");
-		querystring.append(to_string(quantity));
+		querystring.append(Utility::tostring(quantity));
 	}
 	
 	if (price > 0) {

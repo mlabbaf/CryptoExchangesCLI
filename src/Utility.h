@@ -155,6 +155,18 @@ public:
 	    	}
     		
     	}
+    	if (n > 100*100) {
+			// Create an output string stream
+			ostringstream oss;
+			// Set Fixed -Point Notation
+			oss << fixed;
+			// Set precision to 2 digits
+			oss << setprecision(2);
+			//Add double to stream
+			oss << n;
+			// Get string from output string stream
+			s = oss.str();
+    	}
     	else 
     		s = to_string(n);
     	return s;
