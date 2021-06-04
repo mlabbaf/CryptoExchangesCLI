@@ -36,7 +36,7 @@ static bool _IsJsonResultValid(Json::Value json_result) {
 } 
 
 // symbol is necessary
-int Binance::_pathQueryStringToUrl(	string &url, string baseAddress, string symbol, string asset, 
+int Binance::_pathQueryStringToUrl(	string &url, string baseAddress, string symbol, string asset, string coin, string network,
 									int limit, long fromId, long recvWindow, int status, long startTime, long endTime) {
 	url = BINANCE_HOST;
 	url += baseAddress;
@@ -51,6 +51,16 @@ int Binance::_pathQueryStringToUrl(	string &url, string baseAddress, string symb
 	if (asset.size() != 0) {
 		querystring.append("&asset=");
 		querystring.append(asset);
+	}
+
+	if (coin.size() != 0) {
+		querystring.append("&coin=");
+		querystring.append(coin);
+	}
+
+	if (network.size() != 0) {
+		querystring.append("&network=");
+		querystring.append(network);
 	}
 	
 	if ( limit > 0 ) {
@@ -255,7 +265,7 @@ void Binance::ShowAccountStatus() {
 	string baseAddress = "/wapi/v3/accountStatus.html?";
 
 	string temp; 
-	_pathQueryStringToUrl(url, baseAddress, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
+	_pathQueryStringToUrl(url, baseAddress, temp, temp, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 
 	string str_result;
 	CurlAPI::CurlGetRequestWithMBXKey(url, str_result, api_key);
@@ -393,7 +403,7 @@ void Binance::_GetAccountInfoBalances() {
 	baseAddress = "/api/v3/account?";
 
 	string temp;
-	_pathQueryStringToUrl(url, baseAddress, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
+	_pathQueryStringToUrl(url, baseAddress, temp, temp, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 	// cout << "Inside _GetAccountInfoBalances, url: " << url << endl;
 
 	string str_result;
@@ -501,9 +511,9 @@ bool Binance::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
 
 	string temp;
 	if (str == "All")
-		_pathQueryStringToUrl(url, baseAddress, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
+		_pathQueryStringToUrl(url, baseAddress, temp, temp, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 	else
-		_pathQueryStringToUrl(url, baseAddress, str, temp, 0, 0, myRecvWindow, 0, 0, 0); 
+		_pathQueryStringToUrl(url, baseAddress, str, temp, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 	// cout << "Inside GetOpenOrders, url: " << url << endl;
 
 	string str_result;
@@ -538,9 +548,9 @@ void Binance::_GetAllOrders(string &str, int PastDay) {
 
 	string temp;
 	if (str == "All")
-		_pathQueryStringToUrl(url, baseAddress, temp, temp, 0, 0, myRecvWindow, 0, StartTime, 0); 
+		_pathQueryStringToUrl(url, baseAddress, temp, temp, temp, temp, 0, 0, myRecvWindow, 0, StartTime, 0); 
 	else
-		_pathQueryStringToUrl(url, baseAddress, str, temp, 0, 0, myRecvWindow, 0, StartTime, 0); 
+		_pathQueryStringToUrl(url, baseAddress, str, temp, temp, temp, 0, 0, myRecvWindow, 0, StartTime, 0); 
 	
 	string str_result;
 	CurlAPI::CurlGetRequestWithMBXKey(url, str_result, api_key);
@@ -625,7 +635,7 @@ void Binance::_GetMyTrades(string &str, int PastDay) {
 	_GetStartTimeFromDay(PastDay, StartTime);
 
 	string temp;
-	_pathQueryStringToUrl(url, baseAddress, str, temp, 0, 0, myRecvWindow, 0, StartTime, 0); 
+	_pathQueryStringToUrl(url, baseAddress, str, temp, temp, temp, 0, 0, myRecvWindow, 0, StartTime, 0); 
 	// cout << "<BinaCPP::get_account> url = " << url << endl;
 
 	string str_result;
@@ -776,16 +786,19 @@ void Binance::ShowTradesPerformance(string &str, int PastDay) {
 		cout << RED(Sells-Buys) << " ( " << RED((Sells-Buys)/Buys*100) << RED (" %") <<  " )\n";
 }
 
-void Binance::ShowDepositAddress(string &str) {
-	// cout << "ShowDepositAddress\n";
+void Binance::ShowDepositAddress(string &coin, string &network) {
+	// cout << "ShowDepositAddress, coin: " << coin << ", network: " << network << "\n";
 
 	string url;
 	string baseAddress;
 
-	baseAddress = "/wapi/v3/depositAddress.html?";
+	baseAddress = "/sapi/v1/capital/deposit/address?";
 	
 	string temp;
-	_pathQueryStringToUrl(url, baseAddress, temp, str, 0, 0, myRecvWindow, 0, 0, 0); 
+	if (network != "isDefault")
+		_pathQueryStringToUrl(url, baseAddress, temp, temp, coin, network, 0, 0, myRecvWindow, 0, 0, 0); 
+	else 
+		_pathQueryStringToUrl(url, baseAddress, temp, temp, coin, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 	// cout << "Inside _GetAccountInfoBalances, url: " << url << endl;
 
 	string str_result;
@@ -814,7 +827,7 @@ void Binance::ShowDepositHistory(string str) {
 		asset = str;
 
 	string temp;
-	_pathQueryStringToUrl(url, baseAddress, temp, asset, 0, 0, myRecvWindow, 0, 0, 0); 
+	_pathQueryStringToUrl(url, baseAddress, temp, asset, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 	// cout << "url: " <<url << endl;	
 
 	string str_result;
@@ -843,7 +856,7 @@ void Binance::ShowWithdrawHistory(string str) {
 		asset = str;
 
 	string temp;
-	_pathQueryStringToUrl(url, baseAddress, temp, asset, 0, 0, myRecvWindow, 0, 0, 0); 
+	_pathQueryStringToUrl(url, baseAddress, temp, asset, temp, temp, 0, 0, myRecvWindow, 0, 0, 0); 
 	// cout << "url: " <<url << endl;	
 
 	string str_result;

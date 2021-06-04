@@ -1337,4 +1337,5 @@ void BotMethod::Cleanup() {
 }
 
 void BotMethod::Test() {
+	kucoin->ShowServerTime();
 }

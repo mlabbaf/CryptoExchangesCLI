@@ -24,7 +24,7 @@ void Ramzinex::_GetAllPrices() {
 
 	string str_result;
 	CurlAPI::CurlGetRequest(url, str_result);
-	// cout << "inside GetAllPrices, str_result: " << str_result << endl;
+	cout << "inside GetAllPrices, str_result: " << str_result << endl;
 
 	if ( str_result.size() > 0 ) {		
 		try {

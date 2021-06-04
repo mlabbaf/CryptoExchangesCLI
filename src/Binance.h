@@ -34,7 +34,7 @@ private:
 	Json::Value json_result;
 	Json::FastWriter fastWriter;
 
-	int _pathQueryStringToUrl(string &url, string baseAddress, string symbol, string asset, 
+	int _pathQueryStringToUrl(string &url, string baseAddress, string symbol, string asset, string coin, string network,
 									int limit, long fromId, long recvWindow, int status, long startTime, long endTime);
 	int _pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
 									 string timeInForce, double quantity, double price, double ocoStopPrice,
@@ -69,7 +69,7 @@ public:
 	void ShowAllOrders(string &str, int PastDay);
 	void ShowTradesPerformance(string &str, int PastDay);
 	void ShowMyTrades(string str, int PastDay);
-	void ShowDepositAddress(string &str);
+	void ShowDepositAddress(string &coin, string &network);
 	void ShowDepositHistory(string str);
 	void ShowWithdrawHistory(string str);
 	void SendOrder(string symbol, string side, string type, double quantity, 

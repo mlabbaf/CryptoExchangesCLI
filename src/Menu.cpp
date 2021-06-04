@@ -269,6 +269,46 @@ static string _BinanceSingleSubMenuList(_SubMenuListMode mode) {
 	return rc;
 }
 
+static string _BinanceNetworkSubMenuList() {
+	int choice;
+
+	map <int, string> MenuOption;
+	MenuOption.insert(pair <int, string> (101, "isDefault"));
+	MenuOption.insert(pair <int, string> (102, "BTC"));
+	// MenuOption.insert(pair <int, string> (103, "SEGWITBTC"));
+	MenuOption.insert(pair <int, string> (104, "OMNI"));
+	MenuOption.insert(pair <int, string> (105, "ETH"));
+	// MenuOption.insert(pair <int, string> (106, "NEO"));
+	// MenuOption.insert(pair <int, string> (107, "ONT"));
+	// MenuOption.insert(pair <int, string> (108, "ADA"));
+	MenuOption.insert(pair <int, string> (109, "TRX"));
+	// MenuOption.insert(pair <int, string> (110, "XLM"));
+	// MenuOption.insert(pair <int, string> (111, "XRP"));
+	// MenuOption.insert(pair <int, string> (112, "IOTA"));
+	MenuOption.insert(pair <int, string> (113, "BNB"));
+	MenuOption.insert(pair <int, string> (114, "BSC"));
+	// MenuOption.insert(pair <int, string> (115, "LTC"));
+
+	cout << "Select from following menu:\n";
+
+	map<int, string>::iterator it;
+	for (it = MenuOption.begin(); it != MenuOption.end(); it++)
+		cout << "\t" << it->first << ") " << it->second << endl;
+	cout << KGRN << "\nYour choice:  \n" << RESET;
+	cin >> choice;
+	// cout << "choice: " << KGRN << choice << RESET << endl;
+
+
+	string rc;
+	it = MenuOption.find(choice);
+	if (it != MenuOption.end())
+		rc = it->second;
+	else 			// invlid number
+		cout << KRED << "Invalid number\n\n\n" << RESET;	
+	
+	return rc;
+}
+
 static string _BinanceOrderTypeList() {
 	int choice;
 
@@ -435,6 +475,7 @@ static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (10, "XRPUSDT"));
 	MenuOption.insert(pair <int, string> (11, "IOTAUSD"));
 	MenuOption.insert(pair <int, string> (12, "BTTUSD"));
+	MenuOption.insert(pair <int, string> (13, "BNBUSD"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSD"));
 	MenuOption.insert(pair <int, string> (15, "DENTUSD"));
 	MenuOption.insert(pair <int, string> (16, "LINKUSD"));
@@ -481,11 +522,13 @@ static string _HitBTCSingleSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (10, "XRP"));
 	MenuOption.insert(pair <int, string> (11, "IOTA"));
 	MenuOption.insert(pair <int, string> (12, "BTT"));
+	MenuOption.insert(pair <int, string> (13, "BNB"));
 	MenuOption.insert(pair <int, string> (14, "LTC"));
 	MenuOption.insert(pair <int, string> (15, "DENT"));
 	MenuOption.insert(pair <int, string> (16, "LINK"));
 	MenuOption.insert(pair <int, string> (21, "GAS"));
 	MenuOption.insert(pair <int, string> (101, "USD"));
+	MenuOption.insert(pair <int, string> (102, "USDT20"));
 
 	cout << "Select from following menu:\n";
 
@@ -820,8 +863,11 @@ static void ShowBinanceDepositAddress () {
 	// cout << "Inside ShowBinanceDepositAddress\n";
 
 	string SubMenuSelection = _BinanceSingleSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
-	if (SubMenuSelection.size() != 0)
-		binance->ShowDepositAddress(SubMenuSelection);
+	if (SubMenuSelection.size() != 0) {
+		string SubMenuSelectionNetwork = _BinanceNetworkSubMenuList();
+		if (SubMenuSelectionNetwork.size() != 0)
+			binance->ShowDepositAddress(SubMenuSelection, SubMenuSelectionNetwork);
+	}
 }
 
 static void ShowBinanceDepositHistory () {
