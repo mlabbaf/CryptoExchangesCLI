@@ -25,6 +25,7 @@ enum _ExchangeExist {
 	COINEX 		= 0x04,
 	HITBTC 		= 0x08,
 	KUCOIN 		= 0x10,
+	NOBITEX		= 0x20,
 	ALL 		= 0X80
 };
 

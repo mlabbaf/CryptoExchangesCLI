@@ -158,16 +158,6 @@ int Coinex::_createJsonData(string &postData, string market, string type, double
 	return 0;
 }
 
-void Coinex::Init() {
-	Exchange::setKeyFilePath("config/CoinexKeys.txt");
-	Exchange::InitApiSecret();
-}
-
-void Coinex::Cleanup() {
-	Exchange::Cleanup();
-	// cout << "Successfully perform Coinex cleaning up\n";
-}
-
 void Coinex::_GetPriceBySymbol(string &symbol) {
 	// cout << symbol << " - _GetPriceBySymbol\n";
 	string url(COINEX_HOST);  

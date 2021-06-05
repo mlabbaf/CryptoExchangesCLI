@@ -30,7 +30,6 @@ class Binance : public Exchange
 private:
 	static Binance* instance;
 
-	CURL* curl;
 	Json::Value json_result;
 	Json::FastWriter fastWriter;
 
@@ -48,12 +47,6 @@ private:
 
 public:
 	static Binance* getInstance();
-
-	void SetCurl(CURL* c) {
-		curl = c;
-	}
-	void Init();
-	void Cleanup();
 
 	void ShowServerTime();
 	void TestConnectivity();

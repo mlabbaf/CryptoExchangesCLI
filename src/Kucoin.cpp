@@ -212,16 +212,6 @@ static void _GetStartTimeFromDay(int PastDay, long &StartTime) {
 	}
 }
 
-void Kucoin::Init() {
-	Exchange::setKeyFilePath("config/KucoinKeys.txt");
-	Exchange::InitApiSecretPassphrase();
-}
-
-void Kucoin::Cleanup() {
-	Exchange::Cleanup();
-	// cout << "Successfully perform Kucoin cleaning up\n";
-}
-
 void Kucoin::ShowServerTime() {
 	// cout << "Kucoin::ShowServerTime\n";
 	string url(KUCOIN_HOST);  

@@ -40,7 +40,6 @@ class Coinex : public Exchange
 private:
 	static Coinex* instance;
 
-	CURL* curl;
 	Json::Value json_result;
 	Json::FastWriter fastWriter;
 
@@ -62,12 +61,6 @@ private:
 
 public:
 	static Coinex* getInstance();
-
-	void SetCurl(CURL* c) {
-		curl = c;
-	}
-	void Init();
-	void Cleanup();
 
 	// void ShowServerTime();
 	// void TestConnectivity();

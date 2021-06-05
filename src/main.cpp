@@ -13,6 +13,7 @@
 #include "Coinex.h"
 #include "HitBTC.h"
 #include "Kucoin.h"
+#include "Nobitex.h"
 #include "BotMethod.h"
 #include "Log.h"
 
@@ -33,6 +34,7 @@ static Binance *binance;
 static Coinex *coinex;
 static HitBTC *hitbtc;
 static Kucoin *kucoin;
+static Nobitex *nobitex;
 
 
 void Init() {
@@ -45,21 +47,30 @@ void Init() {
 	coinex = Coinex::getInstance();
 	hitbtc = HitBTC::getInstance();
 	kucoin = Kucoin::getInstance();
+	nobitex = Nobitex::getInstance();
 
+	binance->setKeyFilePath("config/BinanceKeys.txt");
 	binance->Init();
 	binance->SetCurl(curl);
 
 	Ramzinex::Init();
 	Ramzinex::SetCurl(curl);
 
+	coinex->setKeyFilePath("config/CoinexKeys.txt");
 	coinex->Init();
 	coinex->SetCurl(curl);
 
+	hitbtc->setKeyFilePath("config/HitBTCKeys.txt");
 	hitbtc->Init();
 	hitbtc->SetCurl(curl);
 
+	kucoin->setKeyFilePath("config/KucoinKeys.txt");
 	kucoin->Init();
 	kucoin->SetCurl(curl);
+
+	nobitex->setKeyFilePath("config/NobitexKeys.txt");
+	nobitex->Init();
+	nobitex->SetCurl(curl);
 
 	Menu::Init();
 	BotMethod::Init();
@@ -75,6 +86,7 @@ void Cleanup() {
 	coinex->Cleanup();
 	hitbtc->Cleanup();
 	kucoin->Cleanup();
+	nobitex->Cleanup();
 
 	Menu::Cleanup();
 	BotMethod::Cleanup();

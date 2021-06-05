@@ -5,6 +5,7 @@
 #include "Coinex.h"
 #include "HitBTC.h"
 #include "Kucoin.h"
+#include "Nobitex.h"
 #include "Log.h"
 #include "Utility.h"
 #include "Definitions.h"
@@ -15,6 +16,7 @@ static Binance *binance;
 static Coinex *coinex;
 static HitBTC *hitbtc;
 static Kucoin *kucoin;
+static Nobitex *nobitex;
 
 
 void _findMinAndMaxFromStrcutExchangesPrices(strcutExchangesPrices &priceExchanges, double &min, double &max) {
@@ -1330,6 +1332,7 @@ void BotMethod::Init() {
 	coinex = Coinex::getInstance();
 	hitbtc = HitBTC::getInstance();
 	kucoin = Kucoin::getInstance();
+	nobitex = Nobitex::getInstance();
 }
 
 void BotMethod::Cleanup() {

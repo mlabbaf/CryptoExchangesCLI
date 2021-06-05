@@ -5,6 +5,7 @@
 #include "Coinex.h"
 #include "HitBTC.h"
 #include "Kucoin.h"
+#include "Nobitex.h"
 #include "BotMethod.h"
 #include "CurlAPI.h"
 
@@ -14,6 +15,7 @@ static Binance *binance;
 static Coinex *coinex;
 static HitBTC *hitbtc;
 static Kucoin *kucoin;
+static Nobitex *nobitex;
 
 
 static void Exit() {
@@ -33,9 +35,9 @@ enum _SubMenuListMode {
 };
 
 
-//-----------------
+/********************************************************************************************/
 // Utilities
-//-----------------
+/********************************************************************************************/
 static void _NotSupported() {
 	cout << RED("This function is not supported\n");
 }
@@ -56,6 +58,8 @@ static string _ExchangeSubMenuList(int mode) {
 		MenuOption.insert(pair <int, string> (5, "HitBTC"));
 	if (mode & KUCOIN)
 		MenuOption.insert(pair <int, string> (6, "Kucoin"));
+	if (mode & NOBITEX)
+		MenuOption.insert(pair <int, string> (7, "Nobitex"));
 
 	cout << "Select from following menu:\n";
 
@@ -168,7 +172,9 @@ static string _GetStringValue(string DisplayString) {
 	return rc;		
 }
 
-// Binance
+/********************************************************************************************/
+// Binance Menu options
+/********************************************************************************************/
 static string _BinancePairSubMenuList(_SubMenuListMode mode) {
 	int choice;
 
@@ -342,7 +348,9 @@ static string _BinanceOrderTypeList() {
 	return rc;
 }
 
-// Coinex
+/********************************************************************************************/
+// Coinex Menu options
+/********************************************************************************************/
 static string _CoinexPairSubMenuList(_SubMenuListMode mode) {
 	int choice;
 
@@ -456,7 +464,9 @@ static string _CoinexOrderTypeList() {
 	return rc;
 }
 
-// HitBTC
+/********************************************************************************************/
+// HitBTC Menu options
+/********************************************************************************************/
 static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	int choice;
 
@@ -610,7 +620,9 @@ static string _HitBTCTransferType() {
 	return rc;
 }
 
-// Kucoin
+/********************************************************************************************/
+// Kucoin Menu options
+/********************************************************************************************/
 static string _KucoinPairSubMenuList(_SubMenuListMode mode) {
 	int choice;
 
@@ -732,9 +744,186 @@ static string _KucoinTransferType() {
 	return _HitBTCTransferType();
 }
 
-//-----------------
-// All exchanges
-//-----------------
+/********************************************************************************************/
+// Nobitex Menu options
+/********************************************************************************************/
+// static string _NobitexPairSubMenuList(_SubMenuListMode mode) {
+// 	int choice;
+
+// 	map <int, string> MenuOption;
+// 	if (mode == WITH_ALL || mode == WITH_ALL_AND_WATCHLIST)
+// 		MenuOption.insert(pair <int, string> (1, "All"));
+// 	if (mode == WITH_WATCHLIST || mode == WITH_ALL_AND_WATCHLIST)
+// 		MenuOption.insert(pair <int, string> (2, "WatchList"));
+// 	MenuOption.insert(pair <int, string> (3, "BTCUSDT"));
+// 	MenuOption.insert(pair <int, string> (4, "ETHUSDT"));
+// 	MenuOption.insert(pair <int, string> (5, "NEOUSDT"));
+// 	MenuOption.insert(pair <int, string> (6, "ONTUSDT"));
+// 	MenuOption.insert(pair <int, string> (7, "ADAUSDT"));
+// 	MenuOption.insert(pair <int, string> (8, "TRXUSDT"));
+// 	MenuOption.insert(pair <int, string> (9, "XLMUSDT"));
+// 	MenuOption.insert(pair <int, string> (10, "XRPUSDT"));
+// 	MenuOption.insert(pair <int, string> (11, "IOTAUSDT"));
+// 	MenuOption.insert(pair <int, string> (12, "BTTUSDT"));
+// 	MenuOption.insert(pair <int, string> (13, "BNBUSDT"));
+// 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
+// 	MenuOption.insert(pair <int, string> (15, "DENTUSDT"));
+// 	MenuOption.insert(pair <int, string> (16, "LINKUSDT"));
+// 	MenuOption.insert(pair <int, string> (17, "EOSUSDT"));
+// 	MenuOption.insert(pair <int, string> (18, "SHIBUSDT"));
+// 	MenuOption.insert(pair <int, string> (19, "BALUSDT"));
+// 	MenuOption.insert(pair <int, string> (20, "DOGEUSDT"));
+// 	MenuOption.insert(pair <int, string> (21, "ALPHAUSDT"));
+// 	MenuOption.insert(pair <int, string> (22, "MATICUSDT"));
+// 	// MenuOption.insert(pair <int, string> (101, "DENTBTC"));
+// 	MenuOption.insert(pair <int, string> (102, "COSBTC"));
+
+// 	cout << "Select from following menu:\n";
+
+// 	map<int, string>::iterator it;
+// 	for (it = MenuOption.begin(); it != MenuOption.end(); it++)
+// 		cout << "\t" << it->first << ") " << it->second << endl;
+// 	cout << KGRN << "\nYour choice:  \n" << RESET;
+// 	cin >> choice;
+// 	// cout << "choice: " << KGRN << choice << RESET << endl;
+
+
+// 	string rc;
+// 	it = MenuOption.find(choice);
+// 	if (it != MenuOption.end())
+// 		rc = it->second;
+// 	else 			// invlid number
+// 		cout << KRED << "Invalid number\n\n\n" << RESET;	
+	
+// 	return rc;
+// }
+
+// string Menu::NobitexPairSubMenuList() {
+// 	return _NobitexPairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+// }
+
+// static string _NobitexSingleSubMenuList(_SubMenuListMode mode) {
+// 	int choice;
+
+// 	map <int, string> MenuOption;
+// 	if (mode == WITH_ALL || mode == WITH_ALL_AND_WATCHLIST)
+// 		MenuOption.insert(pair <int, string> (1, "All"));
+// 	if (mode == WITH_WATCHLIST || mode == WITH_ALL_AND_WATCHLIST)
+// 		MenuOption.insert(pair <int, string> (2, "WatchList"));
+// 	MenuOption.insert(pair <int, string> (3, "BTC"));
+// 	MenuOption.insert(pair <int, string> (4, "ETH"));
+// 	MenuOption.insert(pair <int, string> (5, "NEO"));
+// 	MenuOption.insert(pair <int, string> (6, "ONT"));
+// 	MenuOption.insert(pair <int, string> (7, "ADA"));
+// 	MenuOption.insert(pair <int, string> (8, "TRX"));
+// 	MenuOption.insert(pair <int, string> (9, "XLM"));
+// 	MenuOption.insert(pair <int, string> (10, "XRP"));
+// 	MenuOption.insert(pair <int, string> (11, "IOTA"));
+// 	MenuOption.insert(pair <int, string> (12, "BTT"));
+// 	MenuOption.insert(pair <int, string> (13, "BNB"));
+// 	MenuOption.insert(pair <int, string> (14, "LTC"));
+// 	MenuOption.insert(pair <int, string> (15, "DENT"));
+// 	MenuOption.insert(pair <int, string> (16, "LINK"));
+// 	MenuOption.insert(pair <int, string> (21, "GAS"));
+// 	MenuOption.insert(pair <int, string> (101, "USDT"));
+
+// 	cout << "Select from following menu:\n";
+
+// 	map<int, string>::iterator it;
+// 	for (it = MenuOption.begin(); it != MenuOption.end(); it++)
+// 		cout << "\t" << it->first << ") " << it->second << endl;
+// 	cout << KGRN << "\nYour choice:  \n" << RESET;
+// 	cin >> choice;
+// 	// cout << "choice: " << KGRN << choice << RESET << endl;
+
+
+// 	string rc;
+// 	it = MenuOption.find(choice);
+// 	if (it != MenuOption.end())
+// 		rc = it->second;
+// 	else 			// invlid number
+// 		cout << KRED << "Invalid number\n\n\n" << RESET;	
+	
+// 	return rc;
+// }
+
+// static string _NobitexNetworkSubMenuList() {
+// 	int choice;
+
+// 	map <int, string> MenuOption;
+// 	MenuOption.insert(pair <int, string> (101, "isDefault"));
+// 	MenuOption.insert(pair <int, string> (102, "BTC"));
+// 	// MenuOption.insert(pair <int, string> (103, "SEGWITBTC"));
+// 	MenuOption.insert(pair <int, string> (104, "OMNI"));
+// 	MenuOption.insert(pair <int, string> (105, "ETH"));
+// 	// MenuOption.insert(pair <int, string> (106, "NEO"));
+// 	// MenuOption.insert(pair <int, string> (107, "ONT"));
+// 	// MenuOption.insert(pair <int, string> (108, "ADA"));
+// 	MenuOption.insert(pair <int, string> (109, "TRX"));
+// 	// MenuOption.insert(pair <int, string> (110, "XLM"));
+// 	// MenuOption.insert(pair <int, string> (111, "XRP"));
+// 	// MenuOption.insert(pair <int, string> (112, "IOTA"));
+// 	MenuOption.insert(pair <int, string> (113, "BNB"));
+// 	MenuOption.insert(pair <int, string> (114, "BSC"));
+// 	// MenuOption.insert(pair <int, string> (115, "LTC"));
+
+// 	cout << "Select from following menu:\n";
+
+// 	map<int, string>::iterator it;
+// 	for (it = MenuOption.begin(); it != MenuOption.end(); it++)
+// 		cout << "\t" << it->first << ") " << it->second << endl;
+// 	cout << KGRN << "\nYour choice:  \n" << RESET;
+// 	cin >> choice;
+// 	// cout << "choice: " << KGRN << choice << RESET << endl;
+
+
+// 	string rc;
+// 	it = MenuOption.find(choice);
+// 	if (it != MenuOption.end())
+// 		rc = it->second;
+// 	else 			// invlid number
+// 		cout << KRED << "Invalid number\n\n\n" << RESET;	
+	
+// 	return rc;
+// }
+
+// static string _NobitexOrderTypeList() {
+// 	int choice;
+
+// 	map <int, string> MenuOption;
+// 	MenuOption.insert(pair <int, string> (1, "LIMIT"));
+// 	MenuOption.insert(pair <int, string> (2, "MARKET"));
+// 	// MenuOption.insert(pair <int, string> (3, "STOP_LOSS"));
+// 	MenuOption.insert(pair <int, string> (4, "STOP_LOSS_LIMIT"));
+// 	// MenuOption.insert(pair <int, string> (5, "TAKE_PROFIT"));
+// 	// MenuOption.insert(pair <int, string> (6, "TAKE_PROFIT_LIMIT"));
+// 	// MenuOption.insert(pair <int, string> (7, "LIMIT_MAKER"));
+// 	MenuOption.insert(pair <int, string> (8, "OCO"));
+
+// 	cout << "Select from following menu:\n";
+
+// 	map<int, string>::iterator it;
+// 	for (it = MenuOption.begin(); it != MenuOption.end(); it++)
+// 		cout << "\t" << it->first << ") " << it->second << endl;
+// 	cout << KGRN << "\nYour choice:  \n" << RESET;
+// 	cin >> choice;
+// 	// cout << "choice: " << KGRN << choice << RESET << endl;
+
+
+// 	string rc;
+// 	it = MenuOption.find(choice);
+// 	if (it != MenuOption.end())
+// 		rc = it->second;
+// 	else 			// invlid number
+// 		cout << KRED << "Invalid number\n\n\n" << RESET;	
+	
+// 	return rc;
+// }
+
+
+/********************************************************************************************/
+// All exchanges Methods
+/********************************************************************************************/
 static void ShowAllPrice(int mode) {
 	// if (mode & BINANCE)
 	// 	binance->ShowPrices(string("WatchList"));
@@ -760,6 +949,8 @@ static void ShowAllOpenOrders(int mode) {
 		hitbtc->ShowOpenOrders(string("All"));
 	if (mode & KUCOIN)
 		kucoin->ShowOpenOrders(string("All"));
+	// if (mode & NOBITEX)
+	// 	nobitex->ShowOpenOrders(string("All"));
 }
 
 static void ShowAllMyTrades (int mode) {
@@ -777,6 +968,8 @@ static void ShowAllMyTrades (int mode) {
 			hitbtc->ShowMyTrades(string("WatchList"), pastDay);
 		if (mode & KUCOIN)
 			kucoin->ShowMyTrades(string("All"), pastDay);
+		// if (mode & NOBITEX)
+		// 	nobitex->ShowMyTrades(string("All"), pastDay);
 	}
 }
 
@@ -791,6 +984,8 @@ static void ShowAllDepositHistory (int mode) {
 		_NotSupported();
 	if (mode & KUCOIN)
 		kucoin->ShowDepositHistory(string("All"));
+	// if (mode & NOBITEX)
+	// 	nobitex->ShowDepositHistory(string("All"));
 }
 
 static void ShowAllWithdrawHistory (int mode) {
@@ -804,16 +999,17 @@ static void ShowAllWithdrawHistory (int mode) {
 		_NotSupported();
 	if (mode & KUCOIN)
 		kucoin->ShowDepositHistory(string("All"));
+	// if (mode & NOBITEX)
+	// 	nobitex->ShowDepositHistory(string("All"));
 }
 
-//-----------------
-// Binance
-//-----------------
+/********************************************************************************************/
+// Binance Methods
+/********************************************************************************************/
 static void ShowBinancePrice() {
 	// cout << "Inside ShowBinancePrice\n";
 
 	string SubMenuSelection = _BinancePairSubMenuList(WITH_ALL_AND_WATCHLIST);
-	// cout << "ShowBinancePrice: " << SubMenuSelection << endl;
 	if (SubMenuSelection.size() != 0)
 		binance->ShowPrices(SubMenuSelection);
 }
@@ -933,9 +1129,9 @@ static void CancelAllOrdersFromBinance() {
 		BotMethod::CancelAllOrders(symbol, "BINANCE");
 }
 
-//-----------------
-// Ramzinex
-//-----------------
+/********************************************************************************************/
+// Ramzinex Methods
+/********************************************************************************************/
 static void ShowRamzinexPrice() {
 	int choice;
 
@@ -969,9 +1165,9 @@ static void ShowRamzinexPrice() {
 		cout << KRED << "Invalid number\n\n\n" << RESET;
 }
 
-//-----------------
-// Coinex
-//-----------------
+/********************************************************************************************/
+// Coinex Methods
+/********************************************************************************************/
 static void ShowCoinexPrice() {
 	// cout << "Inside ShowCoinexPrice\n";
 
@@ -1066,9 +1262,9 @@ static void CancelAllOrdersFromCoinex() {
 		BotMethod::CancelAllOrders(symbol, "COINEX");
 }
 
-//-----------------
-// HitBTC
-//-----------------
+/********************************************************************************************/
+// HitBTC Methods
+/********************************************************************************************/
 static void ShowHitBTCPrice() {
 	// cout << "Inside ShowHitBTCPrice\n";
 
@@ -1165,9 +1361,9 @@ static void TransferBetweenBankAndExchangeInHitBTC() {
 	}
 }
 
-//-----------------
-// Kucoin
-//-----------------
+/********************************************************************************************/
+// Kucoin Methods
+/********************************************************************************************/
 static void ShowKucoinPrice() {
 	// cout << "Inside ShowKucoinPrice\n";
 
@@ -1280,9 +1476,135 @@ static void TransferBetweenBankAndExchangeInKucoin() {
 	}
 }
 
-//-----------------
+/********************************************************************************************/
+// Nobitex Methods
+/********************************************************************************************/
+// static void ShowNobitexPrice() {
+// 	// cout << "Inside ShowNobitexPrice\n";
+
+// 	string SubMenuSelection = _NobitexPairSubMenuList(WITH_ALL_AND_WATCHLIST);
+// 	if (SubMenuSelection.size() != 0)
+// 		Nobitex->ShowPrices(SubMenuSelection);
+// }
+
+// static void ShowNobitexOpenOrders() {
+// 	// cout << "Inside ShowNobitexOpenOrders\n";
+
+// 	string SubMenuSelection = _NobitexPairSubMenuList(WITH_ALL);
+// 	if (SubMenuSelection.size() != 0)
+// 		Nobitex->ShowOpenOrders(SubMenuSelection);
+// }
+
+// static void ShowNobitexAllOrders() {
+// 	// cout << "Inside ShowNobitexAllOrders\n";
+
+// 	string SubMenuSelection = _NobitexPairSubMenuList(WITH_WATCHLIST);
+// 	if (SubMenuSelection.size() != 0) {
+// 		int pastDay = _DurationPerDay();
+// 		if (pastDay >= 0)
+// 			Nobitex->ShowAllOrders(SubMenuSelection, pastDay);
+// 	}
+// }
+
+// static void ShowNobitexMyTrades () {
+// 	// cout << "Inside ShowNobitexMyTrades\n";
+
+// 	string SubMenuSelection = _NobitexPairSubMenuList(WITH_WATCHLIST);
+// 	if (SubMenuSelection.size() != 0) {
+// 		int pastDay = _DurationPerDay();
+// 		if (pastDay >= 0)
+// 			Nobitex->ShowMyTrades(SubMenuSelection, pastDay);	
+// 	}
+// }
+
+// static void ShowNobitexTradesPerformance () {
+// 	// cout << "Inside ShowNobitexTradesPerformance\n";
+
+// 	string SubMenuSelection = _NobitexPairSubMenuList(WITH_WATCHLIST);
+// 	if (SubMenuSelection.size() != 0) {
+// 		int pastDay = _DurationPerDay();
+// 		if (pastDay >= 0)
+// 			Nobitex->ShowTradesPerformance(SubMenuSelection, pastDay);	
+// 	}
+// }
+
+// static void ShowNobitexDepositAddress () {
+// 	// cout << "Inside ShowNobitexDepositAddress\n";
+
+// 	string SubMenuSelection = _NobitexSingleSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+// 	if (SubMenuSelection.size() != 0) {
+// 		string SubMenuSelectionNetwork = _NobitexNetworkSubMenuList();
+// 		if (SubMenuSelectionNetwork.size() != 0)
+// 			Nobitex->ShowDepositAddress(SubMenuSelection, SubMenuSelectionNetwork);
+// 	}
+// }
+
+// static void ShowNobitexDepositHistory () {
+// 	// cout << "Inside ShowNobitexDepositHistory\n";
+
+// 	string SubMenuSelection = _NobitexSingleSubMenuList(WITH_ALL);
+// 	if (SubMenuSelection.size() != 0)
+// 		Nobitex->ShowDepositHistory(SubMenuSelection);	
+// }
+
+// static void ShowNobitexWithdrawHistory () {
+// 	// cout << "Inside ShowNobitexWithdrawHistory\n";
+
+// 	string SubMenuSelection = _NobitexSingleSubMenuList(WITH_ALL);
+// 	if (SubMenuSelection.size() != 0)
+// 		Nobitex->ShowWithdrawHistory(SubMenuSelection);	
+// }
+
+// static void SendOrderToNobitex() {
+// 	string symbol = _NobitexPairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+// 	if (symbol.size() != 0) {
+// 		string side = _OrderSideList();
+// 		if (side.size() != 0) {
+// 			string type = _NobitexOrderTypeList();
+// 			if (type.size() != 0) {
+// 				double quantity = _GetDoubleValue("Enter the quantity:");
+// 				if (quantity > 0) {
+// 					if (type != "MARKET") {
+// 						double price = _GetDoubleValue("Enter the price:");
+// 						if (price > 0) {
+// 							if (type != "OCO")
+// 								Nobitex->SendOrder(symbol, side, type, quantity, price, 0, 0);
+// 							else {
+// 								double stopPrice = _GetDoubleValue("Enter the stopPrice:");
+// 								if (stopPrice > 0) {
+// 									double stopLimitPrice = _GetDoubleValue("Enter the stopLimitPrice:");
+// 									if (stopLimitPrice > 0)
+// 										Nobitex->SendOrder(symbol, side, type, quantity, price, stopPrice, stopLimitPrice);
+// 								}
+// 							}
+// 						}
+// 					}
+// 					else 
+// 						Nobitex->SendOrder(symbol, side, type, quantity, 0, 0, 0);
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+// static void CancelOneOrderFromNobitex() {
+// 	string symbol = _NobitexPairSubMenuList(WITHOUT_ALL_AND_WATCHLIST);
+// 	if (symbol.size() != 0) {
+// 		long orderId = _GetLongValue("Enter orderId:");
+// 		if (orderId > 0)
+// 			Nobitex->CancelOrder(symbol, orderId);
+// 	}
+// }
+
+// static void CancelAllOrdersFromNobitex() {
+// 	string symbol = _NobitexPairSubMenuList(WITH_ALL);
+// 	if (symbol.size() != 0)
+// 		BotMethod::CancelAllOrders(symbol, "Nobitex");
+// }
+
+/********************************************************************************************/
 // Old style Main menu
-//-----------------
+/********************************************************************************************/
 
 // void Menu::BinanceMenu() {
 // 	int choice;
@@ -1472,11 +1794,11 @@ void Menu::UtilityMenu() {
 		cout << KRED << "Invalid number\n\n\n" << RESET;
 }
 
-//-----------------
+/********************************************************************************************/
 // New Main menu
-//-----------------
+/********************************************************************************************/
 void Menu::ShowPrice() {
-	int mode = ALL | BINANCE | RAMZINEX | COINEX | HITBTC | KUCOIN;
+	int mode = ALL | BINANCE | RAMZINEX | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1492,11 +1814,13 @@ void Menu::ShowPrice() {
 			ShowHitBTCPrice();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinPrice();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	ShowNobitexPrice();
 	}
 }
 
 void Menu::ShowBalances() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1510,11 +1834,13 @@ void Menu::ShowBalances() {
 			hitbtc->ShowBalances();
 		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
 			kucoin->ShowBalances();
+		// if ((mode & NOBITEX) &&  (symbol == "All" || symbol == "Nobitex"))
+		// 	nobitex->ShowBalances();
 	}
 }
 
 void Menu::ShowBalanceInUSDT() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1530,11 +1856,13 @@ void Menu::ShowBalanceInUSDT() {
 			hitbtc->ShowBalanceInUSDT();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			kucoin->ShowBalanceInUSDT();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	nobitex->ShowBalanceInUSDT();
 	}
 }
 
 void Menu::ShowOpenOrders() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1550,6 +1878,8 @@ void Menu::ShowOpenOrders() {
 			ShowHitBTCOpenOrders();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinOpenOrders();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	ShowNobitexOpenOrders();
 	}
 }
 
@@ -1566,11 +1896,15 @@ void Menu::ShowAllOrders() {
 			_NotSupported();
 		if ((mode & HITBTC) &&  (symbol == "All" || symbol == "HitBTC"))
 			_NotSupported();
+		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
+			_NotSupported();
+		if ((mode & NOBITEX) &&  (symbol == "All" || symbol == "Nobitex"))
+			_NotSupported();
 	}
 }
 
 void Menu::ShowMyTrades() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1586,11 +1920,13 @@ void Menu::ShowMyTrades() {
 			ShowHitBTCMyTrades();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinMyTrades();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	ShowNobitexMyTrades();
 	}
 }
 
 void Menu::ShowTradesPerformance() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1604,11 +1940,13 @@ void Menu::ShowTradesPerformance() {
 			ShowHitBTCTradesPerformance();
 		if ((mode & KUCOIN) && (symbol == "All" || symbol == "Kucoin"))
 			ShowKucoinTradesPerformance();
+		// if ((mode & NOBITEX) && (symbol == "All" || symbol == "Nobitex"))
+		// 	ShowNobitexTradesPerformance();
 	}
 }
 
 void Menu::ShowDepositAddress() {
-	int mode = BINANCE | HITBTC | KUCOIN;
+	int mode = BINANCE | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1624,11 +1962,13 @@ void Menu::ShowDepositAddress() {
 			ShowHitBTCDepositAddress();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinDepositAddress();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	ShowNobitexDepositAddress();
 	}
 }
 
 void Menu::ShowDepositHistory() {
-	int mode = ALL | BINANCE | COINEX | KUCOIN;
+	int mode = ALL | BINANCE | COINEX | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1644,11 +1984,13 @@ void Menu::ShowDepositHistory() {
 			_NotSupported();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinDepositHistory();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	ShowNobitexDepositHistory();
 	}
 }
 
 void Menu::ShowWithdrawHistory() {
-	int mode = ALL | BINANCE | COINEX | KUCOIN;
+	int mode = ALL | BINANCE | COINEX | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1664,11 +2006,13 @@ void Menu::ShowWithdrawHistory() {
 			_NotSupported();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			ShowKucoinWithdrawHistory();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	ShowNobitexWithdrawHistory();
 	}
 }
 
 void Menu::CancelAllOrders() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1684,11 +2028,13 @@ void Menu::CancelAllOrders() {
 			CancelAllOrdersFromHitBTC();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			CancelAllOrdersFromKucoin();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	CancelAllOrdersFromNobitex();
 	}
 }
 
 void Menu::SendOrder() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1704,11 +2050,13 @@ void Menu::SendOrder() {
 			SendOrderToHitBTC();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			SendOrderToKucoin();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	SendOrderToNobitex();
 	}
 }
 
 void Menu::CancelOrder() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN;
+	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1724,6 +2072,8 @@ void Menu::CancelOrder() {
 			CancelOneOrderFromHitBTC();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			CancelOneOrderFromKucoin();
+		// if ((mode & NOBITEX) && symbol == "Nobitex")
+		// 	CancelOneOrderFromNobitex();
 	}
 }
 
@@ -1742,6 +2092,8 @@ void Menu::ShowBankBalances() {
 			hitbtc->ShowBankBalances();
 		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
 			kucoin->ShowBankBalances();
+		// if ((mode & NOBITEX) &&  (symbol == "All" || symbol == "Nobitex"))
+		// 	_NotSupported();
 	}
 }
 
@@ -1760,6 +2112,8 @@ void Menu::ShowExchangeBalances() {
 			hitbtc->ShowExchangeBalances();
 		if ((mode & KUCOIN) &&  (symbol == "All" || symbol == "Kucoin"))
 			kucoin->ShowExchangeBalances();
+		if ((mode & NOBITEX) &&  (symbol == "All" || symbol == "Nobitex"))
+			_NotSupported();
 	}
 }
 
@@ -1780,6 +2134,8 @@ void Menu::TransferBetweenBankAndExchange() {
 			TransferBetweenBankAndExchangeInHitBTC();
 		if ((mode & KUCOIN) && symbol == "Kucoin")
 			TransferBetweenBankAndExchangeInKucoin();
+		if ((mode & NOBITEX) && symbol == "Nobitex")
+			_NotSupported();
 	}
 }
 
@@ -1849,6 +2205,7 @@ void Menu::Init() {
 	coinex = Coinex::getInstance();
 	hitbtc = HitBTC::getInstance();
 	kucoin = Kucoin::getInstance();
+	nobitex = Nobitex::getInstance();
 }
 
 void Menu::Cleanup() {

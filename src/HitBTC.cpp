@@ -144,17 +144,6 @@ static void _GetStartTimeFromDay(int pastDay, string &startTime, string &endTime
 	}
 }
 
-
-void HitBTC::Init() {
-	Exchange::setKeyFilePath("config/HitBTCKeys.txt");
-	Exchange::InitApiSecret();
-}
-
-void HitBTC::Cleanup() {
-	Exchange::Cleanup();
-	// cout << "Successfully perform HitBTC cleaning up\n";
-}
-
 void HitBTC::_GetAllPrices() {
 	string url(HITBTC_HOST);  
 	url += "/public/ticker";

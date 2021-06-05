@@ -15,7 +15,7 @@ libwebsockets_dir="${root_dir}/lib/libwebsockets-2.4.0"
 libwebsockets_include="${libwebsockets_dir}/include"
 libwebsockets_lib="${libwebsockets_dir}/lib"
 
-SRC="src/main.cpp src/Menu.cpp src/CurlAPI.cpp src/Binance.cpp src/Ramzinex.cpp src/BotMethod.cpp src/Coinex.cpp src/HitBTC.cpp src/Kucoin.cpp src/jsoncpp.cpp src/binacpp_utils.cpp src/Exchange.cpp"
+SRC="src/main.cpp src/Menu.cpp src/CurlAPI.cpp src/Binance.cpp src/Ramzinex.cpp src/BotMethod.cpp src/Coinex.cpp src/HitBTC.cpp src/Kucoin.cpp src/jsoncpp.cpp src/binacpp_utils.cpp src/Exchange.cpp src/Nobitex.cpp"
 
 BINARY=bot
 
@@ -36,7 +36,6 @@ mkdir -p bin
 
 # Build the binary
 g++ -std=c++11 -I$libcurl_include -I$jsoncpp_include -I$libwebsockets_include $SRC -L$libcurl_lib -L$libwebsockets_lib -lcurl -lcrypto -lwebsockets -o ./bin/$BINARY
-
 
 # Execute current binary
 export SSL_CERT_FILE=`pwd`/cacert.pem

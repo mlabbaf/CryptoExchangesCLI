@@ -31,7 +31,6 @@ class HitBTC : public Exchange
 private:
 	static HitBTC* instance;
 
-	CURL* curl;
 	Json::Value json_result;
 	Json::FastWriter fastWriter;
 
@@ -50,11 +49,6 @@ public:
 	static HitBTC* getInstance();
 
 	void test() { cout << "HitBTC test\n"; }
-	void SetCurl(CURL* c) {
-		curl = c;
-	}
-	void Init();
-	void Cleanup();
 
 // 	void ShowServerTime();
 // 	void TestConnectivity();

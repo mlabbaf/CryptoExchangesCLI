@@ -6,6 +6,14 @@
 using namespace std;
 
 
+void Exchange::Init() {
+	Exchange::InitApiSecret();
+}
+
+void Exchange::Cleanup() {
+	// cout << "Successfully perform Exchange cleaning up\n";
+}
+
 void Exchange::setKeyFilePath(string exchangeKeyFilePath) {
 	keyFilePath = exchangeKeyFilePath;
 }
@@ -48,11 +56,6 @@ void Exchange::InitApiSecretPassphrase() {
 		exit(-1);
 	}
 }
-
-void Exchange::Cleanup() {
-	// cout << "Successfully perform Exchanges cleaning up\n";
-}
-
 
 void Exchange::ShowPrices(string str) {
 	// cout << "Inside ShowPrices\n";

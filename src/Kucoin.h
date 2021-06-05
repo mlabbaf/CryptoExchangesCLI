@@ -32,7 +32,6 @@ class Kucoin : public Exchange
 private:
 	static Kucoin* instance;
 
-	CURL* curl;
 	Json::Value json_result;
 	Json::FastWriter fastWriter;
 
@@ -53,13 +52,6 @@ private:
 
 public:
 	static Kucoin* getInstance();
-
-	void SetCurl(CURL* c) {
-		curl = c;
-	}
-	void Init();
-	void Cleanup();
-
 	void ShowServerTime();
 // 	void TestConnectivity();
 // 	void ShowAccountStatus();

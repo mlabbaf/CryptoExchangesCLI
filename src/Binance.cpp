@@ -209,16 +209,6 @@ static void _GetStartTimeFromDay(int PastDay, long &StartTime) {
 	}
 }
 
-void Binance::Init() {
-	Exchange::setKeyFilePath("config/BinanceKeys.txt");
-	Exchange::InitApiSecret();
-}
-
-void Binance::Cleanup() {
-	Exchange::Cleanup();
-	// cout << "Successfully perform Binance cleaning up\n";
-}
-
 void Binance::ShowServerTime() {
 	// cout << "Binance::ShowServerTime\n";
 	string url(BINANCE_HOST);  

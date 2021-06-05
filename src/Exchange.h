@@ -30,14 +30,21 @@ protected:
 	string access_id;
 	string passphrase;
 
+	CURL* curl;
+
 public:
+	void Init();
+	void SetCurl(CURL* c) {
+		curl = c;
+	}
+	void Cleanup();
+
 	void test() {cout << "Hello from Exchange\n"; }
 	
 	void setKeyFilePath(string exchangeKeyFilePath);
 
 	void InitApiSecret();
 	void InitApiSecretPassphrase();
-	void Cleanup();
 
 	virtual void GetPrices(string &str, SymbolPriceSrtuct* result, int &len) = 0;
 	void ShowPrices(string str);
