@@ -1838,9 +1838,9 @@ int Menu::MainMenu() {
 		MapMenuOption[choice].method();
 		return AskAboutNewMenu();
 	}
-	else {			// invlid number
+	else {			// invalid number
 		cout << KRED << "Invalid number\n\n\n" << RESET;
-		return 1;
+		return -1;
 	}
 }
 
