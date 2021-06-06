@@ -176,7 +176,7 @@ void HitBTC::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len)
 	Utility::ParseStringToJson("_GetAllPrices", str_result, json_result);
 	if (isJsonResultValid(json_result)) {
 		string line;
-  		ifstream myfile ("config/WatchlistHitBTC.txt");
+  		ifstream myfile (watchlistPath);
   		if (myfile.is_open()) {
     		int cnt = 0;
     		while ( getline (myfile, line) ) {

@@ -1472,7 +1472,7 @@ static void TransferBetweenBankAndExchangeInKucoin() {
 static void ShowNobitexPrice() {
 	// cout << "Inside ShowNobitexPrice\n";
 
-	string SubMenuSelection = _NobitexPairSubMenuList(WITH_ALL_AND_WATCHLIST);
+	string SubMenuSelection = _NobitexPairSubMenuList(WITH_WATCHLIST);
 	if (SubMenuSelection.size() != 0)
 		nobitex->ShowPrices(SubMenuSelection);
 }

@@ -15,21 +15,9 @@ Nobitex* Nobitex::getInstance() {
 
 
 bool Nobitex::isJsonResultValid(Json::Value json_result) {
-	cout << json_result["status"] << endl;
+
 	if (json_result["status"] != "ok")
 		return false;
-
-	// if (json_result.isObject()) {
-	// 	if (json_result.isMember("code")) {
-	// 		cout << "json_result is invalid: " << json_result << endl;
-	// 		return false;
-	// 	}
-	// }
-
-	// if (json_result.isNull()) {
-	// 	cout << "json_result is invalid: " << json_result << endl;
-	// 	return false;
-	// }
 
 	return true;
 } 
@@ -292,38 +280,26 @@ void Nobitex::ShowServerTime() {
 // }
 
 void Nobitex::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
-	cout << RED ("Coinex is not supporting All option\n");
+	cout << RED ("Nobitex is not supporting All option\n");
 }
 
 void Nobitex::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
-	// cout << "GetAllPrices\n";
-	// string url(NOBITEX_HOST);  
-	// url += "/api/v3/ticker/price";
-
-	// string str_result;
-	// CurlAPI::CurlGetRequest(url, str_result);
-	// // cout << "inside GetAllPrices, str_result: " << str_result << endl;
-
-	// Utility::ParseStringToJson("Nobitex::getAllPrices", str_result, json_result);
-	// Json::Value::const_iterator iter;
-	// string line;
-	// ifstream myfile (watchlistPath);
-	// int cnt = 0;
-	// if (myfile.is_open()) {
-	// 	while ( getline (myfile, line) ) {
-	// 		if (isJsonResultValid(json_result)) {
-	// 			for (iter = json_result.begin(); iter != json_result.end(); iter++)
-	// 				if ((*iter)["symbol"] == line) {
-	// 					result[cnt].symbol = (*iter)["symbol"].asString();
-	// 					result[cnt++].price = Utility::JsonToDouble((*iter)["price"]);
-	// 				}
-	// 			}
-	// 		else
-	// 			cout << json_result << endl;
-	// 	}
-	// }
-	// len = cnt;
-	// myfile.close();
+	string line;
+	ifstream myfile (watchlistPath);
+	if (myfile.is_open()) {
+		int cnt = 0;
+		SymbolPriceSrtuct result_temp;
+		int len_temp;
+		while ( getline (myfile,line) ) {
+			Nobitex::getSymbolPrice(line, &result_temp, len_temp);
+			if (isJsonResultValid(json_result)) {
+				result[cnt].symbol = result_temp.symbol;
+				result[cnt++].price = result_temp.price;
+			}
+		}
+		len = cnt;
+		myfile.close();
+	}
 }
 
 void Nobitex::getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) {

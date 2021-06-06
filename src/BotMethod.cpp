@@ -1260,8 +1260,8 @@ void BotMethod::ShowBalanceInUSDT() {
 }
 
 void BotMethod::ShowAllExchangesPrice(int mode) {
-	int lenBinance = 0, lenRamzinex = 0, lenCoinex = 0, lenHitBTC = 0, lenKucoin = 0;
-	SymbolPriceSrtuct priceBinance[200], priceRamzinex[200], priceCoinex[200], priceHitBTC[200], priceKucoin[200];
+	int lenBinance = 0, lenRamzinex = 0, lenCoinex = 0, lenHitBTC = 0, lenKucoin = 0, lenNobitex = 0;
+	SymbolPriceSrtuct priceBinance[200], priceRamzinex[200], priceCoinex[200], priceHitBTC[200], priceKucoin[200], priceNobitex[200];
 
 	string str;
 
@@ -1289,6 +1289,11 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 		str = "WatchList";
 		kucoin->GetPrices(str, priceKucoin, lenKucoin);
 	}
+
+	if (mode & NOBITEX) {
+		str = "WatchList";
+		nobitex->GetPrices(str, priceNobitex, lenNobitex);
+	}
 	
 
 	map <string, strcutExchangesPrices> mapExchanges;
@@ -1308,11 +1313,14 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 		priceKucoin[i].symbol.erase (remove(priceKucoin[i].symbol.begin(), priceKucoin[i].symbol.end(), '-'), priceKucoin[i].symbol.end());
 		mapExchanges[priceKucoin[i].symbol].kucoinPrice = priceKucoin[i].price;
 	}
+	for (int i=0; i<lenNobitex; i++)
+		mapExchanges[priceNobitex[i].symbol].nobitexPrice = priceNobitex[i].price;
+	
 
 	cout << endl;
 	cout << "\t" << setfill('-') << setw(121) << "" << setfill(' ') << endl;
 	cout << "\t|" << setw(15) << "Symbol     |" << setw(15) << "Binance    |" << setw(15) << "Coinex    |" 
-				<< setw(15) << "HitBTC    |" << setw(15) << "Kucoin    |" 
+				<< setw(15) << "HitBTC    |" << setw(15) << "Kucoin    |" << setw(15) << "Nobitex    |" 
 				<< setw(15) << "Minimum    |" << setw(15) << "Maximum    |" << setw(15) << "Percent    |" << "\n";
 	cout << "\t" << setfill('-') << setw(121) << "" << setfill(' ') << endl;
 	double min, max;
@@ -1321,6 +1329,7 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 		cout << "\t|" << setw(15) << iter->first+"    |"
 					<< setw(15) << to_string(iter->second.binancePrice) + "  |" << setw(15) << to_string(iter->second.coinexPrice) + "  |"
 					<< setw(15) << to_string(iter->second.hitBTCPrice) + "  |" << setw(15) << to_string(iter->second.kucoinPrice) + "  |"
+					<< setw(15) << to_string(iter->second.nobitexPrice) + "  |" 
 					<< setw(15) << to_string(min) + "  |" << setw(15) << to_string(max) + "  |" 
 					<< "  " << YELLOW(to_string((max-min)/min*100) + " %  ") << "|" << endl;
 	}

@@ -3,6 +3,7 @@ config/BinanceKeys.txt
 config/CoinexKeys.txt
 config/HitBTCKeys.txt
 config/KucoinKeys.txt
+config/NobitexKeys.txt
 log*
 LastUSDTInExchanges
 config/HodlingHistory.json

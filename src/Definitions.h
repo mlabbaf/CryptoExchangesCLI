@@ -67,6 +67,7 @@ struct strcutExchangesPrices{
 	double coinexPrice;
 	double hitBTCPrice;
 	double kucoinPrice;
+	double nobitexPrice;
 };
 
 // Following structure is used in Coinex for getting open orders

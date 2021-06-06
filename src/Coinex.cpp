@@ -168,7 +168,7 @@ void Coinex::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
 
 void Coinex::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
 	string line;
-	ifstream myfile ("config/WatchlistCoinex.txt");
+	ifstream myfile (watchlistPath);
 	if (myfile.is_open()) {
 		int cnt = 0;
 		SymbolPriceSrtuct result_temp;
