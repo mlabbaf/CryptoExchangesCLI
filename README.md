@@ -17,6 +17,7 @@ following exchanges are supported:
 	Coinex
 	HitBTC
 	Kucoin
+	Nobitex
 
 Warning: The user is responsible for the results of using the source code.
 
