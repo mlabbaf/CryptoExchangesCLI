@@ -69,4 +69,15 @@ struct strcutExchangesPrices{
 	double kucoinPrice;
 };
 
+// Following structure is used in Coinex for getting open orders
+struct SymbolOrderStruct {
+	string symbol;
+	double price;
+	string type;
+	double amount;
+	double left;
+	string order_type;
+	string id;
+};
+
 #endif

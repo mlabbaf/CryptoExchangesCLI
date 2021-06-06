@@ -30,11 +30,11 @@
 
 using namespace std;
 
-static Binance *binance;
-static Coinex *coinex;
-static HitBTC *hitbtc;
-static Kucoin *kucoin;
-static Nobitex *nobitex;
+static Exchange *binance;
+static Exchange *coinex;
+static Exchange *hitbtc;
+static Exchange *kucoin;
+static Exchange *nobitex;
 
 
 void Init() {
@@ -50,28 +50,33 @@ void Init() {
 	nobitex = Nobitex::getInstance();
 
 	binance->setKeyFilePath("config/BinanceKeys.txt");
+	binance->setWatchlistPath("config/WatchlistBinance.txt");
 	binance->Init();
 	binance->SetCurl(curl);
 
-	Ramzinex::Init();
-	Ramzinex::SetCurl(curl);
-
 	coinex->setKeyFilePath("config/CoinexKeys.txt");
+	coinex->setWatchlistPath("config/WatchlistCoinex.txt");
 	coinex->Init();
 	coinex->SetCurl(curl);
 
 	hitbtc->setKeyFilePath("config/HitBTCKeys.txt");
+	hitbtc->setWatchlistPath("config/WatchlistHitBTC.txt");
 	hitbtc->Init();
 	hitbtc->SetCurl(curl);
 
 	kucoin->setKeyFilePath("config/KucoinKeys.txt");
+	kucoin->setWatchlistPath("config/WatchlistKucoin.txt");
 	kucoin->Init();
 	kucoin->SetCurl(curl);
 
 	nobitex->setKeyFilePath("config/NobitexKeys.txt");
+	nobitex->setWatchlistPath("config/WatchlistNobitex.txt");
 	nobitex->Init();
 	nobitex->SetCurl(curl);
-
+	
+	Ramzinex::Init();
+	Ramzinex::SetCurl(curl);
+	
 	Menu::Init();
 	BotMethod::Init();
 

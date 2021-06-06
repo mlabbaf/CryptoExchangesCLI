@@ -18,7 +18,7 @@ Binance* Binance::getInstance() {
 int myRecvWindow = 60000;
 
 
-static bool _IsJsonResultValid(Json::Value json_result) {
+bool Binance::isJsonResultValid(Json::Value json_result) {
 	// cout << json_result << endl;
 	if (json_result.isObject()) {
 		if (json_result.isMember("code")) {
@@ -109,7 +109,7 @@ int Binance::_pathQueryStringToUrl(	string &url, string baseAddress, string symb
 
 int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
 									 string timeInForce, double quantity, double price, double stopPrice, 
-									 double stopLimitPrice, long orderId, long recvWindow) {
+									 double stopLimitPrice, string orderId, long recvWindow) {
 	url = BINANCE_HOST;
 	url += baseAddress;
 
@@ -173,9 +173,9 @@ int Binance::_pathQueryStringToUrl_2(string &url, string baseAddress, string sym
 		querystring.append(to_string(stopLimitPrice));
 	}
 	
-	if (orderId > 0) {
+	if (orderId.size() != 0) {
 		querystring.append("&orderId=");
-		querystring.append(to_string(orderId));
+		querystring.append(orderId);
 	}
 
 	if (recvWindow > 0 ) {
@@ -210,23 +210,22 @@ static void _GetStartTimeFromDay(int PastDay, long &StartTime) {
 }
 
 void Binance::ShowServerTime() {
-	// cout << "Binance::ShowServerTime\n";
+	cout << "Binance::ShowServerTime\n";
 	string url(BINANCE_HOST);  
 	url += "/api/v1/time";
 
 	string str_result;
+	// cout << "inside ShowServerTime, url: " << url << endl;
 	CurlAPI::CurlGetRequest(url, str_result);
 	// cout << "inside ShowServerTime, str_result: " << str_result << endl;
 
 	Utility::ParseStringToJson("Binance::ShowServerTime", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) 
+	if (isJsonResultValid(json_result)) 
 		// cout << json_result << endl;
 		cout << fastWriter.write(json_result) << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::TestConnectivity() {
@@ -240,13 +239,11 @@ void Binance::TestConnectivity() {
 
 	Utility::ParseStringToJson("Binance::TestConnectivity", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		// cout << json_result << endl;
 		cout << fastWriter.write(json_result) << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::ShowAccountStatus() {
@@ -263,13 +260,11 @@ void Binance::ShowAccountStatus() {
 
 	Utility::ParseStringToJson("Binance::ShowAccountStatus", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 		// cout << fastWriter.write(json_result) << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::ShowExchangeInfo() {
@@ -283,16 +278,14 @@ void Binance::ShowExchangeInfo() {
 
 	Utility::ParseStringToJson("Binance::ShowExchangeInfo", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 		// cout << fastWriter.write(json_result) << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
-void Binance::_GetAllPrices() {
+void Binance::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
 	// cout << "GetAllPrices\n";
 	string url(BINANCE_HOST);  
 	url += "/api/v3/ticker/price";
@@ -301,89 +294,69 @@ void Binance::_GetAllPrices() {
 	CurlAPI::CurlGetRequest(url, str_result);
 	// cout << "inside GetAllPrices, str_result: " << str_result << endl;
 
-	Utility::ParseStringToJson("Binance::_GetAllPrices", str_result, json_result);
-	if (_IsJsonResultValid(json_result)) {}
-	else {
-		cout << "json_result is not valid\n";
-		cout << json_result << endl;
+	Utility::ParseStringToJson("Binance::getAllPrices", str_result, json_result);
+	if (isJsonResultValid(json_result)) {
+		int cnt = 0;
+		for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
+			result[cnt].symbol = (*iter)["symbol"].asString();
+			result[cnt++].price = Utility::JsonToDouble((*iter)["price"]);
+		}
+		len = cnt;
 	}
+	else 
+		cout << json_result << endl;
 }
 
-void Binance::_GetPriceBySymbol(string &symbol) {
-	// cout << symbol << " - _GetPriceBySymbol\n";
+void Binance::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << "GetAllPrices\n";
 	string url(BINANCE_HOST);  
-	transform(symbol.begin(), symbol.end(), symbol.begin(), ::toupper);
-	url += "/api/v3/ticker/price?symbol="+symbol;
+	url += "/api/v3/ticker/price";
 
 	string str_result;
 	CurlAPI::CurlGetRequest(url, str_result);
-	// cout << "inside _GetPriceBySymbol, str_result: " << str_result << endl;
+	// cout << "inside GetAllPrices, str_result: " << str_result << endl;
 
-	Utility::ParseStringToJson("Binance::_GetPriceBySymbol", str_result, json_result);
-
-	if (_IsJsonResultValid(json_result)) {}
-	else {
-		cout << "json_result is not valid\n";
-		cout << json_result << endl;
-	}
-}
-
-void Binance::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
-	int counter = 1;
-
-	if (str == "All") {
-		Binance::_GetAllPrices();
-		if (_IsJsonResultValid(json_result)) {
-			int cnt = 0;
-			for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
-				result[cnt].symbol = (*iter)["symbol"].asString();
-				result[cnt].price = Utility::JsonToDouble((*iter)["price"]);
-				cnt++;
-			}
-			len = cnt;
-		}
-	}
-	else if (str == "WatchList") {
-		Json::Value::const_iterator iter;
-		Binance::_GetAllPrices();
-		string line;
-  		ifstream myfile ("config/WatchlistBinance.txt");
-  		if (myfile.is_open()) {
-  			int cnt = 0;
-    		while ( getline (myfile, line) ) {
-    			if (_IsJsonResultValid(json_result)) {
-    				for (iter = json_result.begin(); iter != json_result.end(); iter++)
-						if ((*iter)["symbol"] == line) {
-							// cout << *iter << endl;
-							// cout << fastWriter.write(*iter);
-							result[cnt].symbol = (*iter)["symbol"].asString();
-							result[cnt].price = Utility::JsonToDouble((*iter)["price"]);
-							cnt++;
-						}
-    			}
-				else {
-					cout << "json_result is not valid\n";
-					cout << json_result << endl;
+	Utility::ParseStringToJson("Binance::getAllPrices", str_result, json_result);
+	Json::Value::const_iterator iter;
+	string line;
+	ifstream myfile (watchlistPath);
+	int cnt = 0;
+	if (myfile.is_open()) {
+		while ( getline (myfile, line) ) {
+			if (isJsonResultValid(json_result)) {
+				for (iter = json_result.begin(); iter != json_result.end(); iter++)
+					if ((*iter)["symbol"] == line) {
+						result[cnt].symbol = (*iter)["symbol"].asString();
+						result[cnt++].price = Utility::JsonToDouble((*iter)["price"]);
+					}
 				}
-    		}
-    		len = cnt;
-    		myfile.close();
-    	}
-    	else
-    		cout << "myfile is not open\n";
-	}
-	else {
-		Binance::_GetPriceBySymbol(str);
-		if (_IsJsonResultValid(json_result)) {
-			result[0].symbol = json_result["symbol"].asString();
-			result[0].price = Utility::JsonToDouble(json_result["price"]);
-			len = 1;
+			else
+				cout << json_result << endl;
 		}
 	}
+	len = cnt;
+	myfile.close();
 }
 
-void Binance::ShowPrices(string str) {
-	Exchange::ShowPrices(str);
+void Binance::getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << str << " - getSymbolPrice\n";
+	string url(BINANCE_HOST);  
+	transform(str.begin(), str.end(), str.begin(), ::toupper);
+	url += "/api/v3/ticker/price?symbol="+str;
+
+	string str_result;
+	CurlAPI::CurlGetRequest(url, str_result);
+	// cout << "inside getSymbolPrice, str_result: " << str_result << endl;
+
+	Utility::ParseStringToJson("Binance::getSymbolPrice", str_result, json_result);
+
+	if (isJsonResultValid(json_result)) {
+		result[0].symbol = json_result["symbol"].asString();
+		result[0].price = Utility::JsonToDouble(json_result["price"]);
+		len = 1;
+	}
+	else
+		cout << json_result << endl;
 }
 
 void Binance::_GetAccountInfoBalances() {
@@ -402,11 +375,9 @@ void Binance::_GetAccountInfoBalances() {
 
 	Utility::ParseStringToJson("Binance::_GetAccountInfoBalances", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
-	else {
-		cout << "json_result is not valid\n";
+	if (isJsonResultValid(json_result)) {}
+	else 
 		cout << json_result << endl;
-	}
 }
 
 // mode is not used in Binance exchange and is added for compatibility
@@ -417,7 +388,7 @@ map <string, map<string, double>> Binance::GetBalances(_GetBalancesModes mode) {
 	
 	map < string, map <string,double> >  userBalance;
 
-	if (_IsJsonResultValid(json_result)) {
+	if (isJsonResultValid(json_result)) {
 		if (json_result["balances"].size() == 0)
 			cout << json_result << endl;
 
@@ -427,16 +398,10 @@ map <string, map<string, double>> Binance::GetBalances(_GetBalancesModes mode) {
 			userBalance[symbol]["l"] = atof( json_result["balances"][i]["locked"].asString().c_str() );
 		}
 	}
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 
 	return userBalance;
-}
-
-void Binance::ShowBalances() {
-	Exchange::ShowBalances();
 }
 
 map <string, StructBalanceInUSDT> Binance::ShowBalanceInUSDT() {
@@ -450,7 +415,7 @@ map <string, StructBalanceInUSDT> Binance::ShowBalanceInUSDT() {
 	string str = "All";
 	SymbolPriceSrtuct result[2000];
 	int len;
-	Binance::GetPrices(str, result, len);
+	this->GetPrices(str, result, len);
 
 	// Calculate whole balances
 	double wholeBalance = 0;
@@ -511,20 +476,18 @@ bool Binance::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
 	// cout << "inside GetOpenOrders, str_result: " << str_result << endl;
 
 	Utility::ParseStringToJson("Binance::GetOpenOrders", str_result, jsonOpenOrders);
-	// // if (jsonOpenOrders.isArray())
-	// // 	return true;
-	// // else 
-	// // 	return false;
-	// return jsonOpenOrders.isArray();
-	
-	// return _IsJsonResultValid(jsonOpenOrders);
-	if (_IsJsonResultValid(jsonOpenOrders)) 
+	if (isJsonResultValid(jsonOpenOrders)) 
 		return true;
 	else {
 		cout << "jsonOpenOrders is not valid\n";
 		cout << jsonOpenOrders << endl;
 		return false;
 	}
+}
+
+bool Binance::GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) {
+	cout << RED("This prototype is only used in Coinex\n");
+	return false;
 }
 
 void Binance::_GetAllOrders(string &str, int PastDay) {
@@ -548,11 +511,9 @@ void Binance::_GetAllOrders(string &str, int PastDay) {
 
 	Utility::ParseStringToJson("Binance::_GetAllOrders", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
-	else {
-		cout << "json_result is not valid\n";
+	if (isJsonResultValid(json_result)) {}
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::ShowOpenOrders(string str) {
@@ -585,15 +546,14 @@ void Binance::ShowAllOrders(string &str, int PastDay) {
     		while ( getline (myfile, line) ) {
 				Binance::_GetAllOrders(line, PastDay);
 				// if (json_result.isArray())
-				if (_IsJsonResultValid(json_result))
+				if (isJsonResultValid(json_result))
 					for (int i=0 ; i<json_result.size(); i++)
 					// if (json_result[i].isMember("symbol"))
 						cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", side: " << json_result[i]["side"] << 
 								", price: " << KYEL << json_result[i]["price"] << RESET << 	", origQty :" << json_result[i]["origQty"] << 
 								", status: " << json_result[i]["status"] << endl;
 				else {
-					cout << "json_result is not valid\n";
-					cout << json_result << endl;
+				cout << json_result << endl;
 				}
 			}
     		cout << endl;
@@ -604,16 +564,14 @@ void Binance::ShowAllOrders(string &str, int PastDay) {
 		Binance::_GetAllOrders(str, PastDay);
 		// cout << json_result << endl;
 		// if (json_result.isArray())
-		if (_IsJsonResultValid(json_result))
+		if (isJsonResultValid(json_result))
 			for (int i=0 ; i<json_result.size(); i++)
 			// if (json_result[i].isMember("symbol"))
 				cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", side: " << json_result[i]["side"] << 
 						", price: " << KYEL << json_result[i]["price"] << RESET << ", origQty :" << json_result[i]["origQty"] << 
 						", status: " << json_result[i]["status"] << endl;
-		else {
-			cout << "json_result is not valid\n";
+		else
 			cout << json_result << endl;
-		}
 	}
 }
 
@@ -634,11 +592,9 @@ void Binance::_GetMyTrades(string &str, int PastDay) {
 
 	Utility::ParseStringToJson("Binance::_GetMyTrades", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
-	else {
-		cout << "json_result is not valid\n";
+	if (isJsonResultValid(json_result)) {}
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::ShowMyTrades(string str, int PastDay) {
@@ -651,15 +607,14 @@ void Binance::ShowMyTrades(string str, int PastDay) {
   		if (myfile.is_open()) {
     		while ( getline (myfile, line) ) {
 				Binance::_GetMyTrades(line, PastDay);
-				if (_IsJsonResultValid(json_result))
+				if (isJsonResultValid(json_result))
 					// cout << json_result << endl;
 					for (int i=0 ; i<json_result.size(); i++)
 						cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << 
 								", price: " << KYEL << json_result[i]["price"] << RESET << ", qty :" << json_result[i]["qty"] << 
 								", quoteQty: " << json_result[i]["quoteQty"] << ", isBuyer: " << json_result[i]["isBuyer"] << endl;
 				else {
-					cout << "json_result is not valid\n";
-					cout << json_result << endl;
+				cout << json_result << endl;
 				}
 			}
     		cout << endl;
@@ -673,15 +628,13 @@ void Binance::ShowMyTrades(string str, int PastDay) {
 	else {
 		Binance::_GetMyTrades(str, PastDay);
 		// cout << json_result << endl;
-		if (_IsJsonResultValid(json_result))
+		if (isJsonResultValid(json_result))
 			for (int i=0 ; i<json_result.size(); i++)
 				cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", price: " << KYEL << json_result[i]["price"] << RESET << 
 						", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
 						", isBuyer: " << json_result[i]["isBuyer"] << endl;
-		else {
-			cout << "json_result is not valid\n";
+		else
 			cout << json_result << endl;
-		}
 	}
 }
 
@@ -699,7 +652,7 @@ void Binance::ShowTradesPerformance(string &str, int PastDay) {
 				Binance::_GetMyTrades(line, PastDay);
 				// cout << json_result << endl;
 
-				if (_IsJsonResultValid(json_result)) {
+				if (isJsonResultValid(json_result)) {
 					for (int i=0 ; i<json_result.size(); i++) {
 						cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 								", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
@@ -711,8 +664,7 @@ void Binance::ShowTradesPerformance(string &str, int PastDay) {
 					}
 				}
 				else {
-					cout << "json_result is not valid\n";
-					cout << json_result << endl;
+				cout << json_result << endl;
 					return;
 				}		
 			}
@@ -728,7 +680,7 @@ void Binance::ShowTradesPerformance(string &str, int PastDay) {
 		Binance::_GetMyTrades(str, PastDay);
 		// cout << json_result << endl;
 
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (int i=0 ; i<json_result.size(); i++) {
 				cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 						", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
@@ -740,34 +692,10 @@ void Binance::ShowTradesPerformance(string &str, int PastDay) {
 			}
 		}
 		else {
-			cout << "json_result is not valid\n";
 			cout << json_result << endl;
 			return;
 		}		
 	}
-
-
-
-
-	// Binance::_GetMyTrades(str, PastDay);
-	// // cout << json_result << endl;
-
-	// if (_IsJsonResultValid(json_result)) {
-	// 	for (int i=0 ; i<json_result.size(); i++) {
-	// 		cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
-	// 				", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
-	// 				", isBuyer: " << json_result[i]["isBuyer"] << endl;
-	// 		if (json_result[i]["isBuyer"].asString() == "false") 
-	// 			Sells += atof(json_result[i]["quoteQty"].asString().c_str())*0.999;
-	// 		else
-	// 			Buys += atof(json_result[i]["quoteQty"].asString().c_str());
-	// 	}
-	// }
-	// else {
-	// 	cout << "json_result is not valid\n";
-	// 	cout << json_result << endl;
-	// 	return;
-	// }
 
 	cout << "Considering all trades by " << YELLOW(str) << ". Buys " << Buys << " and sells " << Sells << ". ";
 	if (Sells > Buys)
@@ -797,12 +725,10 @@ void Binance::ShowDepositAddress(string &coin, string &network) {
 
 	Utility::ParseStringToJson("Binance::ShowDepositAddress", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::ShowDepositHistory(string str) {
@@ -826,12 +752,10 @@ void Binance::ShowDepositHistory(string str) {
 
 	Utility::ParseStringToJson("Binance::ShowDepositHistory", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
 void Binance::ShowWithdrawHistory(string str) {
@@ -855,16 +779,14 @@ void Binance::ShowWithdrawHistory(string str) {
 
 	Utility::ParseStringToJson("Binance::ShowWithdrawHistory", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }
 
-void Binance::SendOrder(string symbol, string side, string type, double quantity, 
-						double price, double stopPrice, double stopLimitPrice) {
+void Binance::SendOrder(string symbol, string side, string type, 
+						double quantity, double price, double stopPrice, double stopLimitPrice) {
 	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", quantity: " << quantity << ", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl << endl;
 
 	if (Utility::AreYouSure("")) {
@@ -878,13 +800,13 @@ void Binance::SendOrder(string symbol, string side, string type, double quantity
 
 		string temp;
 		if (type == "LIMIT" || type == "STOP_LOSS_LIMIT")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, 0, 0, 0, myRecvWindow);
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, 0, 0, temp, myRecvWindow);
 		else if (type == "MARKET")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, 0, 0, 0, 0, myRecvWindow);
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, 0, 0, 0, temp, myRecvWindow);
 		else if (type == "STOP_LOSS")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, price, 0, 0, 0, myRecvWindow);
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, price, 0, 0, temp, myRecvWindow);
 		else if (type == "OCO")
-			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, stopPrice, stopLimitPrice, 0, myRecvWindow);
+			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, stopPrice, stopLimitPrice, temp, myRecvWindow);
 		else {
 			cout << "Invalid type " << type << endl;
 		}	
@@ -896,17 +818,16 @@ void Binance::SendOrder(string symbol, string side, string type, double quantity
 
 		Utility::ParseStringToJson("Binance::SendOrder", str_result, json_result);
 
-		if (_IsJsonResultValid(json_result))
+		if (isJsonResultValid(json_result))
 			cout << json_result << endl;
 		else {
-			cout << "json_result is not valid\n";
 			cout << json_result << endl;
+			exit(0);
 		}
-		exit(0);
 	}
 }
 
-void Binance::CancelOrder(string symbol, long orderId) {
+void Binance::CancelOrder(string symbol, string orderId) {
 	cout << "symbol: " << symbol << ", orderId: " << orderId << endl << endl;
 
 	string url;
@@ -922,12 +843,14 @@ void Binance::CancelOrder(string symbol, long orderId) {
 
 	Utility::ParseStringToJson("Binance::CancelOrder", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
-	else {
-		cout << "json_result is not valid\n";
+	else 
 		cout << json_result << endl;
-	}
 }	
+
+void Binance::CancelAllOrders(string symbol) {
+	Utility::notSupported();
+}
 
 

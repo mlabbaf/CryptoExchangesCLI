@@ -25,12 +25,20 @@ class Exchange
 {
 protected:
 	string keyFilePath;
+	string watchlistPath;
 	string secret_key;
 	string api_key;
 	string access_id;
 	string passphrase;
 
 	CURL* curl;
+	Json::Value json_result;
+
+	virtual bool isJsonResultValid(Json::Value json_result) = 0;
+	
+	virtual void getAllPrices(string str, SymbolPriceSrtuct* result, int &len) = 0;
+	virtual void getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) = 0;
+	virtual void getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) = 0;
 
 public:
 	void Init();
@@ -39,17 +47,24 @@ public:
 	}
 	void Cleanup();
 
-	void test() {cout << "Hello from Exchange\n"; }
-	
 	void setKeyFilePath(string exchangeKeyFilePath);
+	void setWatchlistPath(string exchangeWatchlistPath);
 
 	void InitApiSecret();
 	void InitApiSecretPassphrase();
 
-	virtual void GetPrices(string &str, SymbolPriceSrtuct* result, int &len) = 0;
+	virtual void ShowServerTime() = 0;
+	void GetPrices(string &str, SymbolPriceSrtuct* result, int &len);
 	void ShowPrices(string str);
 	virtual map <string, map<string, double>> GetBalances(_GetBalancesModes mode) = 0;
 	void ShowBalances();
+	virtual map <string, StructBalanceInUSDT> ShowBalanceInUSDT() = 0;
+	virtual bool GetOpenOrders(string &str, Json::Value &jsonOpenOrders) = 0;
+	virtual bool GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) = 0; // Coinex used this protorype!
+	virtual void SendOrder( string symbol, string side, string type, 
+							double quantity, double price, double stopPrice, double stopLimitPrice) = 0;
+	virtual void CancelOrder(string symbol, string orderId) = 0;
+	virtual void CancelAllOrders(string symbol) = 0;
 };
 
 #endif

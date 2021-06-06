@@ -31,37 +31,40 @@ class HitBTC : public Exchange
 private:
 	static HitBTC* instance;
 
-	Json::Value json_result;
 	Json::FastWriter fastWriter;
 
 	int _pathQueryStringToUrl(	string &url, string baseAddress, string symbol, string from, string until,
-										string side, string type, string clientOrderId, string by);
+								string side, string type, string clientOrderId, string by);
 	int _createJsonData(	string &postData, string symbol, string currency, string side, 
-								string type, double quantity, double amount, double price, double stopPrice);
-	void _GetAllPrices();
-	void _GetPriceBySymbol(string &symbol);
+							string type, double quantity, double amount, double price, double stopPrice);
 	void _GetAccountInfoBalances();
 	void _GetTradingBalances();
 // 	void _GetAllOrders(string &str, int PastDay);
 	void _GetMyTrades(string &str, int PastDay);
+
+
+protected:
+	bool isJsonResultValid(Json::Value json_result);
+	
+	void getAllPrices(string str, SymbolPriceSrtuct* result, int &len);
+	void getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len);
+	void getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len);
 
 public:
 	static HitBTC* getInstance();
 
 	void test() { cout << "HitBTC test\n"; }
 
-// 	void ShowServerTime();
+	void ShowServerTime();
 // 	void TestConnectivity();
 // 	void ShowAccountStatus();
 // 	void ShowExchangeInfo();
-	void GetPrices(string &str, SymbolPriceSrtuct* result, int &len);
-	void ShowPrices(string str);
 	map <string, map<string, double>> GetBalances(_GetBalancesModes mode);
-	void ShowBalances();
 	void ShowBankBalances();
 	void ShowExchangeBalances();
 	map <string, StructBalanceInUSDT> ShowBalanceInUSDT();
 	bool GetOpenOrders(string &str, Json::Value &jsonOpenOrders);
+	bool GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders);
 	void ShowOpenOrders(string str);
 // 	void ShowAllOrders(string &str, int PastDay);
 // 	void ShowTradesPerformance(string &str, int PastDay);
@@ -70,8 +73,10 @@ public:
 	void ShowDepositAddress(string &str);
 // 	void ShowDepositHistory(string str);
 // 	void ShowWithdrawHistory(string str);
-	void SendOrder(string symbol, string side, string type, double quantity, double price);
-	void CancelOrder(string symbol, string clientOrderId);
+	void SendOrder( string symbol, string side, string type, 
+					double quantity, double price, double stopPrice, double stopLimitPrice);
+	void CancelOrder(string symbol, string orderId);
+	void CancelAllOrders(string symbol);
 	void TransferBetweenBankAndExchange(string currency, double amount, string type);
 };
 

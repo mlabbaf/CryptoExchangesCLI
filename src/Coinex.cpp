@@ -16,7 +16,7 @@ Coinex* Coinex::getInstance() {
     return instance;
 }
 
-static bool _IsJsonResultValid(Json::Value json_result) {
+bool Coinex::isJsonResultValid(Json::Value json_result) {
 	if (json_result.isObject()) {
 		if (json_result["code"].asInt64() == 0)
 			return true;
@@ -59,7 +59,7 @@ static void _createAuthorizationMd5(string &authorization, string secret_key, st
 }
 
 int Coinex::_pathQueryStringToUrl(	string &url, string &authorization, string baseAddress, string coin_type,
-									string market, long id, long page, long limit, string type, double amount,
+									string market, string id, long page, long limit, string type, double amount,
 									double price) {
 	url = COINEX_HOST;
 	url += baseAddress;
@@ -79,9 +79,9 @@ int Coinex::_pathQueryStringToUrl(	string &url, string &authorization, string ba
 		querystring.append(coin_type);
 	}
 
-	if ( id > 0 ) {
+	if ( id.size() != 0 ) {
 		querystring.append("&id=");
-		querystring.append( to_string( id ) );
+		querystring.append( id );
 	}
 
 	if ( limit > 0 ) {
@@ -158,52 +158,49 @@ int Coinex::_createJsonData(string &postData, string market, string type, double
 	return 0;
 }
 
-void Coinex::_GetPriceBySymbol(string &symbol) {
-	// cout << symbol << " - _GetPriceBySymbol\n";
+void Coinex::ShowServerTime() {
+	Utility::notSupported();
+}
+
+void Coinex::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
+	cout << RED ("Coinex is not supporting All option\n");
+}
+
+void Coinex::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
+	string line;
+	ifstream myfile ("config/WatchlistCoinex.txt");
+	if (myfile.is_open()) {
+		int cnt = 0;
+		SymbolPriceSrtuct result_temp;
+		int len_temp;
+		while ( getline (myfile,line) ) {
+			Coinex::getSymbolPrice(line, &result_temp, len_temp);
+			if (isJsonResultValid(json_result)) {
+				result[cnt].symbol = result_temp.symbol;
+				result[cnt++].price = result_temp.price;
+			}
+		}
+		len = cnt;
+		myfile.close();
+	}
+}
+
+void Coinex::getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << str << " - getSymbolPrice\n";
 	string url(COINEX_HOST);  
-	transform(symbol.begin(), symbol.end(), symbol.begin(), ::toupper);
-	url += "/market/ticker?market="+symbol;
+	transform(str.begin(), str.end(), str.begin(), ::toupper);
+	url += "/market/ticker?market="+str;
 
 	string str_result;
 	CurlAPI::CurlGetRequest(url, str_result);
-	// cout << "inside _GetPriceBySymbol, str_result: " << str_result << endl;
+	// cout << "inside getSymbolPrice, str_result: " << str_result << endl;
 
-	Utility::ParseStringToJson("_GetPriceBySymbol", str_result, json_result);
-}
-
-void Coinex::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
-	int counter = 1;
-
-	if (str == "All") 
-		cout << RED ("Coinex is not supporting All option\n");
-	else if (str == "WatchList") {
-		string line;
-  		ifstream myfile ("config/WatchlistCoinex.txt");
-  		if (myfile.is_open()) {
-    		int cnt = 0;
-    		while ( getline (myfile,line) ) {
-    			Coinex::_GetPriceBySymbol(line);
-    			if (_IsJsonResultValid(json_result)) {
-					result[cnt].symbol = line;
-					result[cnt++].price = atof(json_result["data"]["ticker"]["last"].asString().c_str());
-				}
-    		}
-    		len = cnt;
-    		myfile.close();
-    	}
+	Utility::ParseStringToJson("getSymbolPrice", str_result, json_result);
+	if (isJsonResultValid(json_result)) {
+		result[0].symbol = str;
+		result[0].price = Utility::JsonToDouble(json_result["data"]["ticker"]["last"]);
+		len = 1;
 	}
-	else {
-		Coinex::_GetPriceBySymbol(str);
-		if (_IsJsonResultValid(json_result)) {
-			result[0].symbol = str;
-			result[0].price = Utility::JsonToDouble(json_result["data"]["ticker"]["last"]);
-			len = 1;
-		}
-	} 
-}
-
-void Coinex::ShowPrices(string str) {
-	Exchange::ShowPrices(str);
 }
 
 void Coinex::_GetAccountInfoBalances() {
@@ -213,7 +210,7 @@ void Coinex::_GetAccountInfoBalances() {
 	baseAddress = "/balance/info?";
 
 	string temp;
-	_pathQueryStringToUrl(url, authorization, baseAddress, temp, temp, 0, 0, 0, temp, 0, 0);
+	_pathQueryStringToUrl(url, authorization, baseAddress, temp, temp, temp, 0, 0, temp, 0, 0);
 	// cout << "Inside _GetAccountInfoBalances, url: " << url << ", authorization: " << authorization << endl;
 
 	string str_result;
@@ -232,7 +229,7 @@ map <string, map<string, double>> Coinex::GetBalances(_GetBalancesModes mode) {
 	
 	map < string, map <string,double> >  userBalance;
 
-	if (! _IsJsonResultValid(json_result))
+	if (! isJsonResultValid(json_result))
 		return userBalance;
 
 	// for ( int i  = 0 ; i < json_result["data"].size() ; i++ ) {
@@ -256,10 +253,6 @@ map <string, map<string, double>> Coinex::GetBalances(_GetBalancesModes mode) {
 	return userBalance;
 }
 
-void Coinex::ShowBalances() {
-	Exchange::ShowBalances();
-}
-
 map <string, StructBalanceInUSDT> Coinex::ShowBalanceInUSDT() {
 	map <string, StructBalanceInUSDT> balanceResult;
 
@@ -271,7 +264,7 @@ map <string, StructBalanceInUSDT> Coinex::ShowBalanceInUSDT() {
 	string str = "WatchList";
 	SymbolPriceSrtuct result[50];
 	int len;
-	Coinex::GetPrices(str, result, len);
+	this->GetPrices(str, result, len);
 
 	// Calculate whole balances
 	double wholeBalance = 0;
@@ -320,7 +313,7 @@ bool Coinex::_GetOpenOrdersForOneSymbol(string symbol, vector<SymbolOrderStruct>
 	baseAddress = "/order/pending?";
 
 	string temp;
-	_pathQueryStringToUrl(url, authorization, baseAddress, temp, symbol, 0, 1, 100, temp, 0, 0);
+	_pathQueryStringToUrl(url, authorization, baseAddress, temp, symbol, temp, 1, 100, temp, 0, 0);
 	// cout << "Inside GetOpenOrders, url: " << url << endl;
 
 	string str_result;
@@ -330,7 +323,7 @@ bool Coinex::_GetOpenOrdersForOneSymbol(string symbol, vector<SymbolOrderStruct>
 	Json::Value jsonOpenOrders;
 	Utility::ParseStringToJson("_GetOpenOrdersForOneSymbol", str_result, jsonOpenOrders);
 
-	if (_IsJsonResultValid(jsonOpenOrders)) {
+	if (isJsonResultValid(jsonOpenOrders)) {
 		// cout << jsonOpenOrders << endl;
 		for (int i=0; i<jsonOpenOrders["data"]["count"].asInt64(); i++) {
 			Json::Value json_temp = jsonOpenOrders["data"]["data"][i];
@@ -342,7 +335,7 @@ bool Coinex::_GetOpenOrdersForOneSymbol(string symbol, vector<SymbolOrderStruct>
 			order.amount = Utility::JsonToDouble(json_temp["amount"]);
 			order.left = Utility::JsonToDouble(json_temp["left"]);
 			order.order_type = json_temp["order_type"].asString();
-			order.id = Utility::JsonToLong(json_temp["id"]);
+			order.id = json_temp["id"].asString();
 
 			vecOpenOrders.push_back(order);
 		}
@@ -350,6 +343,11 @@ bool Coinex::_GetOpenOrdersForOneSymbol(string symbol, vector<SymbolOrderStruct>
 	else
 		return false;
 	return true;
+}
+
+bool Coinex::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
+	cout << RED("This prototype is used in other exchanges except Coinex\n");
+	return false;
 }
 
 bool Coinex::GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) {
@@ -413,7 +411,7 @@ void Coinex::_GetMyTrades(string &str, int limit) {
 	string baseAddress = "/order/user/deals?";
 
 	string temp;
-	_pathQueryStringToUrl(url, authorization, baseAddress, temp, str, 0, 1, limit, temp, 0, 0);
+	_pathQueryStringToUrl(url, authorization, baseAddress, temp, str, temp, 1, limit, temp, 0, 0);
 	// cout << "Inside _GetMyTrades, url: " << url << endl;
 
 	string str_result;
@@ -442,7 +440,7 @@ void Coinex::ShowMyTrades(string str, int pastDay) {
   		if (myfile.is_open()) {
     		while ( getline (myfile, line) ) {
 				Coinex::_GetMyTrades(line, limit);
-				if (_IsJsonResultValid(json_result)) {
+				if (isJsonResultValid(json_result)) {
 					// cout << json_result << endl;
 					for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
 						Json::Value json_temp = json_result["data"]["data"][i];
@@ -464,7 +462,7 @@ void Coinex::ShowMyTrades(string str, int pastDay) {
 	}
 	else {
 		Coinex::_GetMyTrades(str, limit);
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			// cout << json_result << endl;
 			for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
 				Json::Value json_temp = json_result["data"]["data"][i];
@@ -505,7 +503,7 @@ void Coinex::ShowTradesPerformance(string &str, int pastDay) {
 				Coinex::_GetMyTrades(line, limit);
 				// cout << json_result << endl;
 
-				if (_IsJsonResultValid(json_result)) {
+				if (isJsonResultValid(json_result)) {
 					for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
 						Json::Value json_temp = json_result["data"]["data"][i];
 						if (pastDay == 0 || (tv.tv_sec - pastDay*24*60*60) < Utility::JsonToLong(json_temp["create_time"])) {
@@ -532,7 +530,7 @@ void Coinex::ShowTradesPerformance(string &str, int pastDay) {
 		Coinex::_GetMyTrades(str, limit);
 		// cout << json_result << endl;
 
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (int i=0; i<json_result["data"]["count"].asInt64(); i++) {
 				Json::Value json_temp = json_result["data"]["data"][i];
 				if (pastDay == 0 || (tv.tv_sec - pastDay*24*60*60) < Utility::JsonToLong(json_temp["create_time"])) {
@@ -571,7 +569,7 @@ void Coinex::ShowDepositHistory(string str) {
 		coin_type = str;
 
 	string temp;
-	_pathQueryStringToUrl(url, authorization, baseAddress, coin_type, temp, 0, 0, 0, temp, 0, 0);
+	_pathQueryStringToUrl(url, authorization, baseAddress, coin_type, temp, temp, 0, 0, temp, 0, 0);
 	// cout << "url: " <<url << endl;	
 
 	string str_result;
@@ -595,7 +593,7 @@ void Coinex::ShowWithdrawHistory(string str) {
 		coin_type = str;
 
 	string temp;
-	_pathQueryStringToUrl(url, authorization, baseAddress, coin_type, temp, 0, 0, 0, temp, 0, 0);
+	_pathQueryStringToUrl(url, authorization, baseAddress, coin_type, temp, temp, 0, 0, temp, 0, 0);
 	// cout << "url: " <<url << endl;	
 
 	string str_result;
@@ -607,7 +605,8 @@ void Coinex::ShowWithdrawHistory(string str) {
 	cout << json_result << endl;	
 }
 
-void Coinex::SendOrder(string symbol, string side, string type, double quantity, double price) {
+void Coinex::SendOrder(	string symbol, string side, string type, 
+						double quantity, double price, double stopPrice, double stopLimitPrice) {
 	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", quantity: " << quantity << ", price: " << price << endl << endl;
 
 	if (Utility::AreYouSure("")) {
@@ -625,9 +624,9 @@ void Coinex::SendOrder(string symbol, string side, string type, double quantity,
 
 		string url_temp, temp;
 		if (type == "LIMIT")
-			Coinex::_pathQueryStringToUrl(url_temp, authorization, temp, temp, symbol, 0, 0, 0, side, quantity, price);
+			Coinex::_pathQueryStringToUrl(url_temp, authorization, temp, temp, symbol, temp, 0, 0, side, quantity, price);
 		else if (type == "MARKET")
-			Coinex::_pathQueryStringToUrl(url_temp, authorization, temp, temp, symbol, 0, 0, 0, side, quantity, 0);
+			Coinex::_pathQueryStringToUrl(url_temp, authorization, temp, temp, symbol, temp, 0, 0, side, quantity, 0);
 		else {
 			cout << RED ("Invalid type " + type + "\n");
 			return;
@@ -656,7 +655,7 @@ void Coinex::SendOrder(string symbol, string side, string type, double quantity,
 	}
 }
 
-void Coinex::CancelOrder(string symbol, long orderId) {
+void Coinex::CancelOrder(string symbol, string orderId) {
 	cout << "symbol: " << symbol << ", orderId: " << orderId << endl << endl;
 
 	string url, authorization;
@@ -675,3 +674,6 @@ void Coinex::CancelOrder(string symbol, long orderId) {
 	cout << json_result << endl;	
 }	
 
+void Coinex::CancelAllOrders(string symbol) {
+	Utility::notSupported();
+}

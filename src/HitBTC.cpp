@@ -14,7 +14,7 @@ HitBTC* HitBTC::getInstance() {
 }
 
 
-static bool _IsJsonResultValid(Json::Value json_result) {
+bool HitBTC::isJsonResultValid(Json::Value json_result) {
 	if (json_result.isObject()) {
 		if (json_result.isMember("error"))
 			return false;
@@ -144,7 +144,11 @@ static void _GetStartTimeFromDay(int pastDay, string &startTime, string &endTime
 	}
 }
 
-void HitBTC::_GetAllPrices() {
+void HitBTC::ShowServerTime() {
+	Utility::notSupported();
+}
+
+void HitBTC::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
 	string url(HITBTC_HOST);  
 	url += "/public/ticker";
 
@@ -153,72 +157,57 @@ void HitBTC::_GetAllPrices() {
 	// cout << "inside _GetAllPrices, str_result: " << str_result << endl;
 
 	Utility::ParseStringToJson("_GetAllPrices", str_result, json_result);
+	int cnt = 0;
+	for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
+		result[cnt].symbol = (*iter)["symbol"].asString();
+		result[cnt++].price = Utility::JsonToDouble((*iter)["last"]);
+	}
+	len = cnt;
 }
 
-void HitBTC::_GetPriceBySymbol(string &symbol) {
-	// cout << symbol << " - _GetPriceBySymbol\n";
+void HitBTC::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
 	string url(HITBTC_HOST);  
-	url += "/public/ticker/"+symbol;
+	url += "/public/ticker";
+
+	string str_result;
+	CurlAPI::CurlGetRequest(url, str_result);
+	// cout << "inside _GetAllPrices, str_result: " << str_result << endl;
+
+	Utility::ParseStringToJson("_GetAllPrices", str_result, json_result);
+	if (isJsonResultValid(json_result)) {
+		string line;
+  		ifstream myfile ("config/WatchlistHitBTC.txt");
+  		if (myfile.is_open()) {
+    		int cnt = 0;
+    		while ( getline (myfile, line) ) {
+				for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
+					if ((*iter)["symbol"] == line) {
+						result[cnt].symbol = (*iter)["symbol"].asString();
+						result[cnt++].price = Utility::JsonToDouble((*iter)["last"]);
+					}
+				}
+			}
+    		len = cnt;
+    		myfile.close();
+    	}
+	}
+}
+
+void HitBTC::getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << str << " - _GetPriceBySymbol\n";
+	string url(HITBTC_HOST);  
+	url += "/public/ticker/"+str;
 
 	string str_result;
 	CurlAPI::CurlGetRequest(url, str_result);
 	// cout << "inside _GetPriceBySymbol, str_result: " << str_result << endl;
 
-	Utility::ParseStringToJson("_GetPriceBySymbol", str_result, json_result);
-}
-
-void HitBTC::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
-
-	if (str == "All") {
-		HitBTC::_GetAllPrices();
-		if (_IsJsonResultValid(json_result)) {
-			int cnt = 0;
-			for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
-				result[cnt].symbol = (*iter)["symbol"].asString();
-				result[cnt].price = Utility::JsonToDouble((*iter)["last"]);
-				cnt++;
-			}
-			len = cnt;
-		}
+	Utility::ParseStringToJson("getSymbolPrice", str_result, json_result);
+	if (isJsonResultValid(json_result)) {
+		result[0].symbol = json_result["symbol"].asString();
+		result[0].price = Utility::JsonToDouble(json_result["last"]);
+		len = 1;
 	}
-	else if (str == "WatchList") {
-		HitBTC::_GetAllPrices();
-		if (_IsJsonResultValid(json_result)) {
-			string line;
-	  		ifstream myfile ("config/WatchlistHitBTC.txt");
-	  		if (myfile.is_open()) {
-	    		int cnt = 0;
-	    		while ( getline (myfile, line) ) {
-					for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
-						if ((*iter)["symbol"] == line) {
-							result[cnt].symbol = (*iter)["symbol"].asString();
-							result[cnt].price = Utility::JsonToDouble((*iter)["last"]);
-							cnt++;
-						}
-					}
-				}
-	    		len = cnt;
-	    		myfile.close();
-	    	}
-		}
-		else {
-			cout << "Cannot _GetAllPrices\n";
-			len = 0;
-			return;
-		}
-	}
-	else {
-		HitBTC::_GetPriceBySymbol(str);
-		if (_IsJsonResultValid(json_result)) {
-			result[0].symbol = json_result["symbol"].asString();
-			result[0].price = Utility::JsonToDouble(json_result["last"]);
-			len = 1;
-		}
-	} 
-}
-
-void HitBTC::ShowPrices(string str) {
-	Exchange::ShowPrices(str);
 }
 
 void HitBTC::_GetAccountInfoBalances() {
@@ -231,7 +220,7 @@ void HitBTC::_GetAccountInfoBalances() {
 
 	Utility::ParseStringToJson("_GetAccountInfoBalances", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
+	if (isJsonResultValid(json_result)) {}
 	else {
 		cout << "json_result is not valid\n";
 		cout << json_result << endl;
@@ -248,7 +237,7 @@ void HitBTC::_GetTradingBalances() {
 
 	Utility::ParseStringToJson("_GetTradingBalances", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
+	if (isJsonResultValid(json_result)) {}
 	else {
 		cout << "json_result is not valid\n";
 		cout << json_result << endl;
@@ -263,7 +252,7 @@ map <string, map<string, double>> HitBTC::GetBalances(_GetBalancesModes mode) {
 	if (mode == BANK_AND_EXCHANGE_MODE || mode == ONLY_BANK_MODE) {
 		HitBTC::_GetAccountInfoBalances();
 
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (Json::Value::const_iterator json_iter = json_result.begin(); json_iter != json_result.end(); json_iter++) {
 				string symbol = (*json_iter)["currency"].asString();
 				userBalance[symbol]["f"] = Utility::JsonToDouble((*json_iter)["available"]);
@@ -279,7 +268,7 @@ map <string, map<string, double>> HitBTC::GetBalances(_GetBalancesModes mode) {
 	if (mode == BANK_AND_EXCHANGE_MODE || mode == ONLY_EXCHANGE_MODE) {
 		HitBTC::_GetTradingBalances();
 		
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (Json::Value::const_iterator json_iter = json_result.begin(); json_iter != json_result.end(); json_iter++) {
 				string symbol = (*json_iter)["currency"].asString();
 				userBalance[symbol]["f"] += Utility::JsonToDouble((*json_iter)["available"]);
@@ -293,10 +282,6 @@ map <string, map<string, double>> HitBTC::GetBalances(_GetBalancesModes mode) {
 	}
 
 	return userBalance;
-}
-
-void HitBTC::ShowBalances() {
-	Exchange::ShowBalances();
 }
 
 void HitBTC::ShowBankBalances() {
@@ -356,7 +341,7 @@ map <string, StructBalanceInUSDT> HitBTC::ShowBalanceInUSDT() {
 	string str = "All";
 	SymbolPriceSrtuct result[2000];
 	int len;
-	HitBTC::GetPrices(str, result, len);
+	this->GetPrices(str, result, len);
 
 
 	// Calculate whole balances
@@ -420,13 +405,19 @@ bool HitBTC::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
 
 	Utility::ParseStringToJson("HitBTC::GetOpenOrders", str_result, jsonOpenOrders);
 	
-	if (_IsJsonResultValid(jsonOpenOrders)) 
+	if (isJsonResultValid(jsonOpenOrders)) 
 		return true;
 	else {
 		cout << "jsonOpenOrders is not valid\n";
 		cout << jsonOpenOrders << endl;
 		return false;
 	}
+}
+
+
+bool HitBTC::GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) {
+	cout << RED("This prototype is only used in Coinex\n");
+	return false;
 }
 
 void HitBTC::ShowOpenOrders(string str) {
@@ -466,7 +457,7 @@ void HitBTC::_GetMyTrades(string &str, int PastDay) {
 
 	Utility::ParseStringToJson("HitBTC::_GetMyTrades", str_result, json_result);
 	
-	if (_IsJsonResultValid(json_result)) {}
+	if (isJsonResultValid(json_result)) {}
 	else {
 		cout << "json_result is not valid\n";
 		cout << json_result << endl;
@@ -483,7 +474,7 @@ void HitBTC::ShowMyTrades(string str, int PastDay) {
   		if (myfile.is_open()) {
     		while ( getline (myfile, line) ) {
 				HitBTC::_GetMyTrades(line, PastDay);
-				if (_IsJsonResultValid(json_result))
+				if (isJsonResultValid(json_result))
 					for (int i=0 ; i<json_result.size(); i++)
 						cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 								", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
@@ -502,7 +493,7 @@ void HitBTC::ShowMyTrades(string str, int PastDay) {
 	}
 	else {
 		HitBTC::_GetMyTrades(str, PastDay);
-		if (_IsJsonResultValid(json_result))
+		if (isJsonResultValid(json_result))
 			for (int i=0 ; i<json_result.size(); i++)
 				cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 						", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
@@ -527,7 +518,7 @@ void HitBTC::ShowTradesPerformance(string &str, int PastDay) {
 				HitBTC::_GetMyTrades(line, PastDay);
 				// cout << json_result << endl;
 
-				if (_IsJsonResultValid(json_result)) {
+				if (isJsonResultValid(json_result)) {
 					for (int i=0 ; i<json_result.size(); i++) {
 						cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 								", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
@@ -555,7 +546,7 @@ void HitBTC::ShowTradesPerformance(string &str, int PastDay) {
 		HitBTC::_GetMyTrades(str, PastDay);
 		// cout << json_result << endl;
 
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (int i=0 ; i<json_result.size(); i++) {
 				cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 						", quantity :" << json_result[i]["quantity"] << ", side: " << json_result[i]["side"] << endl;
@@ -592,7 +583,7 @@ void HitBTC::ShowDepositAddress(string &str) {
 
 	Utility::ParseStringToJson("ShowDepositAddress", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
@@ -600,7 +591,8 @@ void HitBTC::ShowDepositAddress(string &str) {
 	}
 }
 
-void HitBTC::SendOrder(string symbol, string side, string type, double quantity, double price) {
+void HitBTC::SendOrder(	string symbol, string side, string type, 
+						double quantity, double price, double stopPrice, double stopLimitPrice) {
 	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", quantity: " << quantity << ", price: " << price << endl << endl;
 
 	if (Utility::AreYouSure("")) {
@@ -629,7 +621,7 @@ void HitBTC::SendOrder(string symbol, string side, string type, double quantity,
 
 		Utility::ParseStringToJson("SendOrder", str_result, json_result);
 		
-		if (_IsJsonResultValid(json_result))
+		if (isJsonResultValid(json_result))
 			cout << json_result << endl;
 		else {
 			cout << "json_result is not valid\n";
@@ -639,12 +631,12 @@ void HitBTC::SendOrder(string symbol, string side, string type, double quantity,
 	}
 }
 
-void HitBTC::CancelOrder(string symbol, string clientOrderId) {
-	cout << "symbol: " << symbol << ", clientOrderId: " << clientOrderId << endl << endl;
+void HitBTC::CancelOrder(string symbol, string orderId) {
+	cout << "symbol: " << symbol << ", clientOrderId: " << orderId << endl << endl;
 
 	string url(HITBTC_HOST);  
 	url += "/order/";
-	url += clientOrderId;
+	url += orderId;
 	// cout << "url: " << url << endl;	
 
 	string str_result;
@@ -653,13 +645,17 @@ void HitBTC::CancelOrder(string symbol, string clientOrderId) {
 
 	Utility::ParseStringToJson("CancelOrder", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
 		cout << json_result << endl;
 	}
 }	
+
+void HitBTC::CancelAllOrders(string symbol) {
+	Utility::notSupported();
+}
 
 void HitBTC::TransferBetweenBankAndExchange(string currency, double amount, string type) {
 	cout << "currency: " << currency << ", type: " << type << ", amount: " << amount << endl;
@@ -677,7 +673,7 @@ void HitBTC::TransferBetweenBankAndExchange(string currency, double amount, stri
 
 	Utility::ParseStringToJson("TransferBetweenBankAndExchange", str_result, json_result);
 	
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";

@@ -12,11 +12,11 @@
 
 using namespace std;
 
-static Binance *binance;
-static Coinex *coinex;
-static HitBTC *hitbtc;
-static Kucoin *kucoin;
-static Nobitex *nobitex;
+static Exchange *binance;
+static Exchange *coinex;
+static Exchange *hitbtc;
+static Exchange *kucoin;
+static Exchange *nobitex;
 
 
 void _findMinAndMaxFromStrcutExchangesPrices(strcutExchangesPrices &priceExchanges, double &min, double &max) {
@@ -836,7 +836,7 @@ void BotMethod::CancelAllOrders(string &str, string exchange) {
 		}
 
 		for (int i=0 ; i<jsonOpenOrders.size(); i++)
-			binance->CancelOrder(jsonOpenOrders[i]["symbol"].asString(), jsonOpenOrders[i]["orderId"].asInt64());
+			binance->CancelOrder(jsonOpenOrders[i]["symbol"].asString(), jsonOpenOrders[i]["orderId"].asString());
 	}
 	else if (exchange == "COINEX") {
 		vector <SymbolOrderStruct> vecOpenOrders;
@@ -904,6 +904,7 @@ void BotMethod::SetJsonFileOrders() {
 
 			Utility::RoundAmountBasedOnPair(pair, orderAmount);
 
+			int temp;
 			if (_FillOldOrderParams(exchange, pair, orderAmount, old_orderParams) >= 0) {
 				new_OrderParams.pair = pair;
 				new_OrderParams.side = mode;
@@ -911,7 +912,7 @@ void BotMethod::SetJsonFileOrders() {
 				new_OrderParams.price = price;
 				new_OrderParams.stopPrice = 0;				// don't care
 				new_OrderParams.origQty = orderAmount;
-				new_OrderParams.orderId = 0;				// don't care
+				new_OrderParams.orderId = temp;				// don't care
 
 				_handleNewTrig(old_orderParams, new_OrderParams);
 			}
@@ -945,7 +946,7 @@ int BotMethod::_FillOldOrderParams(string storedIn, string pair, double amount, 
 					orderParams.price = Utility::JsonToDouble(jsonOpenOrders[i]["price"]);
 					orderParams.stopPrice = Utility::JsonToDouble(jsonOpenOrders[i]["stopPrice"]);
 					orderParams.origQty = Utility::JsonToDouble(jsonOpenOrders[i]["origQty"]);
-					orderParams.orderId = Utility::JsonToLong(jsonOpenOrders[i]["orderId"]);
+					orderParams.orderId = jsonOpenOrders[i]["orderId"].asString();
 				}
 			}
 		}
@@ -960,7 +961,7 @@ int BotMethod::_FillOldOrderParams(string storedIn, string pair, double amount, 
 void BotMethod::_removeAnOrder(OrderParams &orderParams) {
 	// cout << "Inside _removeAnOrder\n";
 
-	// void binance->CancelOrder(string symbol, long orderId);
+	// void binance->CancelOrder(string symbol, string orderId);
 	cout << "We shoule remove an order of " << orderParams.pair << "with price " << orderParams.price <<
 			"and origQty " << orderParams.origQty << ". OrderId " << orderParams.orderId << endl;
 
@@ -1014,7 +1015,7 @@ void BotMethod::_handleNewTrig(OrderParams &old_orderParams, OrderParams &new_or
 	if (_CompareOrderParams(old_orderParams, new_orderParams))
 		return;
 
-	if (old_orderParams.orderId != 0) 
+	if (old_orderParams.orderId.size() != 0) 
 		_removeAnOrder(old_orderParams);
 	if (new_orderParams.type == "LIMIT")
 		_addLimitOrder(new_orderParams);
@@ -1340,5 +1341,6 @@ void BotMethod::Cleanup() {
 }
 
 void BotMethod::Test() {
-	kucoin->ShowServerTime();
+	binance->ShowServerTime();
+	// kucoin->ShowServerTime();
 }

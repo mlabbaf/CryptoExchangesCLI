@@ -14,7 +14,7 @@ Kucoin* Kucoin::getInstance() {
 }
 
 
-static bool _IsJsonResultValid(Json::Value json_result) {
+bool Kucoin::isJsonResultValid(Json::Value json_result) {
 	// if (json_result.isObject()) {
 		if (Utility::JsonToLong(json_result["code"]) == 200000)
 			return true;
@@ -223,7 +223,7 @@ void Kucoin::ShowServerTime() {
 
 	Utility::ParseStringToJson("Kucoin::ShowServerTime", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) 
+	if (isJsonResultValid(json_result)) 
 		// cout << json_result << endl;
 		cout << fastWriter.write(json_result) << endl;
 	else {
@@ -232,7 +232,7 @@ void Kucoin::ShowServerTime() {
 	}
 }
 
-void Kucoin::_GetAllPrices() {
+void Kucoin::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
 	string url(KUCOIN_HOST);  
 	url += "/api/v1/market/allTickers";
 
@@ -241,73 +241,62 @@ void Kucoin::_GetAllPrices() {
 	// cout << "inside _GetAllPrices, str_result: " << str_result << endl;
 
 	Utility::ParseStringToJson("_GetAllPrices", str_result, json_result);
+
+	if (isJsonResultValid(json_result)) {
+		int cnt = 0;
+		Json::Value json_ticker = json_result["data"]["ticker"];
+		for (Json::Value::const_iterator iter = json_ticker.begin(); iter != json_ticker.end(); iter++) {
+			result[cnt].symbol = (*iter)["symbol"].asString();
+			result[cnt++].price = Utility::JsonToDouble((*iter)["last"]);
+		}
+		len = cnt;
+	}
 }
 
-void Kucoin::_GetPriceBySymbol(string &symbol) {
-	// cout << symbol << " - _GetPriceBySymbol\n";
+void Kucoin::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
 	string url(KUCOIN_HOST);  
-	url += "/api/v1/market/orderbook/level1?symbol="+symbol;
+	url += "/api/v1/market/allTickers";
+
+	string str_result;
+	CurlAPI::CurlGetRequest(url, str_result);
+	// cout << "inside _GetAllPrices, str_result: " << str_result << endl;
+
+	Utility::ParseStringToJson("_GetAllPrices", str_result, json_result);
+
+	if (isJsonResultValid(json_result)) {
+		string line;
+  		ifstream myfile (watchlistPath);
+  		if (myfile.is_open()) {
+    		int cnt = 0;
+    		while ( getline (myfile, line) ) {
+				Json::Value json_ticker = json_result["data"]["ticker"];
+				for (Json::Value::const_iterator iter = json_ticker.begin(); iter != json_ticker.end(); iter++)
+					if ((*iter)["symbol"] == line) {
+						result[cnt].symbol = line;
+						result[cnt++].price = Utility::JsonToDouble((*iter)["last"]);
+					}
+			}
+    		len = cnt;
+    		myfile.close();
+    	}
+	}
+}
+
+void Kucoin::getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << str << " - getSymbolPrice\n";
+	string url(KUCOIN_HOST);  
+	url += "/api/v1/market/orderbook/level1?symbol="+str;
 
 	string str_result;
 	CurlAPI::CurlGetRequest(url, str_result);
 	// cout << "inside _GetPriceBySymbol, str_result: " << str_result << endl;
 
 	Utility::ParseStringToJson("_GetPriceBySymbol", str_result, json_result);
-}
-
-void Kucoin::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
-
-	if (str == "All") {
-		Kucoin::_GetAllPrices();
-		if (_IsJsonResultValid(json_result)) {
-			int cnt = 0;
-			Json::Value json_ticker = json_result["data"]["ticker"];
-			for (Json::Value::const_iterator iter = json_ticker.begin(); iter != json_ticker.end(); iter++) {
-				result[cnt].symbol = (*iter)["symbol"].asString();
-				result[cnt].price = Utility::JsonToDouble((*iter)["last"]);
-				cnt++;
-			}
-			len = cnt;
-		}
+	if (isJsonResultValid(json_result)) {
+		result[0].symbol = str;
+		result[0].price = Utility::JsonToDouble(json_result["data"]["price"]);
+		len = 1;
 	}
-	else if (str == "WatchList") {
-		Kucoin::_GetAllPrices();
-		if (_IsJsonResultValid(json_result)) {
-			string line;
-	  		ifstream myfile ("config/WatchlistKucoin.txt");
-	  		if (myfile.is_open()) {
-	    		int cnt = 0;
-	    		while ( getline (myfile, line) ) {
-					Json::Value json_ticker = json_result["data"]["ticker"];
-					for (Json::Value::const_iterator iter = json_ticker.begin(); iter != json_ticker.end(); iter++)
-						if ((*iter)["symbol"] == line) {
-							result[cnt].symbol = line;
-							result[cnt].price = Utility::JsonToDouble((*iter)["last"]);
-							cnt++;
-						}
-				}
-	    		len = cnt;
-	    		myfile.close();
-	    	}
-		}
-		else {
-			cout << "Cannot _GetAllPrices\n";
-			len = 0;
-			return;
-		}
-	}
-	else {
-		Kucoin::_GetPriceBySymbol(str);
-		if (_IsJsonResultValid(json_result)) {
-			result[0].symbol = str;
-			result[0].price = Utility::JsonToDouble(json_result["data"]["price"]);
-			len = 1;
-		}
-	} 
-}
-
-void Kucoin::ShowPrices(string str) {
-	Exchange::ShowPrices(str);
 }
 
 void Kucoin::_GetAccountInfoBalances() {
@@ -325,7 +314,7 @@ void Kucoin::_GetAccountInfoBalances() {
 
 	Utility::ParseStringToJson("_GetAccountInfoBalances", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
+	if (isJsonResultValid(json_result)) {}
 	else {
 		cout << "json_result is not valid\n";
 		cout << json_result << endl;
@@ -341,7 +330,7 @@ map <string, map<string, double>> Kucoin::GetBalances(_GetBalancesModes mode) {
 	// cout << json_data << endl;
 	
 	if (mode == BANK_AND_EXCHANGE_MODE || mode == ONLY_BANK_MODE) {
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (Json::Value::const_iterator json_iter = json_data.begin(); json_iter != json_data.end(); json_iter++) {
 				if ((*json_iter)["type"].asString() == "main") {
 					string symbol = (*json_iter)["currency"].asString();
@@ -357,7 +346,7 @@ map <string, map<string, double>> Kucoin::GetBalances(_GetBalancesModes mode) {
 	}
 
 	if (mode == BANK_AND_EXCHANGE_MODE || mode == ONLY_EXCHANGE_MODE) {
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			for (Json::Value::const_iterator json_iter = json_data.begin(); json_iter != json_data.end(); json_iter++) {
 				if ((*json_iter)["type"].asString() == "trade") {
 					string symbol = (*json_iter)["currency"].asString();
@@ -373,10 +362,6 @@ map <string, map<string, double>> Kucoin::GetBalances(_GetBalancesModes mode) {
 	}
 
 	return userBalance;
-}
-
-void Kucoin::ShowBalances() {
-	Exchange::ShowBalances();
 }
 
 void Kucoin::ShowBankBalances() {
@@ -436,7 +421,7 @@ map <string, StructBalanceInUSDT> Kucoin::ShowBalanceInUSDT() {
 	string str = "All";
 	SymbolPriceSrtuct result[2000];
 	int len;
-	Kucoin::GetPrices(str, result, len);
+	this->GetPrices(str, result, len);
 
 
 	// Calculate whole balances
@@ -499,13 +484,18 @@ bool Kucoin::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
 
 	Utility::ParseStringToJson("Kucoin::GetOpenOrders", str_result, jsonOpenOrders);
 
-	if (_IsJsonResultValid(jsonOpenOrders)) 
+	if (isJsonResultValid(jsonOpenOrders)) 
 		return true;
 	else {
 		cout << "jsonOpenOrders is not valid\n";
 		cout << jsonOpenOrders << endl;
 		return false;
 	}
+}
+
+bool Kucoin::GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) {
+	cout << RED("This prototype is only used in Coinex\n");
+	return false;
 }
 
 void Kucoin::ShowOpenOrders(string str) {
@@ -547,7 +537,7 @@ void Kucoin::_GetMyTrades(string &str, int PastDay) {
 
 	Utility::ParseStringToJson("Kucoin::_GetMyTrades", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result)) {}
+	if (isJsonResultValid(json_result)) {}
 	else {
 		cout << "json_result is not valid\n";
 		cout << json_result << endl;
@@ -564,7 +554,7 @@ void Kucoin::ShowMyTrades(string str, int PastDay) {
   		if (myfile.is_open()) {
     		while ( getline (myfile, line) ) {
 				Kucoin::_GetMyTrades(line, PastDay);
-				if (_IsJsonResultValid(json_result)) {
+				if (isJsonResultValid(json_result)) {
 					// cout << json_result << endl;
 					Json::Value json_items = json_result["data"]["items"];
 					for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++)
@@ -586,7 +576,7 @@ void Kucoin::ShowMyTrades(string str, int PastDay) {
 	}
 	else {
 		Kucoin::_GetMyTrades(str, PastDay);
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			// cout << json_result << endl;
 			Json::Value json_items = json_result["data"]["items"];
 			for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++)
@@ -615,7 +605,7 @@ void Kucoin::ShowTradesPerformance(string &str, int PastDay) {
 				Kucoin::_GetMyTrades(line, PastDay);
 				// cout << json_result << endl;
 
-				if (_IsJsonResultValid(json_result)) {
+				if (isJsonResultValid(json_result)) {
 					Json::Value json_items = json_result["data"]["items"];
 					for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++) {
 						cout << "symbol: " << YELLOW((*iter)["symbol"]) << ", price: " << YELLOW((*iter)["price"]) <<
@@ -645,7 +635,7 @@ void Kucoin::ShowTradesPerformance(string &str, int PastDay) {
 		Kucoin::_GetMyTrades(str, PastDay);
 		// cout << json_result << endl;
 
-		if (_IsJsonResultValid(json_result)) {
+		if (isJsonResultValid(json_result)) {
 			Json::Value json_items = json_result["data"]["items"];
 			for (Json::Value::const_iterator iter = json_items.begin(); iter != json_items.end(); iter++) {
 				cout << "symbol: " << YELLOW((*iter)["symbol"]) << ", price: " << YELLOW((*iter)["price"]) <<
@@ -689,7 +679,7 @@ void Kucoin::ShowDepositAddress(string &str) {
 
 	Utility::ParseStringToJson("Kucoin::ShowDepositAddress", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
@@ -720,7 +710,7 @@ void Kucoin::ShowDepositHistory(string str) {
 
 	Utility::ParseStringToJson("Kucoin::ShowDepositHistory", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
@@ -751,7 +741,7 @@ void Kucoin::ShowWithdrawHistory(string str) {
 
 	Utility::ParseStringToJson("Kucoin::ShowWithdrawHistory", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
@@ -759,8 +749,9 @@ void Kucoin::ShowWithdrawHistory(string str) {
 	}
 }
 
-void Kucoin::SendOrder(string symbol, string side, string type, double size, double price) {
-	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", size: " << size << ", price: " << price << endl << endl;
+void Kucoin::SendOrder(	string symbol, string side, string type, 
+						double quantity, double price, double stopPrice, double stopLimitPrice) {
+	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", size: " << quantity << ", price: " << price << endl << endl;
 
 	if (Utility::AreYouSure("")) {
 		string url(KUCOIN_HOST);  
@@ -770,7 +761,7 @@ void Kucoin::SendOrder(string symbol, string side, string type, double size, dou
 		string postData;
 		string temp;
 		Kucoin::_createJsonData(postData, symbol, temp, temp, temp, temp, 0, 0, 0, 0);
-		// Kucoin::_createJsonData(postData, symbol, temp, side, temp, temp, size, 0, price, 0);
+		// Kucoin::_createJsonData(postData, symbol, temp, side, temp, temp, quantity, 0, price, 0);
 
 		StructKucoinHttpFields fields;
 		_FillKucoinFields(fields, endpoint, "POST", postData);
@@ -781,7 +772,7 @@ void Kucoin::SendOrder(string symbol, string side, string type, double size, dou
 
 		Utility::ParseStringToJson("Kucoin::SendOrder", str_result, json_result);
 
-		if (_IsJsonResultValid(json_result))
+		if (isJsonResultValid(json_result))
 			cout << json_result << endl;
 		else {
 			cout << "json_result is not valid\n";
@@ -809,7 +800,7 @@ void Kucoin::CancelOrder(string symbol, string orderId) {
 
 	Utility::ParseStringToJson("Kucoin::CancelOrder", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
@@ -841,7 +832,7 @@ void Kucoin::CancelAllOrders(string symbol) {
 
 	Utility::ParseStringToJson("Kucoin::CancelAllOrders", str_result, json_result);
 
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";
@@ -883,7 +874,7 @@ void Kucoin::TransferBetweenBankAndExchange(string currency, double amount, stri
 
 	Utility::ParseStringToJson("TransferBetweenBankAndExchange", str_result, json_result);
 	
-	if (_IsJsonResultValid(json_result))
+	if (isJsonResultValid(json_result))
 		cout << json_result << endl;
 	else {
 		cout << "json_result is not valid\n";

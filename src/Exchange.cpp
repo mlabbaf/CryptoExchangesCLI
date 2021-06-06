@@ -7,7 +7,7 @@ using namespace std;
 
 
 void Exchange::Init() {
-	Exchange::InitApiSecret();
+	this->InitApiSecret();
 }
 
 void Exchange::Cleanup() {
@@ -16,6 +16,10 @@ void Exchange::Cleanup() {
 
 void Exchange::setKeyFilePath(string exchangeKeyFilePath) {
 	keyFilePath = exchangeKeyFilePath;
+}
+
+void Exchange::setWatchlistPath(string exchangeWatchlistPath) {
+	watchlistPath = exchangeWatchlistPath;
 }
 
 void Exchange::InitApiSecret() {
@@ -57,12 +61,21 @@ void Exchange::InitApiSecretPassphrase() {
 	}
 }
 
+void Exchange::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
+	if (str == "All")
+		this->getAllPrices(str, result, len);
+	else if (str == "WatchList")
+		this->getWatchlistPrices(str, result, len);
+	else 
+		getSymbolPrice(str, result, len);
+}
+
 void Exchange::ShowPrices(string str) {
 	// cout << "Inside ShowPrices\n";
 
 	SymbolPriceSrtuct result[10000];
 	int len;
-	GetPrices(str, result, len);
+	this->GetPrices(str, result, len);
 
 	for (int i=0; i<len; i++)
 		cout << "symbol: " << result[i].symbol << ", last_price: " << YELLOW(result[i].price) << endl;

@@ -35,7 +35,7 @@ struct OrderParams {
 	double price;
 	double stopPrice;
 	double origQty;
-	long orderId;
+	string orderId;
 };
 
 struct HodlingParams {

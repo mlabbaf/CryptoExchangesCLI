@@ -23,6 +23,10 @@ using namespace std;
 class Utility
 {
 public:
+	static void notSupported() {
+		cout << RED("This function is not supported\n");
+	}
+
 	static double JsonToDouble(Json::Value json_val) {
 		return atof(json_val.asString().c_str());
 	}

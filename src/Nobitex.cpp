@@ -14,22 +14,25 @@ Nobitex* Nobitex::getInstance() {
 }
 
 
-// static bool _IsJsonResultValid(Json::Value json_result) {
-// 	// cout << json_result << endl;
-// 	if (json_result.isObject()) {
-// 		if (json_result.isMember("code")) {
-// 			cout << "json_result is invalid: " << json_result << endl;
-// 			return false;
-// 		}
-// 	}
+bool Nobitex::isJsonResultValid(Json::Value json_result) {
+	cout << json_result["status"] << endl;
+	if (json_result["status"] != "ok")
+		return false;
 
-// 	if (json_result.isNull()) {
-// 		cout << "json_result is invalid: " << json_result << endl;
-// 		return false;
-// 	}
+	// if (json_result.isObject()) {
+	// 	if (json_result.isMember("code")) {
+	// 		cout << "json_result is invalid: " << json_result << endl;
+	// 		return false;
+	// 	}
+	// }
 
-// 	return true;
-// } 
+	// if (json_result.isNull()) {
+	// 	cout << "json_result is invalid: " << json_result << endl;
+	// 	return false;
+	// }
+
+	return true;
+} 
 
 // // symbol is necessary
 // int Nobitex::_pathQueryStringToUrl(	string &url, string baseAddress, string symbol, string asset, string coin, string network,
@@ -105,7 +108,7 @@ Nobitex* Nobitex::getInstance() {
 
 // int Nobitex::_pathQueryStringToUrl_2(string &url, string baseAddress, string symbol, string side, string type, 
 // 									 string timeInForce, double quantity, double price, double stopPrice, 
-// 									 double stopLimitPrice, long orderId, long recvWindow) {
+// 									 double stopLimitPrice, string orderId, long recvWindow) {
 // 	url = Nobitex_HOST;
 // 	url += baseAddress;
 
@@ -169,9 +172,9 @@ Nobitex* Nobitex::getInstance() {
 // 		querystring.append(to_string(stopLimitPrice));
 // 	}
 	
-// 	if (orderId > 0) {
+// 	if (orderId.size() != 0) {
 // 		querystring.append("&orderId=");
-// 		querystring.append(to_string(orderId));
+// 		querystring.append(orderId);
 // 	}
 
 // 	if (recvWindow > 0 ) {
@@ -205,7 +208,7 @@ Nobitex* Nobitex::getInstance() {
 // 	}
 // }
 
-// void Nobitex::ShowServerTime() {
+void Nobitex::ShowServerTime() {
 // 	// cout << "Nobitex::ShowServerTime\n";
 // 	string url(Nobitex_HOST);  
 // 	url += "/api/v1/time";
@@ -216,14 +219,14 @@ Nobitex* Nobitex::getInstance() {
 
 // 	Utility::ParseStringToJson("Nobitex::ShowServerTime", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result)) 
+// 	if (isJsonResultValid(json_result)) 
 // 		// cout << json_result << endl;
 // 		cout << fastWriter.write(json_result) << endl;
 // 	else {
 // 		cout << "json_result is not valid\n";
 // 		cout << json_result << endl;
 // 	}
-// }
+}
 
 // void Nobitex::TestConnectivity() {
 // 	// cout << "Nobitex::TestConnectivity\n";
@@ -236,7 +239,7 @@ Nobitex* Nobitex::getInstance() {
 
 // 	Utility::ParseStringToJson("Nobitex::TestConnectivity", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		// cout << json_result << endl;
 // 		cout << fastWriter.write(json_result) << endl;
 // 	else {
@@ -259,7 +262,7 @@ Nobitex* Nobitex::getInstance() {
 
 // 	Utility::ParseStringToJson("Nobitex::ShowAccountStatus", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		cout << json_result << endl;
 // 		// cout << fastWriter.write(json_result) << endl;
 // 	else {
@@ -279,7 +282,7 @@ Nobitex* Nobitex::getInstance() {
 
 // 	Utility::ParseStringToJson("Nobitex::ShowExchangeInfo", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		cout << json_result << endl;
 // 		// cout << fastWriter.write(json_result) << endl;
 // 	else {
@@ -288,99 +291,62 @@ Nobitex* Nobitex::getInstance() {
 // 	}
 // }
 
-// void Nobitex::_GetAllPrices() {
-// 	// cout << "GetAllPrices\n";
-// 	string url(Nobitex_HOST);  
-// 	url += "/api/v3/ticker/price";
-
-// 	string str_result;
-// 	CurlAPI::CurlGetRequest(url, str_result);
-// 	// cout << "inside GetAllPrices, str_result: " << str_result << endl;
-
-// 	Utility::ParseStringToJson("Nobitex::_GetAllPrices", str_result, json_result);
-// 	if (_IsJsonResultValid(json_result)) {}
-// 	else {
-// 		cout << "json_result is not valid\n";
-// 		cout << json_result << endl;
-// 	}
-// }
-
-// void Nobitex::_GetPriceBySymbol(string &symbol) {
-// 	// cout << symbol << " - _GetPriceBySymbol\n";
-// 	string url(Nobitex_HOST);  
-// 	transform(symbol.begin(), symbol.end(), symbol.begin(), ::toupper);
-// 	url += "/api/v3/ticker/price?symbol="+symbol;
-
-// 	string str_result;
-// 	CurlAPI::CurlGetRequest(url, str_result);
-// 	// cout << "inside _GetPriceBySymbol, str_result: " << str_result << endl;
-
-// 	Utility::ParseStringToJson("Nobitex::_GetPriceBySymbol", str_result, json_result);
-
-// 	if (_IsJsonResultValid(json_result)) {}
-// 	else {
-// 		cout << "json_result is not valid\n";
-// 		cout << json_result << endl;
-// 	}
-// }
-
-void Nobitex::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
-// 	int counter = 1;
-
-// 	if (str == "All") {
-// 		Nobitex::_GetAllPrices();
-// 		if (_IsJsonResultValid(json_result)) {
-// 			int cnt = 0;
-// 			for (Json::Value::const_iterator iter = json_result.begin(); iter != json_result.end(); iter++) {
-// 				result[cnt].symbol = (*iter)["symbol"].asString();
-// 				result[cnt].price = Utility::JsonToDouble((*iter)["price"]);
-// 				cnt++;
-// 			}
-// 			len = cnt;
-// 		}
-// 	}
-// 	else if (str == "WatchList") {
-// 		Json::Value::const_iterator iter;
-// 		Nobitex::_GetAllPrices();
-// 		string line;
-//   		ifstream myfile ("config/WatchlistNobitex.txt");
-//   		if (myfile.is_open()) {
-//   			int cnt = 0;
-//     		while ( getline (myfile, line) ) {
-//     			if (_IsJsonResultValid(json_result)) {
-//     				for (iter = json_result.begin(); iter != json_result.end(); iter++)
-// 						if ((*iter)["symbol"] == line) {
-// 							// cout << *iter << endl;
-// 							// cout << fastWriter.write(*iter);
-// 							result[cnt].symbol = (*iter)["symbol"].asString();
-// 							result[cnt].price = Utility::JsonToDouble((*iter)["price"]);
-// 							cnt++;
-// 						}
-//     			}
-// 				else {
-// 					cout << "json_result is not valid\n";
-// 					cout << json_result << endl;
-// 				}
-//     		}
-//     		len = cnt;
-//     		myfile.close();
-//     	}
-//     	else
-//     		cout << "myfile is not open\n";
-// 	}
-// 	else {
-// 		Nobitex::_GetPriceBySymbol(str);
-// 		if (_IsJsonResultValid(json_result)) {
-// 			result[0].symbol = json_result["symbol"].asString();
-// 			result[0].price = Utility::JsonToDouble(json_result["price"]);
-// 			len = 1;
-// 		}
-// 	}
+void Nobitex::getAllPrices(string str, SymbolPriceSrtuct* result, int &len) {
+	cout << RED ("Coinex is not supporting All option\n");
 }
 
-// void Nobitex::ShowPrices(string str) {
-// 	Exchange::ShowPrices(str);
-// }
+void Nobitex::getWatchlistPrices(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << "GetAllPrices\n";
+	// string url(NOBITEX_HOST);  
+	// url += "/api/v3/ticker/price";
+
+	// string str_result;
+	// CurlAPI::CurlGetRequest(url, str_result);
+	// // cout << "inside GetAllPrices, str_result: " << str_result << endl;
+
+	// Utility::ParseStringToJson("Nobitex::getAllPrices", str_result, json_result);
+	// Json::Value::const_iterator iter;
+	// string line;
+	// ifstream myfile (watchlistPath);
+	// int cnt = 0;
+	// if (myfile.is_open()) {
+	// 	while ( getline (myfile, line) ) {
+	// 		if (isJsonResultValid(json_result)) {
+	// 			for (iter = json_result.begin(); iter != json_result.end(); iter++)
+	// 				if ((*iter)["symbol"] == line) {
+	// 					result[cnt].symbol = (*iter)["symbol"].asString();
+	// 					result[cnt++].price = Utility::JsonToDouble((*iter)["price"]);
+	// 				}
+	// 			}
+	// 		else
+	// 			cout << json_result << endl;
+	// 	}
+	// }
+	// len = cnt;
+	// myfile.close();
+}
+
+void Nobitex::getSymbolPrice(string str, SymbolPriceSrtuct* result, int &len) {
+	// cout << str << " - getSymbolPrice\n";
+	string url(NOBITEX_HOST);  
+	transform(str.begin(), str.end(), str.begin(), ::toupper);
+	url += "/v2/trades/"+str;
+
+	string str_result;
+	CurlAPI::CurlGetRequest(url, str_result);
+	// cout << "inside getSymbolPrice, str_result: " << str_result << endl;
+
+	Utility::ParseStringToJson("Nobitex::getSymbolPrice", str_result, json_result);
+	// cout << "inside getSymbolPrice, json_result: " << json_result << endl;
+
+	if (isJsonResultValid(json_result)) {
+		result[0].symbol = str;
+		result[0].price = Utility::JsonToDouble(json_result["trades"][0]["price"]);
+		len = 1;
+	}
+	else
+		cout << json_result << endl;
+}
 
 // void Nobitex::_GetAccountInfoBalances() {
 // 	string url;
@@ -398,7 +364,7 @@ void Nobitex::GetPrices(string &str, SymbolPriceSrtuct* result, int &len) {
 
 // 	Utility::ParseStringToJson("Nobitex::_GetAccountInfoBalances", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result)) {}
+// 	if (isJsonResultValid(json_result)) {}
 // 	else {
 // 		cout << "json_result is not valid\n";
 // 		cout << json_result << endl;
@@ -413,7 +379,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 	
 // 	map < string, map <string,double> >  userBalance;
 
-// 	if (_IsJsonResultValid(json_result)) {
+// 	if (isJsonResultValid(json_result)) {
 // 		if (json_result["balances"].size() == 0)
 // 			cout << json_result << endl;
 
@@ -431,11 +397,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 	return userBalance;
 }
 
-// void Nobitex::ShowBalances() {
-// 	Exchange::ShowBalances();
-// }
-
-// map <string, StructBalanceInUSDT> Nobitex::ShowBalanceInUSDT() {
+map <string, StructBalanceInUSDT> Nobitex::ShowBalanceInUSDT() {
 // 	map <string, StructBalanceInUSDT> balanceResult;
 
 // 	// Get balance
@@ -487,9 +449,9 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 	// cout << "userBalance.size: " << userBalance.size() << ", jsonNobitex.size: " << jsonNobitex.size() << endl;
 
 // 	return balanceResult;
-// }
+}
 
-// bool Nobitex::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
+bool Nobitex::GetOpenOrders(string &str, Json::Value &jsonOpenOrders) {
 // 	string url;
 // 	string baseAddress;
 
@@ -513,15 +475,21 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 	// // 	return false;
 // 	// return jsonOpenOrders.isArray();
 	
-// 	// return _IsJsonResultValid(jsonOpenOrders);
-// 	if (_IsJsonResultValid(jsonOpenOrders)) 
+// 	// return isJsonResultValid(jsonOpenOrders);
+// 	if (isJsonResultValid(jsonOpenOrders)) 
 // 		return true;
 // 	else {
 // 		cout << "jsonOpenOrders is not valid\n";
 // 		cout << jsonOpenOrders << endl;
 // 		return false;
 // 	}
-// }
+}
+
+
+bool Nobitex::GetOpenOrders(string &str, vector <SymbolOrderStruct> &vecOpenOrders) {
+	cout << RED("This prototype is only used in Coinex\n");
+	return false;
+}
 
 // void Nobitex::_GetAllOrders(string &str, int PastDay) {
 // 	string url;
@@ -544,7 +512,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 	Utility::ParseStringToJson("Nobitex::_GetAllOrders", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result)) {}
+// 	if (isJsonResultValid(json_result)) {}
 // 	else {
 // 		cout << "json_result is not valid\n";
 // 		cout << json_result << endl;
@@ -581,7 +549,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 //     		while ( getline (myfile, line) ) {
 // 				Nobitex::_GetAllOrders(line, PastDay);
 // 				// if (json_result.isArray())
-// 				if (_IsJsonResultValid(json_result))
+// 				if (isJsonResultValid(json_result))
 // 					for (int i=0 ; i<json_result.size(); i++)
 // 					// if (json_result[i].isMember("symbol"))
 // 						cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", side: " << json_result[i]["side"] << 
@@ -600,7 +568,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 		Nobitex::_GetAllOrders(str, PastDay);
 // 		// cout << json_result << endl;
 // 		// if (json_result.isArray())
-// 		if (_IsJsonResultValid(json_result))
+// 		if (isJsonResultValid(json_result))
 // 			for (int i=0 ; i<json_result.size(); i++)
 // 			// if (json_result[i].isMember("symbol"))
 // 				cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", side: " << json_result[i]["side"] << 
@@ -630,7 +598,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 	Utility::ParseStringToJson("Nobitex::_GetMyTrades", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result)) {}
+// 	if (isJsonResultValid(json_result)) {}
 // 	else {
 // 		cout << "json_result is not valid\n";
 // 		cout << json_result << endl;
@@ -647,7 +615,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 //   		if (myfile.is_open()) {
 //     		while ( getline (myfile, line) ) {
 // 				Nobitex::_GetMyTrades(line, PastDay);
-// 				if (_IsJsonResultValid(json_result))
+// 				if (isJsonResultValid(json_result))
 // 					// cout << json_result << endl;
 // 					for (int i=0 ; i<json_result.size(); i++)
 // 						cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << 
@@ -669,7 +637,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 	else {
 // 		Nobitex::_GetMyTrades(str, PastDay);
 // 		// cout << json_result << endl;
-// 		if (_IsJsonResultValid(json_result))
+// 		if (isJsonResultValid(json_result))
 // 			for (int i=0 ; i<json_result.size(); i++)
 // 				cout << "symbol: " << KYEL << json_result[i]["symbol"] << RESET << ", price: " << KYEL << json_result[i]["price"] << RESET << 
 // 						", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
@@ -695,7 +663,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 				Nobitex::_GetMyTrades(line, PastDay);
 // 				// cout << json_result << endl;
 
-// 				if (_IsJsonResultValid(json_result)) {
+// 				if (isJsonResultValid(json_result)) {
 // 					for (int i=0 ; i<json_result.size(); i++) {
 // 						cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 // 								", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
@@ -724,7 +692,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 		Nobitex::_GetMyTrades(str, PastDay);
 // 		// cout << json_result << endl;
 
-// 		if (_IsJsonResultValid(json_result)) {
+// 		if (isJsonResultValid(json_result)) {
 // 			for (int i=0 ; i<json_result.size(); i++) {
 // 				cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 // 						", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
@@ -748,7 +716,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 	// Nobitex::_GetMyTrades(str, PastDay);
 // 	// // cout << json_result << endl;
 
-// 	// if (_IsJsonResultValid(json_result)) {
+// 	// if (isJsonResultValid(json_result)) {
 // 	// 	for (int i=0 ; i<json_result.size(); i++) {
 // 	// 		cout << "symbol: " << YELLOW(json_result[i]["symbol"]) << ", price: " << YELLOW(json_result[i]["price"]) << 
 // 	// 				", qty :" << json_result[i]["qty"] << ", quoteQty: " << json_result[i]["quoteQty"] << 
@@ -793,7 +761,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 	Utility::ParseStringToJson("Nobitex::ShowDepositAddress", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		cout << json_result << endl;
 // 	else {
 // 		cout << "json_result is not valid\n";
@@ -822,7 +790,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 	Utility::ParseStringToJson("Nobitex::ShowDepositHistory", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		cout << json_result << endl;
 // 	else {
 // 		cout << "json_result is not valid\n";
@@ -851,7 +819,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 	Utility::ParseStringToJson("Nobitex::ShowWithdrawHistory", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		cout << json_result << endl;
 // 	else {
 // 		cout << "json_result is not valid\n";
@@ -859,8 +827,8 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 	}
 // }
 
-// void Nobitex::SendOrder(string symbol, string side, string type, double quantity, 
-// 						double price, double stopPrice, double stopLimitPrice) {
+void Nobitex::SendOrder(string symbol, string side, string type, 
+						double quantity, double price, double stopPrice, double stopLimitPrice) {
 // 	cout << "symbol: " << symbol << ", side: " << side << ", type: " << type << ", quantity: " << quantity << ", price: " << price << ", stopPrice: " << stopPrice << ", stopLimitPrice: " << stopLimitPrice << endl << endl;
 
 // 	if (Utility::AreYouSure("")) {
@@ -874,13 +842,13 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 		string temp;
 // 		if (type == "LIMIT" || type == "STOP_LOSS_LIMIT")
-// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, 0, 0, 0, myRecvWindow);
+// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, 0, 0, temp, myRecvWindow);
 // 		else if (type == "MARKET")
-// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, 0, 0, 0, 0, myRecvWindow);
+// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, 0, 0, 0, temp, myRecvWindow);
 // 		else if (type == "STOP_LOSS")
-// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, price, 0, 0, 0, myRecvWindow);
+// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, temp, quantity, price, 0, 0, temp, myRecvWindow);
 // 		else if (type == "OCO")
-// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, stopPrice, stopLimitPrice, 0, myRecvWindow);
+// 			_pathQueryStringToUrl_2(url, baseAddress, symbol, side, type, "GTC", quantity, price, stopPrice, stopLimitPrice, temp, myRecvWindow);
 // 		else {
 // 			cout << "Invalid type " << type << endl;
 // 		}	
@@ -892,7 +860,7 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 		Utility::ParseStringToJson("Nobitex::SendOrder", str_result, json_result);
 
-// 		if (_IsJsonResultValid(json_result))
+// 		if (isJsonResultValid(json_result))
 // 			cout << json_result << endl;
 // 		else {
 // 			cout << "json_result is not valid\n";
@@ -900,9 +868,9 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 // 		}
 // 		exit(0);
 // 	}
-// }
+}
 
-// void Nobitex::CancelOrder(string symbol, long orderId) {
+void Nobitex::CancelOrder(string symbol, string orderId) {
 // 	cout << "symbol: " << symbol << ", orderId: " << orderId << endl << endl;
 
 // 	string url;
@@ -918,12 +886,17 @@ map <string, map<string, double>> Nobitex::GetBalances(_GetBalancesModes mode) {
 
 // 	Utility::ParseStringToJson("Nobitex::CancelOrder", str_result, json_result);
 
-// 	if (_IsJsonResultValid(json_result))
+// 	if (isJsonResultValid(json_result))
 // 		cout << json_result << endl;
 // 	else {
 // 		cout << "json_result is not valid\n";
 // 		cout << json_result << endl;
 // 	}
-// }	
+}	
+
+void Nobitex::CancelAllOrders(string symbol) {
+	Utility::notSupported();
+}
+
 
 
