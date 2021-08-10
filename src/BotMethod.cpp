@@ -248,6 +248,57 @@ void BotMethod::DollarPriceInRamzinex() {
 	cout << endl << "\tMaximum Sell option: " << BuyMax << endl << endl;
 }
 
+static void _checkPrice(double price, double &min, double &max) {
+	if (price < min)
+		min = price;
+	if (price > max)
+		max = price;
+}
+
+void BotMethod::DollarPriceInNobitex() {
+	int lenBinance = 0, lenNobitex = 0;
+	SymbolPriceSrtuct priceNobitex[200], priceBinance[10000], priceBinanceTemp[10000];
+
+	string str;
+	str = "All";
+	binance->GetPrices(str, priceBinance, lenBinance);
+	copy(begin(priceBinance), end(priceBinance), begin(priceBinanceTemp));
+	cout << "Successfully GetPrices from Binance\n";
+	for (int i=0; i<lenBinance; i++)
+		if (priceBinanceTemp[i].symbol.find("USDT") != string::npos)
+			priceBinanceTemp[i].symbol.erase(priceBinanceTemp[i].symbol.find("USDT")); 
+
+	str = "WatchList";
+	nobitex->GetPrices(str, priceNobitex, lenNobitex);
+	cout << "Successfully GetPrices from Nobitex\n";
+
+	double price, minPrice = 10000000, maxPrice = 0;
+	string nobitexCoin, binanceCoin; 
+	for (int i=0; i<lenNobitex; i++) {
+		if (priceNobitex[i].symbol.find("IRT") != string::npos) {
+			if (priceNobitex[i].symbol == "USDTIRT") {
+				cout << "\t" << priceNobitex[i].symbol << " ----\t" << priceNobitex[i].price << endl;
+				_checkPrice(priceNobitex[i].price, minPrice, maxPrice);
+				continue;
+			}
+			nobitexCoin = priceNobitex[i].symbol.erase(priceNobitex[i].symbol.find("IRT")); 
+			for (int j=0; j<lenBinance; j++)
+				if (priceBinance[j].symbol.find("USDT") != string::npos) {
+					binanceCoin = priceBinanceTemp[j].symbol;
+					if (nobitexCoin == binanceCoin) {
+						price = priceNobitex[i].price/priceBinance[j].price;
+						cout << "\t" << priceNobitex[i].symbol << " ----\t" << price << " ("	<<  priceNobitex[i].price << " , " << priceBinance[j].price << ")" << endl;
+						_checkPrice(price, minPrice, maxPrice);
+						break;
+					}
+				}
+		}
+	}
+
+	cout << GREEN("\tMaximum Dollar option: ") << GREEN(maxPrice) << endl;
+	cout << GREEN("\tMinimum Dollar option: ") << GREEN(minPrice) << endl;
+}
+
 static void PrintOrderParam(OrderParams &orderParams) {
 	cout << orderParams.pair << " - " << orderParams.side << " - " << orderParams.type << " - " << 
 			orderParams.price << " - " << orderParams.stopPrice << " - " << orderParams.origQty << 
@@ -1268,6 +1319,7 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 	if (mode & BINANCE) {
 		str = "WatchList";
 		binance->GetPrices(str, priceBinance, lenBinance);
+		cout << "Successfully GetPrices from Binance\n";
 	}
 
 	// if (mode & RAMZINEX) {
@@ -1278,21 +1330,25 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 	if (mode & COINEX) {
 		str = "WatchList";
 		coinex->GetPrices(str, priceCoinex, lenCoinex);
+		cout << "Successfully GetPrices from Coinex\n";
 	}
 
 	if (mode & HITBTC) {
 		str = "WatchList";
 		hitbtc->GetPrices(str, priceHitBTC, lenHitBTC);
+		cout << "Successfully GetPrices from HitBTC\n";
 	}
 
 	if (mode & KUCOIN) {
 		str = "WatchList";
 		kucoin->GetPrices(str, priceKucoin, lenKucoin);
+		cout << "Successfully GetPrices from Kucoin\n";
 	}
 
 	if (mode & NOBITEX) {
 		str = "WatchList";
 		nobitex->GetPrices(str, priceNobitex, lenNobitex);
+		cout << "Successfully GetPrices from Nobitex\n";
 	}
 	
 
@@ -1314,26 +1370,27 @@ void BotMethod::ShowAllExchangesPrice(int mode) {
 		mapExchanges[priceKucoin[i].symbol].kucoinPrice = priceKucoin[i].price;
 	}
 	for (int i=0; i<lenNobitex; i++)
-		mapExchanges[priceNobitex[i].symbol].nobitexPrice = priceNobitex[i].price;
+		if (priceNobitex[i].symbol.find("IRT") == string::npos)
+			mapExchanges[priceNobitex[i].symbol].nobitexPrice = priceNobitex[i].price;
 	
 
 	cout << endl;
-	cout << "\t" << setfill('-') << setw(121) << "" << setfill(' ') << endl;
-	cout << "\t|" << setw(15) << "Symbol     |" << setw(15) << "Binance    |" << setw(15) << "Coinex    |" 
+	cout << "   " << setfill('-') << setw(136) << "" << setfill(' ') << endl;
+	cout << "   |" << setw(15) << "Symbol     |" << setw(15) << "Binance    |" << setw(15) << "Coinex    |" 
 				<< setw(15) << "HitBTC    |" << setw(15) << "Kucoin    |" << setw(15) << "Nobitex    |" 
 				<< setw(15) << "Minimum    |" << setw(15) << "Maximum    |" << setw(15) << "Percent    |" << "\n";
-	cout << "\t" << setfill('-') << setw(121) << "" << setfill(' ') << endl;
+	cout << "   " << setfill('-') << setw(136) << "" << setfill(' ') << endl;
 	double min, max;
 	for (map <string, strcutExchangesPrices>::iterator iter = mapExchanges.begin(); iter != mapExchanges.end(); iter++) {
 		_findMinAndMaxFromStrcutExchangesPrices(iter->second, min, max);
-		cout << "\t|" << setw(15) << iter->first+"    |"
+		cout << "   |" << setw(15) << iter->first+"    |"
 					<< setw(15) << to_string(iter->second.binancePrice) + "  |" << setw(15) << to_string(iter->second.coinexPrice) + "  |"
 					<< setw(15) << to_string(iter->second.hitBTCPrice) + "  |" << setw(15) << to_string(iter->second.kucoinPrice) + "  |"
 					<< setw(15) << to_string(iter->second.nobitexPrice) + "  |" 
 					<< setw(15) << to_string(min) + "  |" << setw(15) << to_string(max) + "  |" 
 					<< "  " << YELLOW(to_string((max-min)/min*100) + " %  ") << "|" << endl;
 	}
-	cout << "\t" << setfill('-') << setw(121) << "" << endl;
+	cout << "   " << setfill('-') << setw(136) << "" << endl;
 	cout << endl;
 }
 

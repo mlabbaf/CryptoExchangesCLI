@@ -759,6 +759,7 @@ static string _NobitexPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (13, "BNBUSDT"));
 	MenuOption.insert(pair <int, string> (14, "LTCUSDT"));
 	MenuOption.insert(pair <int, string> (17, "EOSUSDT"));
+	MenuOption.insert(pair <int, string> (200, "USDTIRT"));
 	MenuOption.insert(pair <int, string> (201, "BTCIRT"));
 	MenuOption.insert(pair <int, string> (202, "ETHIRT"));
 	MenuOption.insert(pair <int, string> (203, "TRXIRT"));
@@ -1727,7 +1728,6 @@ void Menu::BotMenu() {
 
 	map <int, MainMenuMapValues> MapMenuOption;
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (0, MainMenuMapValues("Exit", & Exit)));
-	MapMenuOption.insert(pair <int, MainMenuMapValues> (1, MainMenuMapValues("BotDollarPriceInRamzinex", & BotMethod::DollarPriceInRamzinex)));
 	// MapMenuOption.insert(pair <int, MainMenuMapValues> (2, MainMenuMapValues("BotCheckArbitrage", & BotMethod::CheckArbitrage)));
 	// MapMenuOption.insert(pair <int, MainMenuMapValues> (3, MainMenuMapValues("BotScalping", & BotMethod::Scalping)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (4, MainMenuMapValues("BotHodling", & BotMethod::Hodling)));
@@ -1738,6 +1738,8 @@ void Menu::BotMenu() {
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (7, MainMenuMapValues("CheckHistoryHodling", & BotMethod::CheckHistoryHodling)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (8, MainMenuMapValues("CheckHistoryTrading", & BotMethod::CheckHistoryTrading)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (9, MainMenuMapValues("CheckHistoryHodlingTrading", & BotMethod::CheckHistoryHodlingTrading)));
+	MapMenuOption.insert(pair <int, MainMenuMapValues> (11, MainMenuMapValues("BotDollarPriceInRamzinex", & BotMethod::DollarPriceInRamzinex)));
+	MapMenuOption.insert(pair <int, MainMenuMapValues> (12, MainMenuMapValues("BotDollarPriceInNobitex", & BotMethod::DollarPriceInNobitex)));
 	MapMenuOption.insert(pair <int, MainMenuMapValues> (22, MainMenuMapValues("RandomBuyFromBinance", & BotMethod::RandomBuy)));
 
 	cout << "Select from following menu:\n";

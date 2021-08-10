@@ -30,6 +30,8 @@ protected:
 	string api_key;
 	string access_id;
 	string passphrase;
+	string token;
+	string exchangeName;
 
 	CURL* curl;
 	Json::Value json_result;
@@ -47,11 +49,11 @@ public:
 	}
 	void Cleanup();
 
-	void setKeyFilePath(string exchangeKeyFilePath);
-	void setWatchlistPath(string exchangeWatchlistPath);
+	void setExchangeName(string name);
 
-	void InitApiSecret();
-	void InitApiSecretPassphrase();
+	void initApiSecret();
+	void initApiSecretPassphrase();
+	void initToken();
 
 	virtual void ShowServerTime() = 0;
 	void GetPrices(string &str, SymbolPriceSrtuct* result, int &len);

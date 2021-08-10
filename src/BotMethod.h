@@ -71,6 +71,7 @@ class BotMethod
 public:
 	static void CheckArbitrage();
 	static void DollarPriceInRamzinex();
+	static void DollarPriceInNobitex();
 	static void Scalping();
 	static void Hodling();
 	static void Trading();

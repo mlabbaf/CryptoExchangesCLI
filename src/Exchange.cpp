@@ -7,22 +7,29 @@ using namespace std;
 
 
 void Exchange::Init() {
-	this->InitApiSecret();
+	string name = exchangeName;
+	transform(name.begin(), name.end(), name.begin(), ::tolower);
+	if (name == "binance" | name == "coinex" | name == "hitbtc")
+		this->initApiSecret();
+	else if (name == "kucoin")
+		this->initApiSecretPassphrase();
+	else if (name == "nobitex")
+		this->initToken();
+	else 
+		cout << RED ("Cannot Init exchangeName " + exchangeName) << endl;
 }
 
 void Exchange::Cleanup() {
 	// cout << "Successfully perform Exchange cleaning up\n";
 }
 
-void Exchange::setKeyFilePath(string exchangeKeyFilePath) {
-	keyFilePath = exchangeKeyFilePath;
+void Exchange::setExchangeName(string name) {
+	exchangeName = name;
+	keyFilePath = "config/" + name + "Keys.txt";
+	watchlistPath = "config/Watchlist" + name + ".txt";
 }
 
-void Exchange::setWatchlistPath(string exchangeWatchlistPath) {
-	watchlistPath = exchangeWatchlistPath;
-}
-
-void Exchange::InitApiSecret() {
+void Exchange::initApiSecret() {
 	string line; 
 	ifstream myfile (keyFilePath);
 	if (myfile.is_open()) {
@@ -41,7 +48,7 @@ void Exchange::InitApiSecret() {
 	}
 }
 
-void Exchange::InitApiSecretPassphrase() {
+void Exchange::initApiSecretPassphrase() {
 	string line; 
 	ifstream myfile (keyFilePath);
 	if (myfile.is_open()) {
@@ -49,9 +56,25 @@ void Exchange::InitApiSecretPassphrase() {
 		getline (myfile, secret_key);
 		getline (myfile, passphrase);
 			
-		// cout << api_key << endl;
-		// cout << secret_key << endl;
-		// cout << passphrase << endl;
+		// cout << "api_key: " << api_key << endl;
+		// cout << "secret_key: " << secret_key << endl;
+		// cout << "passphrase: " << passphrase << endl;
+
+		myfile.close();
+	}
+	else {
+		cout << RED("Cannot open " + keyFilePath + "\n");
+		exit(-1);
+	}
+}
+
+void Exchange::initToken() {
+	string line; 
+	ifstream myfile (keyFilePath);
+	if (myfile.is_open()) {
+		getline (myfile, token);
+			
+		// cout << token << endl;
 
 		myfile.close();
 	}
@@ -77,6 +100,7 @@ void Exchange::ShowPrices(string str) {
 	int len;
 	this->GetPrices(str, result, len);
 
+	cout << fixed; // In order to print price in decimal format
 	for (int i=0; i<len; i++)
 		cout << "symbol: " << result[i].symbol << ", last_price: " << YELLOW(result[i].price) << endl;
 }

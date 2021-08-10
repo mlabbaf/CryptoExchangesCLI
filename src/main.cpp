@@ -49,28 +49,23 @@ void Init() {
 	kucoin = Kucoin::getInstance();
 	nobitex = Nobitex::getInstance();
 
-	binance->setKeyFilePath("config/BinanceKeys.txt");
-	binance->setWatchlistPath("config/WatchlistBinance.txt");
+	binance->setExchangeName("Binance");
 	binance->Init();
 	binance->SetCurl(curl);
 
-	coinex->setKeyFilePath("config/CoinexKeys.txt");
-	coinex->setWatchlistPath("config/WatchlistCoinex.txt");
+	coinex->setExchangeName("Coinex");
 	coinex->Init();
 	coinex->SetCurl(curl);
 
-	hitbtc->setKeyFilePath("config/HitBTCKeys.txt");
-	hitbtc->setWatchlistPath("config/WatchlistHitBTC.txt");
+	hitbtc->setExchangeName("HitBTC");
 	hitbtc->Init();
 	hitbtc->SetCurl(curl);
 
-	kucoin->setKeyFilePath("config/KucoinKeys.txt");
-	kucoin->setWatchlistPath("config/WatchlistKucoin.txt");
+	kucoin->setExchangeName("Kucoin");
 	kucoin->Init();
 	kucoin->SetCurl(curl);
 
-	nobitex->setKeyFilePath("config/NobitexKeys.txt");
-	nobitex->setWatchlistPath("config/WatchlistNobitex.txt");
+	nobitex->setExchangeName("Nobitex");
 	nobitex->Init();
 	nobitex->SetCurl(curl);
 	
