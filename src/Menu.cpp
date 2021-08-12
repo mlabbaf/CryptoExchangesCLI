@@ -486,6 +486,7 @@ static string _HitBTCPairSubMenuList(_SubMenuListMode mode) {
 	MenuOption.insert(pair <int, string> (15, "DENTUSD"));
 	MenuOption.insert(pair <int, string> (16, "LINKUSD"));
 	MenuOption.insert(pair <int, string> (17, "EOSUSD"));
+	MenuOption.insert(pair <int, string> (23, "DOTUSD"));
 	MenuOption.insert(pair <int, string> (104, "ETHBTC"));
 	MenuOption.insert(pair <int, string> (110, "XRPBTC"));
 	MenuOption.insert(pair <int, string> (115, "DENTBTC"));
