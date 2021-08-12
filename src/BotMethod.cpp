@@ -532,7 +532,7 @@ void BotMethod::HodlingTradingHandler(_BotHodlingTradingModes mode) {
 		if (mode == HODLING_AND_TRADING_MODE || jsonMode == mode) {
 			// Get price
 			double price = -1;
-			if (history.storedIn == "Binance" || history.storedIn == "Wallet") {
+			if (history.storedIn == "Binance") {
 				for (int i=0; i<lenBinance; i++)
 					if (priceBinance[i].symbol == history.pair)
 						price = priceBinance[i].price;
@@ -542,7 +542,7 @@ void BotMethod::HodlingTradingHandler(_BotHodlingTradingModes mode) {
 					if (priceCoinex[i].symbol == history.pair)
 						price = priceCoinex[i].price;
 			}
-			else if (history.storedIn == "HitBTC") {
+			else if (history.storedIn == "HitBTC" || history.storedIn == "Ramzinex" || history.storedIn == "PancakeSwap" || history.storedIn == "Wallet") {
 				for (int i=0; i<lenHitBTC; i++)
 					if (priceHitBTC[i].symbol == history.pair)
 						price = priceHitBTC[i].price;
@@ -633,7 +633,7 @@ void BotMethod::HodlingTradingHandler(_BotHodlingTradingModes mode) {
 
 	for (vector <pair<string, prices>>::iterator iter = exchangesSorted.begin(); iter != exchangesSorted.end(); iter ++) {
 		// cout << "Exchange: " << KYEL << setw(7) << iter->first << RESET << ",  bought: " << KRED << setw (10) << iter->second.buy << RESET << ",  current: " << KGRN << setw(10) << iter->second.current << RESET << ",  ";
-		cout << "Exchange: " << YELLOWw(iter->first, 7) << ",  bought: " << REDw(iter->second.buy, 10) << ",  current: " << GREENw(iter->second.current, 10) << ",  ";
+		cout << "Exchange: " << YELLOWw(iter->first, 11) << ",  bought: " << REDw(iter->second.buy, 10) << ",  current: " << GREENw(iter->second.current, 10) << ",  ";
 		if (iter->second.current > iter->second.buy)
 			cout << GREENw(iter->second.current - iter->second.buy, 10) << " ( " << GREEN((iter->second.current - iter->second.buy)/iter->second.buy*100) << GREEN(" %") << " )\n";
 		else
@@ -1152,7 +1152,7 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 
 			// Get price
 			double price = -1;
-			if (history.storedIn == "Binance" || history.storedIn == "Wallet") {
+			if (history.storedIn == "Binance") {
 				for (int i=0; i<lenBinance; i++)
 					if (priceBinance[i].symbol == history.pair)
 						price = priceBinance[i].price;
@@ -1162,7 +1162,7 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 					if (priceCoinex[i].symbol == history.pair)
 						price = priceCoinex[i].price;
 			}
-			else if (history.storedIn == "HitBTC") {
+			else if (history.storedIn == "HitBTC" || history.storedIn == "Ramzinex" || history.storedIn == "PancakeSwap" || history.storedIn == "Wallet") {
 				for (int i=0; i<lenHitBTC; i++)
 					if (priceHitBTC[i].symbol == history.pair)
 						price = priceHitBTC[i].price;
@@ -1239,7 +1239,7 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 	sortMapBasedOnPriceDiff(exchanges, exchangesSorted);
 
 	for (vector <pair<string, prices>>::iterator iter = exchangesSorted.begin(); iter != exchangesSorted.end(); iter ++) {
-		cout << "Exchange: " << YELLOWw(iter->first, 7) << ",  bought: " << REDw(iter->second.buy, 8) << ",  sold: " << GREENw(iter->second.sell, 8) << ",  ";
+		cout << "Exchange: " << YELLOWw(iter->first, 11) << ",  bought: " << REDw(iter->second.buy, 8) << ",  sold: " << GREENw(iter->second.sell, 8) << ",  ";
 		if (iter->second.sell > iter->second.buy)
 			cout << GREENw(iter->second.diff, 8) << " ( " << GREEN(iter->second.diff/iter->second.buy*100) << GREEN(" %") << " )\n";
 		else
@@ -1258,17 +1258,17 @@ void BotMethod::CheckHistoryHodlingTradingHandler(_BotHodlingTradingModes mode) 
 void BotMethod::ShowBalanceInUSDT() {
 	map <string, StructBalanceInUSDT> balanceAllExchanges;
 
-	map <string, StructBalanceInUSDT> balanceInUSDTBinance = binance->ShowBalanceInUSDT();
+	// map <string, StructBalanceInUSDT> balanceInUSDTBinance = binance->ShowBalanceInUSDT();
 	map <string, StructBalanceInUSDT> balanceInUSDTCoinex = coinex->ShowBalanceInUSDT();
 	map <string, StructBalanceInUSDT> balanceInUSDTHitBTC = hitbtc->ShowBalanceInUSDT();
 	map <string, StructBalanceInUSDT> balanceInUSDTKucoin = kucoin->ShowBalanceInUSDT();
 
-	for (map <string, StructBalanceInUSDT>::iterator iter = balanceInUSDTBinance.begin(); iter != balanceInUSDTBinance.end(); iter++) {
-		balanceAllExchanges[iter->first].balance += iter->second.balance;
-		balanceAllExchanges[iter->first].balanceFree += iter->second.balanceFree;
-		balanceAllExchanges[iter->first].balanceLocked += iter->second.balanceLocked;
-		balanceAllExchanges[iter->first].asset += iter->second.asset;
-	}
+	// for (map <string, StructBalanceInUSDT>::iterator iter = balanceInUSDTBinance.begin(); iter != balanceInUSDTBinance.end(); iter++) {
+	// 	balanceAllExchanges[iter->first].balance += iter->second.balance;
+	// 	balanceAllExchanges[iter->first].balanceFree += iter->second.balanceFree;
+	// 	balanceAllExchanges[iter->first].balanceLocked += iter->second.balanceLocked;
+	// 	balanceAllExchanges[iter->first].asset += iter->second.asset;
+	// }
 	for (map <string, StructBalanceInUSDT>::iterator iter = balanceInUSDTCoinex.begin(); iter != balanceInUSDTCoinex.end(); iter++) {
 		balanceAllExchanges[iter->first].balance += iter->second.balance;
 		balanceAllExchanges[iter->first].balanceFree += iter->second.balanceFree;

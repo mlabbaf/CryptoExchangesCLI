@@ -1812,7 +1812,8 @@ void Menu::ShowPrice() {
 }
 
 void Menu::ShowBalances() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = ALL | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1832,7 +1833,8 @@ void Menu::ShowBalances() {
 }
 
 void Menu::ShowBalanceInUSDT() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = ALL | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1854,7 +1856,8 @@ void Menu::ShowBalanceInUSDT() {
 }
 
 void Menu::ShowOpenOrders() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = ALL | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1876,7 +1879,8 @@ void Menu::ShowOpenOrders() {
 }
 
 void Menu::ShowAllOrders() {
-	int mode = ALL | BINANCE;
+	// int mode = ALL | BINANCE;
+	int mode = ALL;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1896,7 +1900,8 @@ void Menu::ShowAllOrders() {
 }
 
 void Menu::ShowMyTrades() {
-	int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = ALL | BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = ALL | COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1918,7 +1923,8 @@ void Menu::ShowMyTrades() {
 }
 
 void Menu::ShowTradesPerformance() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1938,7 +1944,8 @@ void Menu::ShowTradesPerformance() {
 }
 
 void Menu::ShowDepositAddress() {
-	int mode = BINANCE | HITBTC | KUCOIN;
+	// int mode = BINANCE | HITBTC | KUCOIN;
+	int mode = HITBTC | KUCOIN;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1960,7 +1967,8 @@ void Menu::ShowDepositAddress() {
 }
 
 void Menu::ShowDepositHistory() {
-	int mode = ALL | BINANCE | COINEX | KUCOIN | NOBITEX;
+	// int mode = ALL | BINANCE | COINEX | KUCOIN | NOBITEX;
+	int mode = ALL | COINEX | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -1982,7 +1990,8 @@ void Menu::ShowDepositHistory() {
 }
 
 void Menu::ShowWithdrawHistory() {
-	int mode = ALL | BINANCE | COINEX | KUCOIN | NOBITEX;
+	// int mode = ALL | BINANCE | COINEX | KUCOIN | NOBITEX;
+	int mode = ALL | COINEX | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -2004,7 +2013,8 @@ void Menu::ShowWithdrawHistory() {
 }
 
 void Menu::CancelAllOrders() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -2026,7 +2036,8 @@ void Menu::CancelAllOrders() {
 }
 
 void Menu::SendOrder() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
@@ -2048,7 +2059,8 @@ void Menu::SendOrder() {
 }
 
 void Menu::CancelOrder() {
-	int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	// int mode = BINANCE | COINEX | HITBTC | KUCOIN | NOBITEX;
+	int mode = COINEX | HITBTC | KUCOIN | NOBITEX;
 	string symbol = _ExchangeSubMenuList(mode);
 
 	if (symbol.size() != 0) {
